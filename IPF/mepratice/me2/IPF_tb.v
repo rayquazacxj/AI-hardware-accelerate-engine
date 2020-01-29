@@ -16,14 +16,15 @@ module IPF_tb;
     
     reg   clk; //give IPF=> reg
 	reg   rst;
+	reg  [2:0] ctrl;
 	reg  [7:0] i_data;
 	reg  [3:0] w_data;
-	reg ready,endinput;
+	reg  i_valid,w_valid;
+	//reg ready,endinput;
 	
 	wire [31:0] res;//each res //receive from IPF=>wire
 	wire res_valid;
 	wire finish;
-	
 	
 	reg [7:0] i_mem [0:5];
 	reg [3:0] w_mem  [0:1];
@@ -31,7 +32,8 @@ module IPF_tb;
 
 	reg [31:0] ipf_dbg, exp_dbg;
     reg over;
-    integer err, exp_num, i,cnt,c_cnt,i_cnt,i_data_id,w_data_id;
+    integer err, exp_num, i,cnt,i_data_id;
+	reg w_data_id;
 	
 /* 接線 */
 `ifdef SDF
@@ -41,9 +43,10 @@ module IPF_tb;
 `endif
     	.clk(clk),
 		.rst(rst),  
-        .ready(ready),
-		.endinput(endinput),
-        .i_data(i_data), 
+        .ctrl(ctrl),
+		.i_valid(i_valid),
+        .i_data(i_data),
+		.w_valid(w_valid),
 		.w_data(w_data), 
 		.res_valid(res_valid), 
 		.res(res), 
@@ -60,8 +63,7 @@ module IPF_tb;
 	initial begin
 		$readmemb(`PAT, i_mem);
 		$readmemb(`WPA , w_mem);
-		$readmemb(`EXP0 , exp_mem);
-		
+		$readmemb(`EXP0 , exp_mem);		
 		/*
 		`ifdef MODE0
 			$readmemh(`EXP0 , exp_mem);
@@ -92,18 +94,47 @@ module IPF_tb;
 	initial begin 
 		clk=0;
 		rst=0;
-		endinput=0;
+		i_valid=0;
+		w_valid=0;
+		ctrl='hz;
 		
-		@(negedge clk)rst=1; //wait , when neg clk => active(rst=1)
-		#(`CYCLE*2)rst=0; //wait 2 cyc =>active(rst=0)
-		@(negedge clk)ready=1;
+		@(negedge clk)rst=1; 	//wait , when neg clk => active(rst=1)
+		#(`CYCLE*2)rst=0; 		//wait 2 cyc =>active(rst=0)
 		@(negedge clk);
 		
-		cnt=0;
-		i_data_id=0;
-		w_data_id=0;
-		i_cnt=0;
-		c_cnt=0;
+		cnt	 	 = 0;
+		i_data_id= 0;
+		w_data_id= 0;
+		while(finish==0)begin
+			if(cnt==0|cnt==2|cnt==4|cnt==6|cnt==8)begin
+				if(cnt!=8)begin
+					if(cnt==0|cnt==4)begin
+						i_valid=1;
+						repeat(3)begin
+							i_data =i_mem[i_data_id];
+							i_data_id = i_data_id + 1;
+							@(negedge clk);
+						end
+					end
+					i_valid=0;
+					w_valid=1;
+					w_data =w_mem[w_data_id];
+					w_data_id = ~w_data_id;
+					ctrl=1;
+				end
+				else ctrl=0;
+			end
+			else begin
+				repeat(2)@(negedge clk);
+				ctrl=2;
+			end
+				
+			@(negedge clk);
+			cnt = cnt +1;
+			i_valid=0;
+			w_valid=0;
+		end	
+		/*
 		while(finish == 0)begin
 			if(cnt== 0 | cnt== 5)begin //give i
 				i_data = i_mem[i_data_id];
@@ -134,9 +165,10 @@ module IPF_tb;
 			end
 			
 			@(negedge clk);
-		end
+		end*/
+		i_data = 'hz;i_valid=0;
+		w_data = 'hz;w_valid=0;
 		
-		ready=0;i_data = 'hz;w_data = 'hz;
 	end
 	
 	/* check ans */
@@ -204,7 +236,7 @@ module ipf_mem(res_valid, res, clk);
 	integer i,id;
 	
 	initial begin
-		for(i=0;i<`N_PAT;i=i+1)begin
+		for(i=0;i<12;i=i+1)begin
 			ipf_M[i]=0;
 		end
 		id=0;

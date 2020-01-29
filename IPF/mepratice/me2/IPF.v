@@ -20,12 +20,12 @@ module IPF#(
 )(
 	input clk,
 	input rst,
-	input endinput,
-	input  ready,
+	input [1:0]ctrl,//0: end , 1:start , 2:hold   //input  ready,c-start replace it
+	
 	input  [7:0] i_data, //2 i
-	//input i_valid,w_valid,
 	input  [3:0] w_data,
-	//output reg gray_req,
+	input i_valid,w_valid,
+	
 	output wire [31:0] res,
 	output reg res_valid,
 
@@ -33,15 +33,18 @@ module IPF#(
 
 );
 	parameter STATE_Width = 3;
-	parameter IDLE    = 3'd0;
 	parameter FINISH  = 3'd1;
-	parameter WAITI   = 3'd2;
-	parameter WAITW   = 3'd3;
-	parameter COMPUTE = 3'd4;
+	parameter WAIT   = 3'd2;
+	parameter COMPUTE = 3'd3;
+	//parameter IDLE    = 3'd0;//parameter WAITW   = 3'd3;
+	
+	parameter HOLD = 2'd2;
+	parameter START = 2'd1;
+	parameter END = 2'd0;
 
 	reg [STATE_Width-1:0] PS, NS;
     
-	wire[15:0]icu;
+	wire[15:0]icu; //can reg?
 	reg [7:0]rega;
 	reg [7:0]regb;
 	reg [7:0]regc;
@@ -62,18 +65,17 @@ module IPF#(
 	/* FSM */
 	always@(posedge clk or posedge rst)begin
 		if(rst)begin
-			PS<=IDLE;
+			PS<=WAIT;
 		end
 		else begin
 			PS<=NS;
-			//just_w<=njust_w;
 		end
 	end
 	always@(*)begin
 		NS = PS;
 		res_valid=0;
-		//njust_w=0;
 		case(PS)
+			/*
 			IDLE:begin
 				NS=IDLE;
 				if(ready)begin
@@ -86,15 +88,23 @@ module IPF#(
 			end
 			WAITW:begin
 				NS = COMPUTE;	
+			end*/
+			WAIT:begin
+				NS=WAIT;
+				if(ctrl==START)begin
+					NS=COMPUTE;
+				end
+				if(ctrl==END)begin
+					NS=FINISH;
+				end
 			end
 			COMPUTE:begin
 				NS=COMPUTE;
 				res_valid=1;
-				if(cnt==2)begin
-					NS=WAITW;
-					//njust_w=1;
+				if(ctrl==HOLD)begin
+					NS=WAIT;
 				end
-				if(endinput)begin
+				if(ctrl==END)begin
 					NS=FINISH;
 				end
 			end
@@ -103,7 +113,8 @@ module IPF#(
 			end
 		endcase
 	end
-	/* counter for FSM */
+	
+	/* counter for FSM 
 	always@(posedge clk or posedge rst)begin
 		if(rst)cnt<=0;
 		else begin
@@ -112,6 +123,7 @@ module IPF#(
 			else cnt<=0;
 		end
 	end
+	*/
 	
 	/* get data*/
 	always@(posedge clk or posedge rst)begin
@@ -127,6 +139,17 @@ module IPF#(
 			regc<=regc;
 			w	<=w;
 			case(PS)
+				WAIT:begin
+					if(i_valid)begin
+						rega<=regb;
+						regb<=regc;
+						regc<=i_data;
+					end
+					else if(w_valid)begin
+						w<=w_data;
+					end
+				end
+				/*
 				WAITI:begin
 					rega<=regb;
 					regb<=regc;
@@ -135,17 +158,19 @@ module IPF#(
 				WAITW:begin
 					w<=w_data;
 				end
+				*/
 				COMPUTE:begin
 					rega<=regb;
 					regb<=regc;
 					regc<=rega;
 				end
+				/*
 				default:begin
 					rega<=rega;
 					regb<=regb;
 					regc<=regc;
 					w<=w;
-				end
+				end*/
 			endcase
 		end
 	end
