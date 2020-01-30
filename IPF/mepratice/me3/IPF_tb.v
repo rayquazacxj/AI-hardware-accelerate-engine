@@ -17,20 +17,20 @@ module IPF_tb;
     reg   clk; //give IPF=> reg
 	reg   rst;
 	reg  [2:0] ctrl;
-	reg  [7:0] i_data;
-	reg  [3:0] w_data;
+	reg  [63:0] i_data;
+	reg  [63:0] w_data;
 	reg  i_valid,w_valid;
-	//reg ready,endinput;
 	
-	wire [31:0] res;//each res //receive from IPF=>wire
+	
+	wire [1151:0] res;				//each res //receive from IPF=>wire
 	wire res_valid;
 	wire finish;
 	
-	reg [7:0] i_mem [0:5];
-	reg [3:0] w_mem  [0:1];
-	reg [31:0] exp_mem  [0:11];//12次res
+	reg [63:0] i_mem [0:7];
+	reg [63:0] w_mem  [0:4];		// 4 W => 9 * 8 bit * 4 / 63 = 4.xx
+	reg [1151:0] exp_mem  [0:31];	//31次res
 
-	reg [31:0] ipf_dbg, exp_dbg;
+	reg [1151:0] ipf_dbg, exp_dbg;
     reg over;
     integer err, exp_num, i,cnt,i_data_id;
 	reg w_data_id;
@@ -106,11 +106,11 @@ module IPF_tb;
 		i_data_id= 0;
 		w_data_id= 0;
 		while(finish==0)begin
-			if(cnt==0|cnt==2|cnt==4|cnt==6|cnt==8)begin
-				if(cnt!=8)begin
-					if(cnt==0|cnt==4)begin
+			if(cnt==0|cnt==2|cnt==4)begin
+				if(cnt!=4)begin
+					if(cnt==0)begin
 						i_valid=1;
-						repeat(3)begin
+						repeat(8)begin
 							i_data =i_mem[i_data_id];
 							i_data_id = i_data_id + 1;
 							@(negedge clk);
@@ -118,54 +118,27 @@ module IPF_tb;
 					end
 					i_valid=0;
 					w_valid=1;
-					w_data =w_mem[w_data_id];
-					w_data_id = ~w_data_id;
+					repeat(2)begin
+						if(w_data_id==4)w_data_id=0;	// w0 - w3
+						w_data =w_mem[w_data_id];
+						w_data_id = w_data_id+1;
+						@(negedge clk);
+					end
 					ctrl=1;
 				end
 				else ctrl=0;
 			end
 			else begin
-				repeat(2)@(negedge clk);
+				repeat(15)@(negedge clk);
 				ctrl=2;
+				@(negedge clk);
 			end
-				
-			@(negedge clk);
+		
 			cnt = cnt +1;
 			i_valid=0;
 			w_valid=0;
 		end	
-		/*
-		while(finish == 0)begin
-			if(cnt== 0 | cnt== 5)begin //give i
-				i_data = i_mem[i_data_id];
-				i_data_id = i_data_id+1;
-				i_cnt = i_cnt+1;
-				if(i_cnt==3)begin
-					i_cnt=0;
-					cnt = cnt+1;
-				end
-			end
-			else if (cnt==1 | cnt==3 |cnt==6 |cnt==8)begin //give w
-				w_data = w_mem[w_data_id];
-				if(w_data_id)w_data_id=0;
-				else w_data_id=1;
-				cnt = cnt+1;
-			end
-			else if (cnt==2 | cnt==4 |cnt==7 |cnt==9)begin //compute
-				c_cnt = c_cnt+1;
-				if(c_cnt==3)begin
-					if(cnt==9)endinput=1;
-					c_cnt=0;
-					cnt = cnt+1;
-				end
-			end
-			else begin
-				i_data = 'hz;
-				w_data = 'hz;
-			end
-			
-			@(negedge clk);
-		end*/
+		
 		i_data = 'hz;i_valid=0;
 		w_data = 'hz;w_valid=0;
 		
@@ -184,7 +157,7 @@ module IPF_tb;
 		
 		@(posedge clk);
 		@(posedge clk);
-		for(i=0;i<12;i=i+1)begin
+		for(i=0;i<32;i=i+1)begin
 			exp_dbg=exp_mem[i]; ipf_dbg= u_ipf_mem.ipf_M[i];
 			if(exp_dbg == ipf_dbg)begin
 				err = err;
@@ -229,14 +202,14 @@ endmodule
 module ipf_mem(res_valid, res, clk); 
 
 	input	res_valid;
-	input	[31:0] res;
+	input	[1151:0] res;
 	input	clk;
 
-	reg [31:0] ipf_M [0:11];
+	reg [1151:0] ipf_M [0:31];
 	integer i,id;
 	
 	initial begin
-		for(i=0;i<12;i=i+1)begin
+		for(i=0;i<31;i=i+1)begin
 			ipf_M[i]=0;
 		end
 		id=0;
