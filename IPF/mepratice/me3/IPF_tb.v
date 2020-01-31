@@ -2,15 +2,16 @@
 `define SDFFILE    "./IPF.sdf"	  
 `define End_CYCLE  10000000
 
-`define PAT        "./pattern.dat" 
-`define WPA		   "./wpa.dat"   
-`define EXP0       "./res.dat"
+`define PAT        "./data_i.dat" 
+`define WPA		   "./data_w.dat"   
+`define EXP0       "./data_res.dat"
 
 
 `define N_PAT      256**2
 `define I_Width    8
 `define O_Width    9
 `define A_Width    16
+`define ANS_NUM    64
 
 module IPF_tb;
     
@@ -28,7 +29,7 @@ module IPF_tb;
 	
 	reg [63:0] i_mem [0:7];
 	reg [63:0] w_mem  [0:4];		// 4 W => 9 * 8 bit * 4 / 63 = 4.xx
-	reg [1151:0] exp_mem  [0:31];	//31次res
+	reg [1151:0] exp_mem  [0:63];	//64次res
 
 	reg [1151:0] ipf_dbg, exp_dbg;
     reg over;
@@ -64,15 +65,7 @@ module IPF_tb;
 		$readmemb(`PAT, i_mem);
 		$readmemb(`WPA , w_mem);
 		$readmemb(`EXP0 , exp_mem);		
-		/*
-		`ifdef MODE0
-			$readmemh(`EXP0 , exp_mem);
-		`elsif MODE1
-			$readmemh(`EXP1 , exp_mem);
-		`else
-			$readmemh(`EXP2 , exp_mem);
-		`endif
-		*/
+		
 	end
 	
 	/* set clk */
@@ -118,8 +111,8 @@ module IPF_tb;
 					end
 					i_valid=0;
 					w_valid=1;
-					repeat(2)begin
-						if(w_data_id==4)w_data_id=0;	// w0 - w3
+					repeat(4)begin
+						if(w_data_id==7)w_data_id=0;	// w0 - w7
 						w_data =w_mem[w_data_id];
 						w_data_id = w_data_id+1;
 						@(negedge clk);
@@ -129,7 +122,7 @@ module IPF_tb;
 				else ctrl=0;
 			end
 			else begin
-				repeat(15)@(negedge clk);
+				repeat(32)@(negedge clk);
 				ctrl=2;
 				@(negedge clk);
 			end
@@ -157,7 +150,7 @@ module IPF_tb;
 		
 		@(posedge clk);
 		@(posedge clk);
-		for(i=0;i<32;i=i+1)begin
+		for(i=0;i<`ANS_NUM;i=i+1)begin
 			exp_dbg=exp_mem[i]; ipf_dbg= u_ipf_mem.ipf_M[i];
 			if(exp_dbg == ipf_dbg)begin
 				err = err;
@@ -205,11 +198,11 @@ module ipf_mem(res_valid, res, clk);
 	input	[1151:0] res;
 	input	clk;
 
-	reg [1151:0] ipf_M [0:31];
+	reg [1151:0] ipf_M [0:63];
 	integer i,id;
 	
 	initial begin
-		for(i=0;i<31;i=i+1)begin
+		for(i=0;i<`ANS_NUM;i=i+1)begin
 			ipf_M[i]=0;
 		end
 		id=0;

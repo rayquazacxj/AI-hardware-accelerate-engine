@@ -3,16 +3,24 @@ module CUBE#(
 )(
 	input [191:0]i,		// 3 REG
 	input [71:0]w,		// 9 data 3 * 3
-	output[143:0]result
+	output reg[143:0]result
 );
-	wire [71:0]locali; //REG C B A get row
-	assign locali = (id<=5)? {i[128+23+8*id : 128+8*id] ,i[64+23+8*id : 64+8*id] ,i[23+8*id : 8*id]}: (id==6)? {i[135:128],i[191:176],i[71:64],i[127:112],i[7:0],i[63:48]}:{i[143:128],i[191,184],i[79:64],i[127:120],i[15:0],i[63:56]};
-	//integer j;
-	always@(*)begin  
-		result[15:0]   = w[7 : 0]   * locali[7 : 0]; 
-		result[63:48]  = w[15 : 8]  * locali[15 : 8];
-		result[111:96] = w[23 : 16] * locali[23 : 16];
-		result[31:16]  = w[31 : 24] * locali[31 : 24];
+	reg [71:0]locali; //REG C B A get row
+	//assign locali = (id<=5)? {i[128+23+8*id : 128+8*id] ,i[64+23+8*id : 64+8*id] ,i[23+8*id : 8*id]}: (id==6)? {i[135:128],i[191:176],i[71:64],i[127:112],i[7:0],i[63:48]} : {i[143:128],i[191,184],i[79:64],i[127:120],i[15:0],i[63:56]};
+	
+	always@(*)begin
+		case(id)
+			6:locali = {i[135:128],i[191:176],i[71:64],i[127:112],i[7:0],i[63:48]};
+			7:locali = {i[143:128],i[191:184],i[79:64],i[127:120],i[15:0],i[63:56]};
+			default: locali = {i[128+23+8*id : 128+8*id] ,i[64+23+8*id : 64+8*id] ,i[23+8*id : 8*id]};
+		endcase
+	end
+	
+	always@(*)begin
+		result[15:0]   = w[7 : 0]   * locali[7 : 0]; 	//0
+		result[63:48]  = w[15 : 8]  * locali[15 : 8];   //1
+		result[111:96] = w[23 : 16] * locali[23 : 16];  //2
+		result[31:16]  = w[31 : 24] * locali[31 : 24];  //3
 		result[79:64]  = w[39 : 32] * locali[39 : 32];
 		result[127:112]= w[47 : 40] * locali[47 : 40];
 		result[47:32]  = w[55 : 48] * locali[55 : 48];
@@ -26,11 +34,11 @@ module CUBE#(
 		*/
 	end
 		/*
+		//integer j;
 		for(j=0;j<9;j=j+1)begin
 			result[?]= w[8*j+7 : 8*j] * locali[8*j+7 : 8*j];
 		end
 		*/
-	end
 	/*
 	reg [3:0]re1,re2;
 	assign result = {re1,re2};
@@ -49,9 +57,9 @@ module IPF#(
 )(
 	input clk,
 	input rst,
-	input [1:0]ctrl,//0: end , 1:start , 2:hold   //input  ready,c-start replace it
+	input [1:0]ctrl,			//0: end , 1:start , 2:hold   //input  ready,c-start replace it
 	
-	input  [63:0] i_data, //2 i
+	input  [63:0] i_data, 		//2 i
 	input  [63:0] w_data,
 	input i_valid,w_valid,
 	
@@ -65,7 +73,6 @@ module IPF#(
 	parameter FINISH  = 3'd1;
 	parameter WAIT   = 3'd2;
 	parameter COMPUTE = 3'd3;
-	//parameter IDLE    = 3'd0;//parameter WAITW   = 3'd3;
 	
 	parameter HOLD = 2'd2;
 	parameter START = 2'd1;
@@ -73,7 +80,7 @@ module IPF#(
 
 	reg [STATE_Width-1:0] PS, NS;
     
-	wire[191:0]icu; //can reg?
+	wire[191:0]icu; //can reg? 3 regx
 	reg [63:0]rega;
 	reg [63:0]regb;
 	reg [63:0]regc;
@@ -83,12 +90,12 @@ module IPF#(
 	reg [63:0]regg;
 	reg [63:0]regh;
 	
-	reg [143:0]w;
-	reg [71:0]wcu;
-	reg [7:0]widfirst;	//max number 64 * 3 = 192 , need 8 bits 
-	reg widcnt;			//current regw save 2 w
+	reg [447:0]w;				//5 * 5 * 8 bits * 2 => (50 -> 56) * 8 / 64 = 7.0
+	reg [71:0]wcu; 
+	reg [3:0]widcnt;			//current regw save 4 w
+	reg [5:0]widstart;
 	
-	reg [3:0]ccnt,rcnt;	// 8 ccnt => 1 rcnt
+	reg [3:0]ccnt,rcnt;			// 8 ccnt => 1 rcnt
 	
 	CUBE #(0)C0(.i(icu),.w(wcu),.result(res[143:0]));
 	CUBE #(1)C1(.i(icu),.w(wcu),.result(res[287:144]));
@@ -99,12 +106,6 @@ module IPF#(
 	CUBE #(6)C6(.i(icu),.w(wcu),.result(res[1007:864]));
 	CUBE #(7)C7(.i(icu),.w(wcu),.result(res[1151:1008]));
 
-	/*
-	CUBE C1(.i({icu[9:8],icu[1:0]}),.w(w),.result(res[7:0]));
-	CUBE C2(.i({icu[11:10],icu[3:2]}),.w(w),.result(res[15:8]));
-	CUBE C3(.i({icu[13:12],icu[5:4]}),.w(w),.result(res[23:16]));
-	CUBE C4(.i({icu[15:14],icu[7:6]}),.w(w),.result(res[31:24]));
-	*/
  
 	assign icu = {regc,regb,rega};
 	assign finish = (PS == FINISH);
@@ -172,7 +173,10 @@ module IPF#(
 			w	<=0;
 			wcu <=0;
 			widcnt<=0;
-			widfirst<=63;
+			widstart<=0;
+			ccnt<=0;
+			rcnt<=0;
+			
 		end
 		else begin
 			rega<=rega;
@@ -186,7 +190,9 @@ module IPF#(
 			w	<=w;
 			wcu <=wcu;
 			widcnt<=widcnt;
-			widfirst<=widfirst;
+			widstart<=widstart;
+			ccnt<=ccnt;
+			rcnt<=rcnt;
 			case(PS)
 				WAIT:begin
 					if(i_valid)begin
@@ -200,24 +206,30 @@ module IPF#(
 						regh<=i_data;
 					end
 					else if(w_valid)begin
-						w[widfirst : widcnt*64]<=w_data;
-						if(widcnt==1)widcnt<=0;
-						else widcnt<=widcnt+1;
-						if(widfirst<127)widfirst<=63+(widcnt+1)*64;
-						else widfirst<=143;
+						case(widstart)
+							0:begin
+								case(widcnt)
+									0:w[63: 0]<=w_data;
+									1:w[127:64]<=w_data;
+									2:w[191:128]<=w_data;
+									3:w[255:192]<=w_data;
+								endcase
+							end
+							32:begin
+								case(widcnt)
+									0:w[63+32: 0+32]<=w_data;
+									1:w[127+32:64+32]<=w_data;
+									2:w[191+32:128+32]<=w_data;
+									3:w[255+32:192+32]<=w_data;
+								endcase
+							end
+						endcase
+						//w[63+widstart+(widcnt+1)*64 : widstart+widcnt*64]<=w_data;
+						widcnt<=widcnt+1;
 					end
 					wcu<= w[71:0];
 				end
-				/*
-				WAITI:begin
-					rega<=regb;
-					regb<=regc;
-					regc<=i_data;
-				end
-				WAITW:begin
-					w<=w_data;
-				end
-				*/
+				
 				COMPUTE:begin
 					// shift
 					rega<=regb;
@@ -233,28 +245,28 @@ module IPF#(
 					if(ccnt<7)ccnt<=ccnt+1;
 					if(ccnt==7)begin
 						ccnt<=0;
+						case(rcnt)
+							//0:wcu<= w[71:0];
+							0:wcu<= w[143:72];
+							1:wcu<= w[215:144];
+							2:wcu<= w[287:216];
+						endcase
 						rcnt<=rcnt+1;
-						wcu<= w[71+(rcnt+1)*72:(rcnt+1)*72];
+						//wcu<= w[71+(rcnt+1)*72:(rcnt+1)*72];
 					end
 					
 					// COMPUTE -> WAIT
 					if(ctrl==HOLD)begin
-						w<=0;
+						w<=w[447:288];
 						wcu<=0;
 						widcnt<=0;
-						widfirst<=63;
+						widstart<=32;
 						ccnt<=0;
 						rcnt<=0;
 					end
 					
 				end
-				/*
-				default:begin
-					rega<=rega;
-					regb<=regb;
-					regc<=regc;
-					w<=w;
-				end*/
+				
 			endcase
 		end
 	end
