@@ -96,7 +96,7 @@ module IPF#(
 	reg [5:0]widstart;
 	
 	reg [3:0]ccnt,rcnt;			// 8 ccnt => 1 rcnt
-	
+	reg cnt3_3_2;
 	CUBE #(0)C0(.i(icu),.w(wcu),.result(res[143:0]));
 	CUBE #(1)C1(.i(icu),.w(wcu),.result(res[287:144]));
 	CUBE #(2)C2(.i(icu),.w(wcu),.result(res[431:288]));
@@ -176,7 +176,7 @@ module IPF#(
 			widstart<=0;
 			ccnt<=0;
 			rcnt<=0;
-			
+			cnt3_3_2<=0;
 		end
 		else begin
 			rega<=rega;
@@ -193,6 +193,7 @@ module IPF#(
 			widstart<=widstart;
 			ccnt<=ccnt;
 			rcnt<=rcnt;
+			cnt3_3_2<=cnt3_3_2;
 			case(PS)
 				WAIT:begin
 					if(i_valid)begin
@@ -257,10 +258,17 @@ module IPF#(
 					
 					// COMPUTE -> WAIT
 					if(ctrl==HOLD)begin
-						w<=w[447:288];
+						cnt3_3_2<= ~cnt3_3_2;		//3 *3 * 4w = 36 (4 8 8 8 8) , (8 8 8 8 4)
+						if(!cnt3_3_2)begin
+							w<=w[447:288];
+							widstart<=32;
+						end
+						else begin
+							w<=0;
+							widstart<=0;
+						end
 						wcu<=0;
-						widcnt<=0;
-						widstart<=32;
+						widcnt<=0;					
 						ccnt<=0;
 						rcnt<=0;
 					end

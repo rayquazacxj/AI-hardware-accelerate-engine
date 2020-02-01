@@ -11,7 +11,7 @@
 `define I_Width    8
 `define O_Width    9
 `define A_Width    16
-`define ANS_NUM    64
+`define ANS_NUM    128
 
 module IPF_tb;
     
@@ -27,9 +27,9 @@ module IPF_tb;
 	wire res_valid;
 	wire finish;
 	
-	reg [63:0] i_mem [0:7];
-	reg [63:0] w_mem  [0:4];		// 4 W => 9 * 8 bit * 4 / 63 = 4.xx
-	reg [1151:0] exp_mem  [0:63];	//64次res
+	reg [63:0] i_mem [0:15];
+	reg [63:0] w_mem  [0:8];		// 4*2 W 
+	reg [1151:0] exp_mem  [0:`ANS_NUM];	//`ANS_NUM res
 
 	reg [1151:0] ipf_dbg, exp_dbg;
     reg over;
@@ -99,9 +99,9 @@ module IPF_tb;
 		i_data_id= 0;
 		w_data_id= 0;
 		while(finish==0)begin
-			if(cnt==0|cnt==2|cnt==4)begin
-				if(cnt!=4)begin
-					if(cnt==0)begin
+			if(cnt==0|cnt==2|cnt==4|cnt==6|cnt==8)begin
+				if(cnt!=8)begin
+					if(cnt==0|cnt==4)begin
 						i_valid=1;
 						repeat(8)begin
 							i_data =i_mem[i_data_id];
@@ -198,7 +198,7 @@ module ipf_mem(res_valid, res, clk);
 	input	[1151:0] res;
 	input	clk;
 
-	reg [1151:0] ipf_M [0:63];
+	reg [1151:0] ipf_M [0:`ANS_NUM];
 	integer i,id;
 	
 	initial begin
