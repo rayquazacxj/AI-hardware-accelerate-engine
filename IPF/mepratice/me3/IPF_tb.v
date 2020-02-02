@@ -111,11 +111,21 @@ module IPF_tb;
 					end
 					i_valid=0;
 					w_valid=1;
-					repeat(4)begin
-						if(w_data_id==7)w_data_id=0;	// w0 - w7
-						w_data =w_mem[w_data_id];
-						w_data_id = w_data_id+1;
-						@(negedge clk);
+					if(cnt==2|cnt==6)begin
+						repeat(4)begin // 8 8 8 8
+							if(w_data_id==9)w_data_id=0;	// w0 - w7
+							w_data =w_mem[w_data_id];
+							w_data_id = w_data_id+1;
+							@(negedge clk);
+						end
+					end
+					else begin
+					repeat(5)begin //8(4) 8 8 8 8
+							if(w_data_id==9)w_data_id=0;	// w0 - w7
+							w_data =w_mem[w_data_id];
+							w_data_id = w_data_id+1;
+							@(negedge clk);
+						end
 					end
 					ctrl=1;
 				end

@@ -158,7 +158,21 @@ module IPF#(
 		end
 	end
 	*/
-	
+	/* get wcu */
+	always@(*)begin
+		case(PS)
+			WAIT:wcu=w[71:0];
+			COMPUTE:begin
+				case(rcnt)
+					0:wcu= w[71:0];
+					1:wcu= w[143:72];
+					2:wcu= w[215:144];
+					3:wcu= w[287:216];
+				endcase
+			end
+		endcase
+	end
+
 	/* get data*/
 	always@(posedge clk or posedge rst)begin
 		if(rst)begin
@@ -171,7 +185,7 @@ module IPF#(
 			regg<=0;
 			regh<=0;
 			w	<=0;
-			wcu <=0;
+			//wcu <=0;
 			widcnt<=0;
 			widstart<=0;
 			ccnt<=0;
@@ -188,7 +202,7 @@ module IPF#(
 			regg<=regg;
 			regh<=regh;
 			w	<=w;
-			wcu <=wcu;
+			//wcu <=wcu;
 			widcnt<=widcnt;
 			widstart<=widstart;
 			ccnt<=ccnt;
@@ -208,15 +222,24 @@ module IPF#(
 					end
 					else if(w_valid)begin
 						case(widstart)
-							0:begin
+							0:begin/*
+								w[319:256]<=w_data;
+								w[256:0]<=w[319:63];
+							end*/
 								case(widcnt)
 									0:w[63: 0]<=w_data;
 									1:w[127:64]<=w_data;
 									2:w[191:128]<=w_data;
 									3:w[255:192]<=w_data;
+									4:w[319:256]<=w_data;
 								endcase
+							
 							end
-							32:begin
+							32:begin/*
+								w[256+32:256-63+32]<=w_data;
+								w[256-63+32:32]<=w[256+32:63+32];
+							end*/
+							
 								case(widcnt)
 									0:w[63+32: 0+32]<=w_data;
 									1:w[127+32:64+32]<=w_data;
@@ -228,7 +251,7 @@ module IPF#(
 						//w[63+widstart+(widcnt+1)*64 : widstart+widcnt*64]<=w_data;
 						widcnt<=widcnt+1;
 					end
-					wcu<= w[71:0];
+					//wcu<= w[71:0];
 				end
 				
 				COMPUTE:begin
@@ -246,12 +269,14 @@ module IPF#(
 					if(ccnt<7)ccnt<=ccnt+1;
 					if(ccnt==7)begin
 						ccnt<=0;
+						/*
 						case(rcnt)
 							//0:wcu<= w[71:0];
 							0:wcu<= w[143:72];
 							1:wcu<= w[215:144];
 							2:wcu<= w[287:216];
 						endcase
+						*/
 						rcnt<=rcnt+1;
 						//wcu<= w[71+(rcnt+1)*72:(rcnt+1)*72];
 					end
@@ -267,7 +292,7 @@ module IPF#(
 							w<=0;
 							widstart<=0;
 						end
-						wcu<=0;
+						//wcu<=0;
 						widcnt<=0;					
 						ccnt<=0;
 						rcnt<=0;
