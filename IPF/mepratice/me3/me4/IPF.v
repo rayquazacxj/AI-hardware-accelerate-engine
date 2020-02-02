@@ -30,10 +30,13 @@ module CUBE#(
 		case(wsize)		
 			0:begin		//3 * 3
 				case(NO3)
+					6:locali={i[SC +D1:SC +0],i[SC +D2+NO3*8 : SC +NO3*8],i[SB +D1:SB +0],i[SB +D2+NO3*8 : SB +NO3*8],i[D1:0],i[D2+NO3*8 :NO3*8]};
+					6:locali={i[SC +D2:SC +0],i[SC +D1+NO3*8 : SC +NO3*8],i[SB +D2:SB +0],i[SB +D1+NO3*8 : SB +NO3*8],i[D2:0],i[D1+NO3*8 :NO3*8]};
+					default: locali = {i[SC +D3+NO3*8 : SC +NO3*8] ,i[SB +D3+NO3*8 :SB +NO3*8] ,i[D3+NO3*8 : NO3*8]};
+				endcase	
+					/*
 					6:locali = {i[135:128],i[191:176],i[71:64],i[127:112],i[7:0],i[63:48]};
-					7:locali = {i[143:128],i[191:184],i[79:64],i[127:120],i[15:0],i[63:56]};
-					default: locali = {i[SC+23+8*NO3 : SC+8*NO3] ,i[SB+23+8*NO3 :SB+8*NO3] ,i[23+8*NO3 : 8*NO3]};
-				endcase
+					7:locali = {i[143:128],i[191:184],i[79:64],i[127:120],i[15:0],i[63:56]};*/
 			end
 			1:begin		//5 * 5
 				case(ID5)	
@@ -48,20 +51,20 @@ module CUBE#(
 					end
 					1:begin	 // REG D C B
 						case(NO5)
-							4:locali = {i[SC + 23+NO5*8: SC + 0 +NO5*8],i[SB+ 7+NO5*8: SB+ 0+NO5*8],i[SB + 31+NO5*8 : SB + 0+NO5*8],i[7+(NO5-4)*8:(NO5-4)*8]};
-							5:locali = {i[SC + 23+NO5*8: SC + 0 +NO5*8],i[SB+ 15: SB+ 0],i[SB + 23+NO5*8 : SB + 0+NO5*8],i[7+(NO5-4)*8:(NO5-4)*8]};
-							6:locali = {i[SC + 7: SC + 0],i[SC + 15+NO5*8: SC + 0 +NO5*8],i[SB+ 23: SB+ 0],i[SB + 15+NO5*8 : SB + 0+NO5*8],i[7+(NO5-4)*8:(NO5-4)*8]};
-							7:locali = {i[SC + 15: SC + 0],i[SC + 7+NO5*8: SC + 0 +NO5*8],i[SB+ 31: SB+ 0],i[SB + 7+NO5*8 : SB + 0+NO5*8],i[7+(NO5-4)*8:(NO5-4)*8]};
-							default:locali = {i[SC + 23+NO5*8: SC + 0 +NO5*8],i[SB + 39+NO5*8 : SB + 0+NO5*8],i[7+(NO5+4)*8:(NO5+4)*8]};
+							4:locali = {i[SC + D3+NO5*8: SC + 0 +NO5*8],i[SB+ D1+NO5*8: SB+ 0+NO5*8],i[SB + D4+NO5*8 : SB + 0+NO5*8],i[D1+(NO5-4)*8:(NO5-4)*8]};
+							5:locali = {i[SC + D3+NO5*8: SC + 0 +NO5*8],i[SB+ D2: SB+ 0],i[SB + D3+NO5*8 : SB + 0+NO5*8],i[D1+(NO5-4)*8:(NO5-4)*8]};
+							6:locali = {i[SC + D1: SC + 0],i[SC + D2+NO5*8: SC + 0 +NO5*8],i[SB+ D3: SB+ 0],i[SB + D2+NO5*8 : SB + 0+NO5*8],i[D1+(NO5-4)*8:(NO5-4)*8]};
+							7:locali = {i[SC + D2: SC + 0],i[SC + D1+NO5*8: SC + 0 +NO5*8],i[SB+ D4: SB+ 0],i[SB + D1+NO5*8 : SB + 0+NO5*8],i[D1+(NO5-4)*8:(NO5-4)*8]};
+							default:locali = {i[SC + D3+NO5*8: SC + 0 +NO5*8],i[SB + D5+NO5*8 : SB + 0+NO5*8],i[D1+(NO5+4)*8:(NO5+4)*8]};
 						endcase
 					end
 					2:begin	 // REG E D C
 						case(NO5)
-							4:locali = {i[SC + 7: SC +0],i[SC + 31+NO5*8 : SC + 0+NO5*8],i[SB + 7:SB +0],i[SB + 7+(NO5+3)*8 : SB + 0+(NO5+3)*8]};
-							5:locali = {i[SC + 15: SC +0],i[SC + 23+NO5*8 : SC + 0+NO5*8],i[SB + 15+(NO5-5)*8 : SB + 0+(NO5-5)*8]};
-							6:locali = {i[SC + 23: SC +0],i[SC + 15+NO5*8 : SC + 0+NO5*8],i[SB + 15+(NO5-5)*8 : SB + 0+(NO5-5)*8]};
-							7:locali = {i[SC + 31: SC +0],i[SC + 7+NO5*8 : SC + 0+NO5*8],i[SB + 15+(NO5-5)*8 : SB + 0+(NO5-5)*8]};
-							default:locali= {i[SC +39+NO5*8 : SC +0+NO5*8],i[SB + 15+(NO5+3)*8 : SB + 0+(NO5+3)*8]};
+							4:locali = {16{0},i[SC + D1: SC +0],i[SC + D4+NO5*8 : SC + 0+NO5*8],i[SB + D1:SB +0],i[SB + D1+(NO5+3)*8 : SB + 0+(NO5+3)*8]};
+							5:locali = {16{0},i[SC + D2: SC +0],i[SC + D3+NO5*8 : SC + 0+NO5*8],i[SB + D2+(NO5-5)*8 : SB + 0+(NO5-5)*8]};
+							6:locali = {16{0},i[SC + D3: SC +0],i[SC + D2+NO5*8 : SC + 0+NO5*8],i[SB + D2+(NO5-5)*8 : SB + 0+(NO5-5)*8]};
+							7:locali = {16{0},i[SC + D4: SC +0],i[SC + D1+NO5*8 : SC + 0+NO5*8],i[SB + D2+(NO5-5)*8 : SB + 0+(NO5-5)*8]};
+							default:locali= {16{0},i[SC +D5+NO5*8 : SC +0+NO5*8],i[SB + D2+(NO5+3)*8 : SB + 0+(NO5+3)*8]};
 						endcase
 					end
 				endcase
@@ -101,16 +104,51 @@ module CUBE#(
 							default:locali={i[SB +D6+NO7*8:SB +NO7*8],i[D3+ (NO7+4)*8: (NO7+4)*8]};
 						endcase
 					end
-					3:begin	 //REG F D E
+					3:begin	 //REG F E D
 						case(NO7)
-							default:locali={}
-							
-							
-							
-					
+							2:locali={i[SC +D1+NO7*8:SC +NO7*8],i[SB +D1:SB +0],i[SB +D6+NO7*8:SB +0+NO7*8],i[D1+(NO7-2)*8:(NO7-2)*8]};
+							3:locali={i[SC +D1+NO7*8:SC +NO7*8],i[SB +D2:SB +0],i[SB +D5+NO7*8:SB +0+NO7*8],i[D1+(NO7-2)*8:(NO7-2)*8]};
+							4:locali={i[SC +D1+NO7*8:SC +NO7*8],i[SB +D3:SB +0],i[SB +D4+NO7*8:SB +0+NO7*8],i[D1+(NO7-2)*8:(NO7-2)*8]};
+							5:locali={i[SC +D1+NO7*8:SC +NO7*8],i[SB +D4:SB +0],i[SB +D3+NO7*8:SB +0+NO7*8],i[D1+(NO7-2)*8:(NO7-2)*8]};
+							6:locali={i[SC +D1+NO7*8:SC +NO7*8],i[SB +D5:SB +0],i[SB +D2+NO7*8:SB +0+NO7*8],i[D1+(NO7-2)*8:(NO7-2)*8]};
+							7:locali={i[SC +D1+NO7*8:SC +NO7*8],i[SB +D6:SB +0],i[SB +D1+NO7*8:SB +0+NO7*8],i[D1+(NO7-2)*8:(NO7-2)*8]};
+							default:locali={i[SC +D1+NO7*8:SC +NO7*8],i[SB +D7+NO7*8:SB +NO7*8],i[D1+(NO7+6)*8:(NO7+6)*8]};
+						endcase
+					end
+					4:begin	 //REG G F E
+						case(NO7)
+							2:locali={i[SC +D3+NO7*8:SC +0+NO7*8],i[SB +D1:SB +0],i[SB +D5+(NO7+1)*8:SB +0+(NO7+1)*8]};
+							3:locali={i[SC +D3+NO7*8:SC +0+NO7*8],i[SB +D2:SB +0],i[SB +D4+(NO7+1)*8:SB +0+(NO7+1)*8]};
+							4:locali={i[SC +D3+NO7*8:SC +0+NO7*8],i[SB +D3:SB +0],i[SB +D3+(NO7+1)*8:SB +0+(NO7+1)*8]};
+							5:locali={i[SC +D3+NO7*8:SC +0+NO7*8],i[SB +D4:SB +0],i[SB +D2+(NO7+1)*8:SB +0+(NO7+1)*8]};
+							6:locali={i[SC +D1:SC +0],i[SC +D2+NO7*8:SC +0+NO7*8],i[SB +D5:SB +0],i[SB +D1+(NO7+1)*8:SB +0+(NO7+1)*8]};
+							7:locali={i[SC +D2:SC +0],i[SC +D1+NO7*8:SC +0+NO7*8],i[SB +D6:SB +0]};
+							default:locali={i[SC +D3+NO7*8:SC +0+NO7*8],i[SB +D6+(NO7+1)*8:SB +0+(NO7+1)*8]}
+						endcase
+					end
+					5:begin  //REG G F END
+						case(NO7)	
+							2:locali={40{0},i[SC +D1:SC +0],i[SC +D3+(NO7+3)*8:SC +0+(NO7+3)*8]};
+							3:locali={40{0},i[SC +D2:SC +0],i[SC +D2+(NO7+3)*8:SC +0+(NO7+3)*8]};
+							4:locali={40{0},i[SC +D3:SC +0],i[SC +D1+(NO7+3)*8:SC +0+(NO7+3)*8]};
+							5:locali={40{0},i[SC +D4:SC +0]};
+							6:locali={40{0},i[SC +D4+8:SC +8]};
+							7:locali={40{0},i[SC +D4+15:SC +15]};
+							default:locali={40{0},i[SC +D4+(NO7+3)*8:SC +0+(NO7+3)*8]};
+						endcase
+					end
+				endcase
+			end
+		endcase
+	end
 	
-	
+	integer j;
 	always@(*)begin
+		for(j=0;j<9;j=j+1)begin
+			result[16*j+15 : 16*j]= w[8*j+7 : 8*j] * locali[8*j+7 : 8*j];
+		end
+	end
+	/*
 		result[15:0]   = w[7 : 0]   * locali[7 : 0]; 	//0
 		result[63:48]  = w[15 : 8]  * locali[15 : 8];   //1
 		result[111:96] = w[23 : 16] * locali[23 : 16];  //2
@@ -120,13 +158,13 @@ module CUBE#(
 		result[47:32]  = w[55 : 48] * locali[55 : 48];
 		result[95:80]  = w[63 : 56] * locali[63 : 56];
 		result[143:128]= w[71 : 64] * locali[71 : 64];
+	*/
 		/*
 		 0 3 6
 		 1 4 7
 		 2 5 8
 		 result = [ 8 , 5 , 2 , 7 , 4 , 1 , 6 , 3 , 0 ] for add
 		*/
-	end
 		/*
 		//integer j;
 		for(j=0;j<9;j=j+1)begin
