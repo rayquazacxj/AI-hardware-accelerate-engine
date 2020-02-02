@@ -1,20 +1,68 @@
 module CUBE#(
-	parameter id = 0
+	
+	parameter NO3 = 0,
+	parameter NO5 = 0,
+	parameter ID5 = 0,
+	parameter NO7 = 0,
+	parameter ID7 = 0
+	
 )(
+	input [1:0]wsize,
 	input [191:0]i,		// 3 REG
 	input [71:0]w,		// 9 data 3 * 3
 	output reg[143:0]result
 );
-	reg [71:0]locali; //REG C B A get row
+	parameter SA= 0;
+	parameter SB = 64;
+	parameter SC = 128;
+	
+	reg [71:0]locali; 	//REG C B A get row
 	//assign locali = (id<=5)? {i[128+23+8*id : 128+8*id] ,i[64+23+8*id : 64+8*id] ,i[23+8*id : 8*id]}: (id==6)? {i[135:128],i[191:176],i[71:64],i[127:112],i[7:0],i[63:48]} : {i[143:128],i[191,184],i[79:64],i[127:120],i[15:0],i[63:56]};
 	
 	always@(*)begin
-		case(id)
-			6:locali = {i[135:128],i[191:176],i[71:64],i[127:112],i[7:0],i[63:48]};
-			7:locali = {i[143:128],i[191:184],i[79:64],i[127:120],i[15:0],i[63:56]};
-			default: locali = {i[128+23+8*id : 128+8*id] ,i[64+23+8*id : 64+8*id] ,i[23+8*id : 8*id]};
-		endcase
-	end
+		case(wsize)		
+			0:begin		//3 * 3
+				case(NO3)
+					6:locali = {i[135:128],i[191:176],i[71:64],i[127:112],i[7:0],i[63:48]};
+					7:locali = {i[143:128],i[191:184],i[79:64],i[127:120],i[15:0],i[63:56]};
+					default: locali = {i[SC+23+8*NO3 : SC+8*NO3] ,i[SB+23+8*NO3 :SB+8*NO3] ,i[23+8*NO3 : 8*NO3]};
+				endcase
+			end
+			1:begin		//5 * 5
+				case(id5)	
+					0:begin	//REG C B A
+						case(NO5):
+							4:locali = {i[SB+ 31+NO5*8: SB+ 0+NO5*8],i[7:0],i[ 31+NO5*8: 0+NO5*8]};						//	7654 | 07654
+							5:locali = {i[SB+ 7: SB+ 0],i[SB+ 23+NO5*8: SB+ 0+NO5*8],i[15:0],i[ 23+NO5*8: 0+NO5*8]};	//	0765 | 10765
+							6:locali = {i[SB+ 15: SB+ 0],i[SB+ 15+NO5*8: SB+ 0+NO5*8],i[23:0],i[ 15+NO5*8: 0+NO5*8]};	//  1076 | 21076
+							7:locali = {i[SB+ 23: SB+ 0],i[SB+ 7+NO5*8: SB+ 0+NO5*8],i[31:0],i[ 7+NO5*8: 0+NO5*8]};		//  2107 | 32107
+							default:locali = {i[SB+ 31+NO5*8: SB+ 0+NO5*8],i[ 39+NO5*8: 0+NO5*8]};	
+						endcase
+					end
+					1:begin	 // REG D C B
+						case(NO5):
+							4:locali = {i[SC + 23+NO5*8: SC + 0 +NO5*8],i[SB+ 7+NO5*8: SB+ 0+NO5*8],i[SB + 31+NO5*8 : SB + 0+NO5*8],i[7+(NO5-4)*8:(NO5-4)*8]};
+							5:locali = {i[SC + 23+NO5*8: SC + 0 +NO5*8],i[SB+ 15: SB+ 0],i[SB + 23+NO5*8 : SB + 0+NO5*8],i[7+(NO5-4)*8:(NO5-4)*8]};
+							6:locali = {i[SC + 7: SC + 0],i[SC + 15+NO5*8: SC + 0 +NO5*8],i[SB+ 23: SB+ 0],i[SB + 15+NO5*8 : SB + 0+NO5*8],i[7+(NO5-4)*8:(NO5-4)*8]};
+							7:locali = {i[SC + 15: SC + 0],i[SC + 7+NO5*8: SC + 0 +NO5*8],i[SB+ 31: SB+ 0],i[SB + 7+NO5*8 : SB + 0+NO5*8],i[7+(NO5-4)*8:(NO5-4)*8]};
+							default:locali = {i[SC + 23+NO5*8: SC + 0 +NO5*8],i[SB + 39+NO5*8 : SB + 0+NO5*8],i[7+(NO5+4)*8:(NO5+4)*8]};
+						endcase
+					end
+					2:begin	 // REG E D C
+						case(NO5):
+							4:locali = {i[SC + 7: SC +0],i[SC + 31+NO5*8 : SC + 0+NO5*8],i[SB + 7:SB +0],i[SB + 7+(NO5+3)*8 : SB + 0+(NO5+3)*8]};
+							5:locali = {i[SC + 15: SC +0],i[SC + 23+NO5*8 : SC + 0+NO5*8],i[SB + 15+(NO5-5)*8 : SB + 0+(NO5-5)*8]};
+							6:locali = {i[SC + 23: SC +0],i[SC + 15+NO5*8 : SC + 0+NO5*8],i[SB + 15+(NO5-5)*8 : SB + 0+(NO5-5)*8]};
+							7:locali = {i[SC + 31: SC +0],i[SC + 7+NO5*8 : SC + 0+NO5*8],i[SB + 15+(NO5-5)*8 : SB + 0+(NO5-5)*8]};
+							default:locali= {i[SC +39+NO5*8 : SC +0+NO5*8],i[SB + 15+(NO5+3)*8 : SB + 0+(NO5+3)*8]};
+						endcase
+					end
+				endcase
+			end
+			2:begin  //7 * 7
+				case(id7)
+					
+	
 	
 	always@(*)begin
 		result[15:0]   = w[7 : 0]   * locali[7 : 0]; 	//0
@@ -39,14 +87,7 @@ module CUBE#(
 			result[?]= w[8*j+7 : 8*j] * locali[8*j+7 : 8*j];
 		end
 		*/
-	/*
-	reg [3:0]re1,re2;
-	assign result = {re1,re2};
-	always@(*)begin
-		re1 = i[1:0] * w[1:0];
-		re2 = i[3:2] * w[3:2];
-	end
-	*/
+	
 endmodule
 
 
@@ -222,8 +263,7 @@ module IPF#(
 					end
 					else if(w_valid)begin
 						case(widstart)
-							0:begin
-							/*
+							0:begin/*
 								w[319:256]<=w_data;
 								w[256:0]<=w[319:63];
 							end*/
@@ -236,8 +276,7 @@ module IPF#(
 								endcase
 							
 							end
-							32:begin
-							/*
+							32:begin/*
 								w[256+32:256-63+32]<=w_data;
 								w[256-63+32:32]<=w[256+32:63+32];
 							end*/
