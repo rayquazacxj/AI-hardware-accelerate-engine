@@ -245,8 +245,7 @@ module IPF#(
 	reg [1599:0]w;	 
 	reg [3:0]widcnt;			//current regw save 4 w
 	reg [5:0]widstart;
-	
-	wire [391:0]wcu[0:7];
+	reg [391:0]wcu[0:7];
 	integer idx,idxx;
 	/*
 	wire [391:0]wcu0;
