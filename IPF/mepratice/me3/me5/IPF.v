@@ -228,9 +228,20 @@ module IPF#(
 	
 	//reg [447:0]w;				//5 * 5 * 8 bits * 2 => (50 -> 56) * 8 / 64 = 7.0
 	reg [1599:0]w;	
-	reg [71:0]wcu; 
+	//reg [71:0]wcu; 
 	reg [3:0]widcnt;			//current regw save 4 w
 	reg [5:0]widstart;
+	
+	wire [391:0]wcu[0:7];
+	/*
+	wire [391:0]wcu0;
+	wire [391:0]wcu1;
+	wire [391:0]wcu2;
+	wire [391:0]wcu3;
+	wire [391:0]wcu4;
+	wire [391:0]wcu5;
+	wire [391:0]wcu6;
+	wire [391:0]wcu7;*/
 	
 	reg [3:0]ccnt,rcnt;			// 8 ccnt => 1 rcnt
 	reg cnt7_7_2;
@@ -371,12 +382,44 @@ module IPF#(
 		case(PS)
 			WAIT:wcu=w[71:0];
 			COMPUTE:begin
-				case(rcnt)
-					0:wcu= w[71:0];
-					1:wcu= w[143:72];
-					2:wcu= w[215:144];
-					3:wcu= w[287:216];
-				endcase
+				case(Wsize)
+					0:begin		//3 * 3
+						case(rcnt)
+							0:begin
+								for(idx=0;idx<8;idx=idx+1)begin
+									wcu[idx]=w[idx*72+:72];
+								end
+							end
+							1:begin
+								for(idx=0;idx<8;idx=idx+1)begin
+									wcu[idx]=w[idx*72 +:72];
+								end
+							end
+						endcase
+					end
+					1:begin		//5 * 5
+						case(rcnt)
+							0:begin
+								wcu0= w[71:0];
+							end
+						
+							1:wcu= w[143:72];
+							2:wcu= w[215:144];
+							3:wcu= w[287:216];
+						endcase
+					end
+					2:begin		// 7 * 7
+						case(rcnt)
+							0:begin
+								wcu0= w[71:0];
+							end
+						
+							1:wcu= w[143:72];
+							2:wcu= w[215:144];
+							3:wcu= w[287:216];
+						endcase
+					end
+				
 			end
 		endcase
 	end
