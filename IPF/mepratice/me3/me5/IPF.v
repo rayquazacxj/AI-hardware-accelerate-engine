@@ -211,8 +211,9 @@ module IPF#(
 	wire[191:0]icu0; 	//REG A B C	(3 , 5, 7)		//can reg? 3 regx
 	wire[191:0]icu1;	//REG B C D	(5 ,7)
 	wire[191:0]icu2;	//REG C D E	(5 ,7)
-	wire[191:0]icu3;	//REG D E F ( 7 )
-	wire[191:0]icu4;	//REG E F G ( 7 )
+	wire[191:0]icu3;	//REG A B C , D E F (5 ,7)
+	wire[191:0]icu4;	//REG B C D , E F G (5 ,7)
+	wire[191:0]icu5;	//REG C D E , E F G (5 ,7)
 	
 	reg [63:0]rega;
 	reg [63:0]regb;
@@ -231,6 +232,14 @@ module IPF#(
 	
 	reg [3:0]ccnt,rcnt;			// 8 ccnt => 1 rcnt
 	reg cnt7_7_2;
+	
+	genvar idx;
+	generate 
+		for(idx=0 ; idx<64 ; idx =idx+1)begin: label
+			CUBE #(.NO3(),.NO5(),.ID5(),.NO7(),.ID7())cube(.wsize(Wsize),.i(icu),.w(wcu),.result(res[143:0]));
+		end
+	endgenerate
+	
 	CUBE #(0)C0(.i(icu),.w(wcu),.result(res[143:0]));
 	CUBE #(1)C1(.i(icu),.w(wcu),.result(res[287:144]));
 	CUBE #(2)C2(.i(icu),.w(wcu),.result(res[431:288]));
