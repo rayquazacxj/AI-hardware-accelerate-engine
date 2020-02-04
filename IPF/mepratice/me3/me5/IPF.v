@@ -205,7 +205,8 @@ module IPF#(
 	input  [63:0] w_data,
 	input i_valid,w_valid,
 	input  [1:0] Wsize,
-	output wire [1152:0] res,
+	input  stride,
+	output reg [9215:0] result,
 	output reg res_valid,
 
 	output finish
@@ -259,6 +260,8 @@ module IPF#(
 	
 	reg [3:0]ccnt,rcnt;			// 8 ccnt => 1 rcnt
 	reg cnt7_7_2;
+	
+	wire [9215:0]result_tmp;
 	/*
 	genvar idx;
 	generate 
@@ -277,71 +280,71 @@ module IPF#(
 	CUBE #(6)C6(.i(icu),.w(wcu),.result(res[1007:864]));
 	CUBE #(7)C7(.i(icu),.w(wcu),.result(res[1151:1008]));*/
 	
-	CUBE #(.NO3(0),.NO5(0),.ID5(0),.NO7(0),.ID7(0))C0(.wsize(Wsize),.i(icu0),.w(wcu[0]),.result(res[1151:1008]));
-	CUBE #(.NO3(1),.NO5(0),.ID5(1),.NO7(0),.ID7(1))C1(.wsize(Wsize),.i(icu1),.w(wcu[0]),.result(res[1151:1008]));
-	CUBE #(.NO3(2),.NO5(0),.ID5(2),.NO7(0),.ID7(2))C2(.wsize(Wsize),.i(icu2),.w(wcu[0]),.result(res[1151:1008]));
-	CUBE #(.NO3(3),.NO5(1),.ID5(0),.NO7(0),.ID7(3))C3(.wsize(Wsize),.i(icu3),.w(wcu[0]),.result(res[1151:1008]));
-	CUBE #(.NO3(4),.NO5(1),.ID5(1),.NO7(0),.ID7(4))C4(.wsize(Wsize),.i(icu4),.w(wcu[0]),.result(res[1151:1008]));
-	CUBE #(.NO3(5),.NO5(1),.ID5(2),.NO7(0),.ID7(5))C5(.wsize(Wsize),.i(icu5),.w(wcu[0]),.result(res[1151:1008]));
-	CUBE #(.NO3(6),.NO5(2),.ID5(0),.NO7(1),.ID7(6))C6(.wsize(Wsize),.i(icu0),.w(wcu[0]),.result(res[1151:1008]));
-	CUBE #(.NO3(7),.NO5(2),.ID5(1),.NO7(1),.ID7(7))C7(.wsize(Wsize),.i(icu1),.w(wcu[0]),.result(res[1151:1008]));
-	CUBE #(.NO3(0),.NO5(2),.ID5(2),.NO7(1),.ID7(0))C8(.wsize(Wsize),.i(icu2),.w(wcu[1]),.result(res[1151:1008]));
-	CUBE #(.NO3(1),.NO5(3),.ID5(0),.NO7(1),.ID7(1))C9(.wsize(Wsize),.i(icu3),.w(wcu[1]),.result(res[1151:1008]));
-	CUBE #(.NO3(2),.NO5(3),.ID5(1),.NO7(1),.ID7(2))C10(.wsize(Wsize),.i(icu4),.w(wcu[1]),.result(res[1151:1008]));
-	CUBE #(.NO3(3),.NO5(3),.ID5(2),.NO7(1),.ID7(3))C11(.wsize(Wsize),.i(icu5),.w(wcu[1]),.result(res[1151:1008]));
-	CUBE #(.NO3(4),.NO5(4),.ID5(0),.NO7(2),.ID7(4))C12(.wsize(Wsize),.i(icu0),.w(wcu[1]),.result(res[1151:1008]));
-	CUBE #(.NO3(5),.NO5(4),.ID5(1),.NO7(2),.ID7(5))C13(.wsize(Wsize),.i(icu1),.w(wcu[1]),.result(res[1151:1008]));
-	CUBE #(.NO3(6),.NO5(4),.ID5(2),.NO7(2),.ID7(6))C14(.wsize(Wsize),.i(icu2),.w(wcu[1]),.result(res[1151:1008]));
-	CUBE #(.NO3(7),.NO5(5),.ID5(0),.NO7(2),.ID7(7))C15(.wsize(Wsize),.i(icu3),.w(wcu[1]),.result(res[1151:1008]));
-	CUBE #(.NO3(0),.NO5(5),.ID5(1),.NO7(2),.ID7(0))C16(.wsize(Wsize),.i(icu4),.w(wcu[2]),.result(res[1151:1008]));
-	CUBE #(.NO3(1),.NO5(5),.ID5(2),.NO7(2),.ID7(1))C17(.wsize(Wsize),.i(icu5),.w(wcu[2]),.result(res[1151:1008]));
-	CUBE #(.NO3(2),.NO5(6),.ID5(0),.NO7(3),.ID7(2))C18(.wsize(Wsize),.i(icu0),.w(wcu[2]),.result(res[1151:1008]));
-	CUBE #(.NO3(3),.NO5(6),.ID5(1),.NO7(3),.ID7(3))C19(.wsize(Wsize),.i(icu1),.w(wcu[2]),.result(res[1151:1008]));
-	CUBE #(.NO3(4),.NO5(6),.ID5(2),.NO7(3),.ID7(4))C20(.wsize(Wsize),.i(icu2),.w(wcu[2]),.result(res[1151:1008]));
-	CUBE #(.NO3(5),.NO5(7),.ID5(0),.NO7(3),.ID7(5))C21(.wsize(Wsize),.i(icu3),.w(wcu[2]),.result(res[1151:1008]));
-	CUBE #(.NO3(6),.NO5(7),.ID5(1),.NO7(3),.ID7(6))C22(.wsize(Wsize),.i(icu4),.w(wcu[2]),.result(res[1151:1008]));
-	CUBE #(.NO3(7),.NO5(7),.ID5(2),.NO7(3),.ID7(7))C23(.wsize(Wsize),.i(icu5),.w(wcu[2]),.result(res[1151:1008]));
-	CUBE #(.NO3(0),.NO5(0),.ID5(0),.NO7(4),.ID7(0))C24(.wsize(Wsize),.i(icu0),.w(wcu[3]),.result(res[1151:1008]));
-	CUBE #(.NO3(1),.NO5(0),.ID5(1),.NO7(4),.ID7(1))C25(.wsize(Wsize),.i(icu1),.w(wcu[3]),.result(res[1151:1008]));
-	CUBE #(.NO3(2),.NO5(0),.ID5(2),.NO7(4),.ID7(2))C26(.wsize(Wsize),.i(icu2),.w(wcu[3]),.result(res[1151:1008]));
-	CUBE #(.NO3(3),.NO5(1),.ID5(0),.NO7(4),.ID7(3))C27(.wsize(Wsize),.i(icu3),.w(wcu[3]),.result(res[1151:1008]));
-	CUBE #(.NO3(4),.NO5(1),.ID5(1),.NO7(4),.ID7(4))C28(.wsize(Wsize),.i(icu4),.w(wcu[3]),.result(res[1151:1008]));
-	CUBE #(.NO3(5),.NO5(1),.ID5(2),.NO7(4),.ID7(5))C29(.wsize(Wsize),.i(icu5),.w(wcu[3]),.result(res[1151:1008]));
-	CUBE #(.NO3(6),.NO5(2),.ID5(0),.NO7(5),.ID7(6))C30(.wsize(Wsize),.i(icu0),.w(wcu[3]),.result(res[1151:1008]));
-	CUBE #(.NO3(7),.NO5(2),.ID5(1),.NO7(5),.ID7(7))C31(.wsize(Wsize),.i(icu1),.w(wcu[3]),.result(res[1151:1008]));
-	CUBE #(.NO3(0),.NO5(2),.ID5(2),.NO7(5),.ID7(0))C32(.wsize(Wsize),.i(icu2),.w(wcu[4]),.result(res[1151:1008]));
-	CUBE #(.NO3(1),.NO5(3),.ID5(0),.NO7(5),.ID7(1))C33(.wsize(Wsize),.i(icu3),.w(wcu[4]),.result(res[1151:1008]));
-	CUBE #(.NO3(2),.NO5(3),.ID5(1),.NO7(5),.ID7(2))C34(.wsize(Wsize),.i(icu4),.w(wcu[4]),.result(res[1151:1008]));
-	CUBE #(.NO3(3),.NO5(3),.ID5(2),.NO7(5),.ID7(3))C35(.wsize(Wsize),.i(icu5),.w(wcu[4]),.result(res[1151:1008]));
-	CUBE #(.NO3(4),.NO5(4),.ID5(0),.NO7(6),.ID7(4))C36(.wsize(Wsize),.i(icu0),.w(wcu[4]),.result(res[1151:1008]));
-	CUBE #(.NO3(5),.NO5(4),.ID5(1),.NO7(6),.ID7(5))C37(.wsize(Wsize),.i(icu1),.w(wcu[4]),.result(res[1151:1008]));
-	CUBE #(.NO3(6),.NO5(4),.ID5(2),.NO7(6),.ID7(6))C38(.wsize(Wsize),.i(icu2),.w(wcu[4]),.result(res[1151:1008]));
-	CUBE #(.NO3(7),.NO5(5),.ID5(0),.NO7(6),.ID7(7))C39(.wsize(Wsize),.i(icu3),.w(wcu[4]),.result(res[1151:1008]));
-	CUBE #(.NO3(0),.NO5(5),.ID5(1),.NO7(6),.ID7(0))C40(.wsize(Wsize),.i(icu4),.w(wcu[5]),.result(res[1151:1008]));
-	CUBE #(.NO3(1),.NO5(5),.ID5(2),.NO7(6),.ID7(1))C41(.wsize(Wsize),.i(icu5),.w(wcu[5]),.result(res[1151:1008]));
-	CUBE #(.NO3(2),.NO5(6),.ID5(0),.NO7(7),.ID7(2))C42(.wsize(Wsize),.i(icu0),.w(wcu[5]),.result(res[1151:1008]));
-	CUBE #(.NO3(3),.NO5(6),.ID5(1),.NO7(7),.ID7(3))C43(.wsize(Wsize),.i(icu1),.w(wcu[5]),.result(res[1151:1008]));
-	CUBE #(.NO3(4),.NO5(6),.ID5(2),.NO7(7),.ID7(4))C44(.wsize(Wsize),.i(icu2),.w(wcu[5]),.result(res[1151:1008]));
-	CUBE #(.NO3(5),.NO5(7),.ID5(0),.NO7(7),.ID7(5))C45(.wsize(Wsize),.i(icu3),.w(wcu[5]),.result(res[1151:1008]));
-	CUBE #(.NO3(6),.NO5(7),.ID5(1),.NO7(7),.ID7(6))C46(.wsize(Wsize),.i(icu4),.w(wcu[5]),.result(res[1151:1008]));
-	CUBE #(.NO3(7),.NO5(7),.ID5(2),.NO7(7),.ID7(7))C47(.wsize(Wsize),.i(icu5),.w(wcu[5]),.result(res[1151:1008]));
+	CUBE #(.NO3(0),.NO5(0),.ID5(0),.NO7(0),.ID7(0))C0(.wsize(Wsize),.i(icu0),.w(wcu[0]),.result(result_tmp[1151:1008]));
+	CUBE #(.NO3(1),.NO5(0),.ID5(1),.NO7(0),.ID7(1))C1(.wsize(Wsize),.i(icu1),.w(wcu[0]),.result(result_tmp[1151:1008]));
+	CUBE #(.NO3(2),.NO5(0),.ID5(2),.NO7(0),.ID7(2))C2(.wsize(Wsize),.i(icu2),.w(wcu[0]),.result(result_tmp[1151:1008]));
+	CUBE #(.NO3(3),.NO5(1),.ID5(0),.NO7(0),.ID7(3))C3(.wsize(Wsize),.i(icu3),.w(wcu[0]),.result(result_tmp[1151:1008]));
+	CUBE #(.NO3(4),.NO5(1),.ID5(1),.NO7(0),.ID7(4))C4(.wsize(Wsize),.i(icu4),.w(wcu[0]),.result(result_tmp[1151:1008]));
+	CUBE #(.NO3(5),.NO5(1),.ID5(2),.NO7(0),.ID7(5))C5(.wsize(Wsize),.i(icu5),.w(wcu[0]),.result(result_tmp[1151:1008]));
+	CUBE #(.NO3(6),.NO5(2),.ID5(0),.NO7(1),.ID7(6))C6(.wsize(Wsize),.i(icu0),.w(wcu[0]),.result(result_tmp[1151:1008]));
+	CUBE #(.NO3(7),.NO5(2),.ID5(1),.NO7(1),.ID7(7))C7(.wsize(Wsize),.i(icu1),.w(wcu[0]),.result(result_tmp[1151:1008]));
+	CUBE #(.NO3(0),.NO5(2),.ID5(2),.NO7(1),.ID7(0))C8(.wsize(Wsize),.i(icu2),.w(wcu[1]),.result(result_tmp[1151:1008]));
+	CUBE #(.NO3(1),.NO5(3),.ID5(0),.NO7(1),.ID7(1))C9(.wsize(Wsize),.i(icu3),.w(wcu[1]),.result(result_tmp[1151:1008]));
+	CUBE #(.NO3(2),.NO5(3),.ID5(1),.NO7(1),.ID7(2))C10(.wsize(Wsize),.i(icu4),.w(wcu[1]),.result(result_tmp[1151:1008]));
+	CUBE #(.NO3(3),.NO5(3),.ID5(2),.NO7(1),.ID7(3))C11(.wsize(Wsize),.i(icu5),.w(wcu[1]),.result(result_tmp[1151:1008]));
+	CUBE #(.NO3(4),.NO5(4),.ID5(0),.NO7(2),.ID7(4))C12(.wsize(Wsize),.i(icu0),.w(wcu[1]),.result(result_tmp[1151:1008]));
+	CUBE #(.NO3(5),.NO5(4),.ID5(1),.NO7(2),.ID7(5))C13(.wsize(Wsize),.i(icu1),.w(wcu[1]),.result(result_tmp[1151:1008]));
+	CUBE #(.NO3(6),.NO5(4),.ID5(2),.NO7(2),.ID7(6))C14(.wsize(Wsize),.i(icu2),.w(wcu[1]),.result(result_tmp[1151:1008]));
+	CUBE #(.NO3(7),.NO5(5),.ID5(0),.NO7(2),.ID7(7))C15(.wsize(Wsize),.i(icu3),.w(wcu[1]),.result(result_tmp[1151:1008]));
+	CUBE #(.NO3(0),.NO5(5),.ID5(1),.NO7(2),.ID7(0))C16(.wsize(Wsize),.i(icu4),.w(wcu[2]),.result(result_tmp[1151:1008]));
+	CUBE #(.NO3(1),.NO5(5),.ID5(2),.NO7(2),.ID7(1))C17(.wsize(Wsize),.i(icu5),.w(wcu[2]),.result(result_tmp[1151:1008]));
+	CUBE #(.NO3(2),.NO5(6),.ID5(0),.NO7(3),.ID7(2))C18(.wsize(Wsize),.i(icu0),.w(wcu[2]),.result(result_tmp[1151:1008]));
+	CUBE #(.NO3(3),.NO5(6),.ID5(1),.NO7(3),.ID7(3))C19(.wsize(Wsize),.i(icu1),.w(wcu[2]),.result(result_tmp[1151:1008]));
+	CUBE #(.NO3(4),.NO5(6),.ID5(2),.NO7(3),.ID7(4))C20(.wsize(Wsize),.i(icu2),.w(wcu[2]),.result(result_tmp[1151:1008]));
+	CUBE #(.NO3(5),.NO5(7),.ID5(0),.NO7(3),.ID7(5))C21(.wsize(Wsize),.i(icu3),.w(wcu[2]),.result(result_tmp[1151:1008]));
+	CUBE #(.NO3(6),.NO5(7),.ID5(1),.NO7(3),.ID7(6))C22(.wsize(Wsize),.i(icu4),.w(wcu[2]),.result(result_tmp[1151:1008]));
+	CUBE #(.NO3(7),.NO5(7),.ID5(2),.NO7(3),.ID7(7))C23(.wsize(Wsize),.i(icu5),.w(wcu[2]),.result(result_tmp[1151:1008]));
+	CUBE #(.NO3(0),.NO5(0),.ID5(0),.NO7(4),.ID7(0))C24(.wsize(Wsize),.i(icu0),.w(wcu[3]),.result(result_tmp[1151:1008]));
+	CUBE #(.NO3(1),.NO5(0),.ID5(1),.NO7(4),.ID7(1))C25(.wsize(Wsize),.i(icu1),.w(wcu[3]),.result(result_tmp[1151:1008]));
+	CUBE #(.NO3(2),.NO5(0),.ID5(2),.NO7(4),.ID7(2))C26(.wsize(Wsize),.i(icu2),.w(wcu[3]),.result(result_tmp[1151:1008]));
+	CUBE #(.NO3(3),.NO5(1),.ID5(0),.NO7(4),.ID7(3))C27(.wsize(Wsize),.i(icu3),.w(wcu[3]),.result(result_tmp[1151:1008]));
+	CUBE #(.NO3(4),.NO5(1),.ID5(1),.NO7(4),.ID7(4))C28(.wsize(Wsize),.i(icu4),.w(wcu[3]),.result(result_tmp[1151:1008]));
+	CUBE #(.NO3(5),.NO5(1),.ID5(2),.NO7(4),.ID7(5))C29(.wsize(Wsize),.i(icu5),.w(wcu[3]),.result(result_tmp[1151:1008]));
+	CUBE #(.NO3(6),.NO5(2),.ID5(0),.NO7(5),.ID7(6))C30(.wsize(Wsize),.i(icu0),.w(wcu[3]),.result(result_tmp[1151:1008]));
+	CUBE #(.NO3(7),.NO5(2),.ID5(1),.NO7(5),.ID7(7))C31(.wsize(Wsize),.i(icu1),.w(wcu[3]),.result(result_tmp[1151:1008]));
+	CUBE #(.NO3(0),.NO5(2),.ID5(2),.NO7(5),.ID7(0))C32(.wsize(Wsize),.i(icu2),.w(wcu[4]),.result(result_tmp[1151:1008]));
+	CUBE #(.NO3(1),.NO5(3),.ID5(0),.NO7(5),.ID7(1))C33(.wsize(Wsize),.i(icu3),.w(wcu[4]),.result(result_tmp[1151:1008]));
+	CUBE #(.NO3(2),.NO5(3),.ID5(1),.NO7(5),.ID7(2))C34(.wsize(Wsize),.i(icu4),.w(wcu[4]),.result(result_tmp[1151:1008]));
+	CUBE #(.NO3(3),.NO5(3),.ID5(2),.NO7(5),.ID7(3))C35(.wsize(Wsize),.i(icu5),.w(wcu[4]),.result(result_tmp[1151:1008]));
+	CUBE #(.NO3(4),.NO5(4),.ID5(0),.NO7(6),.ID7(4))C36(.wsize(Wsize),.i(icu0),.w(wcu[4]),.result(result_tmp[1151:1008]));
+	CUBE #(.NO3(5),.NO5(4),.ID5(1),.NO7(6),.ID7(5))C37(.wsize(Wsize),.i(icu1),.w(wcu[4]),.result(result_tmp[1151:1008]));
+	CUBE #(.NO3(6),.NO5(4),.ID5(2),.NO7(6),.ID7(6))C38(.wsize(Wsize),.i(icu2),.w(wcu[4]),.result(result_tmp[1151:1008]));
+	CUBE #(.NO3(7),.NO5(5),.ID5(0),.NO7(6),.ID7(7))C39(.wsize(Wsize),.i(icu3),.w(wcu[4]),.result(result_tmp[1151:1008]));
+	CUBE #(.NO3(0),.NO5(5),.ID5(1),.NO7(6),.ID7(0))C40(.wsize(Wsize),.i(icu4),.w(wcu[5]),.result(result_tmp[1151:1008]));
+	CUBE #(.NO3(1),.NO5(5),.ID5(2),.NO7(6),.ID7(1))C41(.wsize(Wsize),.i(icu5),.w(wcu[5]),.result(result_tmp[1151:1008]));
+	CUBE #(.NO3(2),.NO5(6),.ID5(0),.NO7(7),.ID7(2))C42(.wsize(Wsize),.i(icu0),.w(wcu[5]),.result(result_tmp[1151:1008]));
+	CUBE #(.NO3(3),.NO5(6),.ID5(1),.NO7(7),.ID7(3))C43(.wsize(Wsize),.i(icu1),.w(wcu[5]),.result(result_tmp[1151:1008]));
+	CUBE #(.NO3(4),.NO5(6),.ID5(2),.NO7(7),.ID7(4))C44(.wsize(Wsize),.i(icu2),.w(wcu[5]),.result(result_tmp[1151:1008]));
+	CUBE #(.NO3(5),.NO5(7),.ID5(0),.NO7(7),.ID7(5))C45(.wsize(Wsize),.i(icu3),.w(wcu[5]),.result(result_tmp[1151:1008]));
+	CUBE #(.NO3(6),.NO5(7),.ID5(1),.NO7(7),.ID7(6))C46(.wsize(Wsize),.i(icu4),.w(wcu[5]),.result(result_tmp[1151:1008]));
+	CUBE #(.NO3(7),.NO5(7),.ID5(2),.NO7(7),.ID7(7))C47(.wsize(Wsize),.i(icu5),.w(wcu[5]),.result(result_tmp[1151:1008]));
 	
-	CUBE #(.NO3(0),.NO5(4),.ID5(3),.NO7(1),.ID7(6))C48(.wsize(Wsize),.i(icu0),.w(wcu[6]),.result(res[1151:1008]));
-	CUBE #(.NO3(1),.NO5(4),.ID5(3),.NO7(1),.ID7(6))C49(.wsize(Wsize),.i(icu0),.w(wcu[6]),.result(res[1151:1008]));
-	CUBE #(.NO3(2),.NO5(4),.ID5(3),.NO7(1),.ID7(6))C50(.wsize(Wsize),.i(icu0),.w(wcu[6]),.result(res[1151:1008]));
-	CUBE #(.NO3(3),.NO5(4),.ID5(3),.NO7(1),.ID7(6))C51(.wsize(Wsize),.i(icu0),.w(wcu[6]),.result(res[1151:1008]));
-	CUBE #(.NO3(4),.NO5(4),.ID5(3),.NO7(1),.ID7(6))C52(.wsize(Wsize),.i(icu0),.w(wcu[6]),.result(res[1151:1008]));
-	CUBE #(.NO3(5),.NO5(4),.ID5(3),.NO7(1),.ID7(6))C53(.wsize(Wsize),.i(icu0),.w(wcu[6]),.result(res[1151:1008]));
-	CUBE #(.NO3(6),.NO5(4),.ID5(3),.NO7(1),.ID7(6))C54(.wsize(Wsize),.i(icu0),.w(wcu[6]),.result(res[1151:1008]));
-	CUBE #(.NO3(7),.NO5(4),.ID5(3),.NO7(1),.ID7(6))C55(.wsize(Wsize),.i(icu0),.w(wcu[6]),.result(res[1151:1008]));
-	CUBE #(.NO3(0),.NO5(4),.ID5(3),.NO7(1),.ID7(6))C56(.wsize(Wsize),.i(icu0),.w(wcu[7]),.result(res[1151:1008]));
-	CUBE #(.NO3(1),.NO5(4),.ID5(3),.NO7(1),.ID7(6))C57(.wsize(Wsize),.i(icu0),.w(wcu[7]),.result(res[1151:1008]));
-	CUBE #(.NO3(2),.NO5(4),.ID5(3),.NO7(1),.ID7(6))C58(.wsize(Wsize),.i(icu0),.w(wcu[7]),.result(res[1151:1008]));
-	CUBE #(.NO3(3),.NO5(4),.ID5(3),.NO7(1),.ID7(6))C59(.wsize(Wsize),.i(icu0),.w(wcu[7]),.result(res[1151:1008]));
-	CUBE #(.NO3(4),.NO5(4),.ID5(3),.NO7(1),.ID7(6))C60(.wsize(Wsize),.i(icu0),.w(wcu[7]),.result(res[1151:1008]));
-	CUBE #(.NO3(5),.NO5(4),.ID5(3),.NO7(1),.ID7(6))C61(.wsize(Wsize),.i(icu0),.w(wcu[7]),.result(res[1151:1008]));
-	CUBE #(.NO3(6),.NO5(4),.ID5(3),.NO7(1),.ID7(6))C62(.wsize(Wsize),.i(icu0),.w(wcu[7]),.result(res[1151:1008]));
-	CUBE #(.NO3(7),.NO5(4),.ID5(3),.NO7(1),.ID7(6))C63(.wsize(Wsize),.i(icu0),.w(wcu[7]),.result(res[1151:1008]));
+	CUBE #(.NO3(0),.NO5(4),.ID5(3),.NO7(1),.ID7(6))C48(.wsize(Wsize),.i(icu0),.w(wcu[6]),.result(result_tmp[1151:1008]));
+	CUBE #(.NO3(1),.NO5(4),.ID5(3),.NO7(1),.ID7(6))C49(.wsize(Wsize),.i(icu0),.w(wcu[6]),.result(result_tmp[1151:1008]));
+	CUBE #(.NO3(2),.NO5(4),.ID5(3),.NO7(1),.ID7(6))C50(.wsize(Wsize),.i(icu0),.w(wcu[6]),.result(result_tmp[1151:1008]));
+	CUBE #(.NO3(3),.NO5(4),.ID5(3),.NO7(1),.ID7(6))C51(.wsize(Wsize),.i(icu0),.w(wcu[6]),.result(result_tmp[1151:1008]));
+	CUBE #(.NO3(4),.NO5(4),.ID5(3),.NO7(1),.ID7(6))C52(.wsize(Wsize),.i(icu0),.w(wcu[6]),.result(result_tmp[1151:1008]));
+	CUBE #(.NO3(5),.NO5(4),.ID5(3),.NO7(1),.ID7(6))C53(.wsize(Wsize),.i(icu0),.w(wcu[6]),.result(result_tmp[1151:1008]));
+	CUBE #(.NO3(6),.NO5(4),.ID5(3),.NO7(1),.ID7(6))C54(.wsize(Wsize),.i(icu0),.w(wcu[6]),.result(result_tmp[1151:1008]));
+	CUBE #(.NO3(7),.NO5(4),.ID5(3),.NO7(1),.ID7(6))C55(.wsize(Wsize),.i(icu0),.w(wcu[6]),.result(result_tmp[1151:1008]));
+	CUBE #(.NO3(0),.NO5(4),.ID5(3),.NO7(1),.ID7(6))C56(.wsize(Wsize),.i(icu0),.w(wcu[7]),.result(result_tmp[1151:1008]));
+	CUBE #(.NO3(1),.NO5(4),.ID5(3),.NO7(1),.ID7(6))C57(.wsize(Wsize),.i(icu0),.w(wcu[7]),.result(result_tmp[1151:1008]));
+	CUBE #(.NO3(2),.NO5(4),.ID5(3),.NO7(1),.ID7(6))C58(.wsize(Wsize),.i(icu0),.w(wcu[7]),.result(result_tmp[1151:1008]));
+	CUBE #(.NO3(3),.NO5(4),.ID5(3),.NO7(1),.ID7(6))C59(.wsize(Wsize),.i(icu0),.w(wcu[7]),.result(result_tmp[1151:1008]));
+	CUBE #(.NO3(4),.NO5(4),.ID5(3),.NO7(1),.ID7(6))C60(.wsize(Wsize),.i(icu0),.w(wcu[7]),.result(result_tmp[1151:1008]));
+	CUBE #(.NO3(5),.NO5(4),.ID5(3),.NO7(1),.ID7(6))C61(.wsize(Wsize),.i(icu0),.w(wcu[7]),.result(result_tmp[1151:1008]));
+	CUBE #(.NO3(6),.NO5(4),.ID5(3),.NO7(1),.ID7(6))C62(.wsize(Wsize),.i(icu0),.w(wcu[7]),.result(result_tmp[1151:1008]));
+	CUBE #(.NO3(7),.NO5(4),.ID5(3),.NO7(1),.ID7(6))C63(.wsize(Wsize),.i(icu0),.w(wcu[7]),.result(result_tmp[1151:1008]));
 	
  
 	assign icu0 = {regc,regb,rega};
@@ -352,7 +355,19 @@ module IPF#(
 	assign icu5 = (Wsize==0)?{regc,regb,rega} : (Wsize==1)? {rege,regd,regc}: {regg,regf,rege};
 	
 	assign finish = (PS == FINISH);
-		
+	
+	always@(*)begin
+		if(rst)begin
+			result= 0;
+		end
+		if(stride==0)begin
+			result = result_tmp; 
+		end/*
+		else begin
+			result = {result_tmp[NO0,2,4,6]};
+		end*/
+	end
+	
 	/* FSM */
 	always@(posedge clk or posedge rst)begin
 		if(rst)begin
@@ -607,23 +622,39 @@ module IPF#(
 				end
 				
 				COMPUTE:begin
-					// shift
-					rega<=regb;
-					regb<=regc;
-					regc<=regd;
-					regd<=rege;
-					rege<=regf;
-					regf<=regg;
-					regg<=regh;
-					regh<=rega;	
-					
 					// counter
-					if(ccnt<7)ccnt<=ccnt+1;
-					if(ccnt==7)begin
-						ccnt<=0;
-						rcnt<=rcnt+1;
-					end
+					ccnt<=ccnt+1;
 					
+					// shift
+					if(stride==0)begin	//stride = 1
+						rega<=regb;
+						regb<=regc;
+						regc<=regd;
+						regd<=rege;
+						rege<=regf;
+						regf<=regg;
+						regg<=regh;
+						regh<=rega;	
+						if(ccnt==7)begin
+							ccnt<=0;
+							rcnt<=rcnt+1;
+						end
+					end
+					else begin			//stride = 2
+						rega<=regc;
+						regb<=regd;
+						regc<=rege;
+						regd<=regf;
+						rege<=regg;
+						regf<=regh;
+						regg<=rega;
+						regh<=regb;
+						if(ccnt==3)begin
+							ccnt<=0;
+							rcnt<=rcnt+1;
+						end
+					end
+									
 					// COMPUTE -> WAIT
 					if(ctrl==HOLD)begin								
 						if(Wsize==2)begin	// 7 * 7
@@ -644,10 +675,8 @@ module IPF#(
 						widcnt<=0;					
 						ccnt<=0;
 						rcnt<=0;
-					end
-					
-				end
-				
+					end	
+				end			
 			endcase
 		end
 	end

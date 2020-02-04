@@ -21,6 +21,7 @@ module IPF_tb;
 	reg  [63:0] i_data;
 	reg  [63:0] w_data;
 	reg  i_valid,w_valid;
+	reg  [1:0]Wsize;
 	
 	
 	wire [1151:0] res;				//each res //receive from IPF=>wire
@@ -49,15 +50,16 @@ module IPF_tb;
         .i_data(i_data),
 		.w_valid(w_valid),
 		.w_data(w_data), 
+		.Wsize(Wsize),
 		.res_valid(res_valid), 
-		.res(res), 
+		.result(res), 
 		.finish(finish)
 	);
 			
     ipf_mem u_ipf_mem(
    	    .clk(clk),
    	    .res_valid(res_valid),
-   	    .res(res)
+   	    .res(re)
    	);
 	
 	/* read file data */
@@ -90,7 +92,7 @@ module IPF_tb;
 		i_valid=0;
 		w_valid=0;
 		ctrl='hz;
-		
+		Wsize=1;
 		@(negedge clk)rst=1; 	//wait , when neg clk => active(rst=1)
 		#(`CYCLE*2)rst=0; 		//wait 2 cyc =>active(rst=0)
 		@(negedge clk);
