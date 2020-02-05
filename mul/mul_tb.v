@@ -13,7 +13,7 @@
 `define A_Width    16
 `define ANS_NUM    128
 
-module IPF_tb;
+module MUL_tb;
     
     reg   clk; //give IPF=> reg
 	reg   rst;
@@ -39,9 +39,9 @@ module IPF_tb;
 	
 /* 接線 */
 `ifdef SDF
-    IPF IPF(
+    MUL MUL(
 `else
-    IPF #(.In_Width(`I_Width), .Out_Width(`O_Width), .Addr_Width(`A_Width)) IPF(
+    MUL #(.In_Width(`I_Width), .Out_Width(`O_Width), .Addr_Width(`A_Width)) MUL(
 `endif
     	.clk(clk),
 		.rst(rst),  

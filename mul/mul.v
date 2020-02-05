@@ -7,14 +7,16 @@ module CUBE#(
 	parameter ID7 = 0
 	
 )(
+	input stride,
+	input [1:0]round,
 	input [1:0]wsize,
-	input [191:0]i,		// 3 REG
-	input [391:0]w,		// max 7 * 7 * 8 bits
+	input [191:0]i_dat,		// 3 REG
+	input [391:0]w_dat,		// max 7 * 7 * 8 bits
 	output reg[143:0]result
 );
-	parameter SA= 0;
+	parameter SA= 128;
 	parameter SB = 64;
-	parameter SC = 128;
+	parameter SC = 0;
 	parameter D1 = 7;
 	parameter D2 = 15;
 	parameter D3 = 23;
@@ -22,25 +24,127 @@ module CUBE#(
 	parameter D5 = 39;
 	parameter D6 = 47;
 	parameter D7 = 55;
+	parameter P1 = 8;
+	parameter P2 = 16;
+	parameter P3 = 24;
+	parameter P4 = 32;
+	parameter P5 = 40;
+	parameter P6 = 48;
+	parameter P7 = 56;
+	
+	integer j;
 	
 	reg [71:0]locali; 	//REG C B A get row
 	reg [71:0]localw;
-	//assign locali = (id<=5)? {i[128+23+8*id : 128+8*id] ,i[64+23+8*id : 64+8*id] ,i[23+8*id : 8*id]}: (id==6)? {i[135:128],i[191:176],i[71:64],i[127:112],i[7:0],i[63:48]} : {i[143:128],i[191,184],i[79:64],i[127:120],i[15:0],i[63:56]};
-	integer j;
 	
+	reg [191:0]i,		
+	reg [391:0]w,	
+	
+	always@(posedge clk or negedge rst)begin
+		if(!rst)begin
+			i<=0;
+			w<=0;
+		end
+		else begin
+			i<=i_dat;
+			w<=w_dat;
+		end
+	end
+			
+			
 	always@(*)begin
 		case(wsize)		
 			0:begin		//3 * 3
 				case(NO3)
-					6:locali={i[SC +D1:SC +0],i[SC +D2+NO3*8 : SC +NO3*8],i[SB +D1:SB +0],i[SB +D2+NO3*8 : SB +NO3*8],i[D1:0],i[D2+NO3*8 :NO3*8]};
-					7:locali={i[SC +D2:SC +0],i[SC +D1+NO3*8 : SC +NO3*8],i[SB +D2:SB +0],i[SB +D1+NO3*8 : SB +NO3*8],i[D2:0],i[D1+NO3*8 :NO3*8]};
-					default: locali = {i[SC +D3+NO3*8 : SC +NO3*8] ,i[SB +D3+NO3*8 :SB +NO3*8] ,i[D3+NO3*8 : NO3*8]};
+					6:locali={i[SA +D1:SA +0],i[SC +D2+NO3*8 : SC +NO3*8],i[SB +D1:SB +0],i[SB +D2+NO3*8 : SB +NO3*8],i[D1:0],i[D2+NO3*8 :NO3*8]};
+					7:locali={i[SA +D2:SA +0],i[SC +D1+NO3*8 : SC +NO3*8],i[SB +D2:SB +0],i[SB +D1+NO3*8 : SB +NO3*8],i[D2:0],i[D1+NO3*8 :NO3*8]};
+					default: locali = {i[SA +D3+NO3*8 : SC +NO3*8] ,i[SB +D3+NO3*8 :SB +NO3*8] ,i[D3+NO3*8 : NO3*8]};
 				endcase	
-					/*
-					6:locali = {i[135:128],i[191:176],i[71:64],i[127:112],i[7:0],i[63:48]};
-					7:locali = {i[143:128],i[191:184],i[79:64],i[127:120],i[15:0],i[63:56]};*/
 			end
 			1:begin		//5 * 5
+				case(stride)
+					0:begin
+						case(round)	// 2 round
+							0:begin
+								//case(NO5) // 4 NO
+								case(ID5)
+									0:locali = {i[SA +D3+NO5*8:SA +NO5*8],i[SB +D3+NO5*8:SB +NO5*8],i[D3+NO5*8:NO5*8]};
+									1:locali = {i[SA +D3+NO5*8:SA +NO5*8],i[SB +D3+NO5*8:SB +NO5*8],{D3{1'b0}}};
+									2:locali = {i[SA +D2+NO5*8:SA +NO5*8],{D1{1'b0}},i[SB +D2+NO5*8:SB +NO5*8],{D1{1'b0}},i[D2+NO5*8:NO5*8],{D1{1'b0}}};
+									3:locali = {i[SA +D2+NO5*8:SA +NO5*8],{D1{1'b0}},i[SB +D2+NO5*8:SB +NO5*8],{D1{1'b0}},{D3{1'b0}}};
+								endcase
+								//endcase
+							end
+							1:begin
+								case(ID5)
+									0:begin		//3 *3
+										case(NO5)
+											2:locali = {i[SA +D2+(NO5+4)*8:SA +(NO5+4)*8],i[SA +D1:SA],i[SB +D2+(NO5+4)*8:SB +(NO5+4)*8],i[SB +D1:SB],i[D2+(NO5+4)*8:(NO5+4)*8],i[D1:0]};
+											3:locali = {i[SA +D1+(NO5+4)*8:SA +(NO5+4)*8],i[SA +D2:SA],i[SB +D1+(NO5+4)*8:SB +(NO5+4)*8],i[SB +D2:SB],i[D1+(NO5+4)*8:(NO5+4)*8],i[D2:0]};
+											default:locali={i[SA +D3+(NO5+4)*8:SA +(NO5+4)*8],i[SB +D3+(NO5+4)*8:SB +(NO5+4)*8],i[D3+(NO5+4)*8:(NO5+4)*8]};
+										endcase
+									end
+									1:begin		//3 * 2
+										case(NO5)
+											2:locali = {i[SA +D2+(NO5+4)*8:SA +(NO5+4)*8],i[SA +D1:SA],i[SB +D2+(NO5+4)*8:SB +(NO5+4)*8],i[SB +D1:SB],{D3{1'b0}}};
+											3:locali = {i[SA +D1+(NO5+4)*8:SA +(NO5+4)*8],i[SA +D2:SA],i[SB +D1+(NO5+4)*8:SB +(NO5+4)*8],i[SB +D2:SB],{D3{1'b0}}};
+											default:locali={i[SA +D3+(NO5+4)*8:SA +(NO5+4)*8],i[SB +D3+(NO5+4)*8:SB +(NO5+4)*8],{D3{1'b0}}};
+										endcase
+									end
+									2:begin		// 2 * 3
+										case(NO5)
+											0:locali={i[SA +D1+(NO5+7)*8:SA +(NO5+7)*8],i[SA +D1:SA],{D1{1'b0}},i[SB +D1+(NO5+7)*8:SB +(NO5+7)*8],i[SB +D1:SB],{D1{1'b0}},i[D1+(NO5+7)*8:(NO5+7)*8],i[D1:0],{D1{1'b0}}}; //NO5_0
+											default:locali = {i[SA +D2+(NO5-1)*8:SA +(NO5-1)*8],{D1{1'b0}},i[SB +D2+(NO5-1)*8:SB +(NO5-1)*8],{D1{1'b0}},i[D2+(NO5-1)*8:(NO5-1)*8],{D1{1'b0}}};
+										endcase
+									end
+									3:begin		//2 * 2
+										case(NO5)
+											0:locali={i[SA +D1+(NO5+7)*8:SA +(NO5+7)*8],i[SA +D1:SA],{D1{1'b0}},i[SB +D1+(NO5+7)*8:SB +(NO5+7)*8],i[SB +D1:SB],{D1{1'b0}},{D3{1'b0}}}; //NO5_0
+											default:locali = {i[SA +D2+(NO5-1)*8:SA +(NO5-1)*8],{D1{1'b0}},i[SB +D2+(NO5-1)*8:SB +(NO5-1)*8],{D1{1'b0}},{D3{1'b0}}};
+										endcase
+									end
+								endcase
+							end
+						endcase		
+					end
+					1:begin	//stride 2
+						case(ID5)
+							0:begin	// 3 * 3
+								case(NO5)
+									3:locali = {i[SA +D2+(NO5+3)*8:SA +(NO5+3)*8],i[SA +D1:SA],i[SB +D2+(NO5+3)*8:SB +(NO5+3)*8],i[SB +D1:SB],i[D2+(NO5+3)*8:(NO5+3)*8],i[D1:0]};
+									default:locali={i[SA +D3+(NO5*2)*8:SA +(NO5*2)*8],i[SB +D3+(NO5*2)*8:SB +(NO5*2)*8],i[D3+(NO5*2)*8:(NO5*2)*8]};
+								endcase	
+							end
+							1:begin // 3 * 2
+								case(NO5)
+									3:locali = {i[SA +D2+(NO5+3)*8:SA +(NO5+3)*8],i[SA +D1:SA],i[SB +D2+(NO5+3)*8:SB +(NO5+3)*8],i[SB +D1:SB],{D3{1'b0}}};
+									default:locali={i[SA +D3+(NO5*2)*8:SA +(NO5*2)*8],i[SB +D3+(NO5*2)*8:SB +(NO5*2)*8],{D3{1'b0}}};
+								endcase	
+							end
+							2:begin // 2 * 3
+								case(NO5)
+									0:locali = {i[SA +D2+P3:SA +P3],{D1{1'b0}},i[SB +D2+P3:SB +P3],{D1{1'b0}},i[D2+P3:P3],{D1{1'b0}}};
+									1:locali = {i[SA +D2+P5:SA +P5],{D1{1'b0}},i[SB +D5+P5:SB +P5],{D1{1'b0}},i[D2+P5:P5],{D1{1'b0}}};
+									2:locali = {i[SA +D1+P7:SA +P7],i[SA +D1:SA],{D1{1'b0}},i[SB +D1+P7:SB +P7],i[SB +D1:SB],{D1{1'b0}},i[D1+P7:P7],i[D1:0],{D1{1'b0}}};
+									3:locali = {i[SA +D2+P1:SA +P1],{D1{1'b0}},i[SB +D5+P1:SB +P1],{D1{1'b0}},i[D2+P1:P1],{D1{1'b0}}};
+								endcase
+							end
+							3:begin // 2 * 2
+								case(NO5)
+									0:locali = {i[SA +D2+P3:SA +P3],{D1{1'b0}},i[SB +D2+P3:SB +P3],{D1{1'b0}},{D3{1'b0}}};
+									1:locali = {i[SA +D2+P5:SA +P5],{D1{1'b0}},i[SB +D5+P5:SB +P5],{D1{1'b0}},{D3{1'b0}}};
+									2:locali = {i[SA +D1+P7:SA +P7],i[SA +D1:SA],{D1{1'b0}},i[SB +D1+P7:SB +P7],i[SB +D1:SB],{D1{1'b0}},{D3{1'b0}}};
+									3:locali = {i[SA +D2+P1:SA +P1],{D1{1'b0}},i[SB +D5+P1:SB +P1],{D1{1'b0}},{D3{1'b0}}};
+								endcase
+							end
+						endcase
+					end
+				endcase
+			end
+			2:begin		// 7 * 7
+				
+					
+				/*	
 				case(ID5)	
 					0:begin	//REG C B A
 						case(NO5)
@@ -71,7 +175,8 @@ module CUBE#(
 					end
 					3:locali={72{1'b0}};
 				endcase
-			end
+			end*/
+			/*
 			2:begin  //7 * 7
 				case(ID7)
 					0:begin		// REG C B A
@@ -88,7 +193,7 @@ module CUBE#(
 					1:begin	  //REG D C B
 						case(NO7)
 							2:locali={i[SB +D4+NO7*8:SB +0+NO7*8],i[D1:0],i[D4+(NO7+2)*8:0+(NO7+2)*8]};
-							3:locali={i[SB +D4+NO7*8:SB +0+NO7*8],i[D2:0],i[D3+(NO7+2)*8:0+(NO7+2)*8]};
+							3:locali={i [SB +D4+NO7*8:SB +0+NO7*8],i[D2:0],i[D3+(NO7+2)*8:0+(NO7+2)*8]};
 							4:locali={i[SB +D4+NO7*8:SB +0+NO7*8],i[D3:0],i[D2+(NO7+2)*8:0+(NO7+2)*8]};
 							5:locali={i[SB +D1:SB+0],i[SB +D3+NO7*8:SB +0+NO7*8],i[D4:0],i[D1+(NO7+2)*8:0+(NO7+2)*8]};
 							6:locali={i[SB +D2:SB+0],i[SB +D2+NO7*8:SB +0+NO7*8],i[D5:0]};
@@ -145,7 +250,7 @@ module CUBE#(
 			end
 		endcase
 	end
-	
+	*/
 	always@(*)begin
 		case(wsize)
 			0:localw = w[71:0];
@@ -192,7 +297,7 @@ module CUBE#(
 endmodule
 
 
-module IPF#(
+module MUL#(
 	parameter In_Width   = 8, 
 	parameter Out_Width  = 9,
 	parameter Addr_Width = 16
@@ -233,6 +338,7 @@ module IPF#(
 	wire[191:0]icu4;	//REG A B C ,B C D , E F G
 	wire[191:0]icu5;	//REG A B C ,C D E , E F G 
 	
+	//ifm 
 	reg [63:0]rega;
 	reg [63:0]regb;
 	reg [63:0]regc;
@@ -369,8 +475,8 @@ module IPF#(
 	end
 	
 	/* FSM */
-	always@(posedge clk or posedge rst)begin
-		if(rst)begin
+	always@(posedge clk or negedge rst)begin
+		if(!rst)begin
 			PS<=WAIT;
 		end
 		else begin
@@ -500,7 +606,7 @@ module IPF#(
 	end
 
 	/* get data*/
-	always@(posedge clk or posedge rst)begin
+	always@(posedge clk or negedge rst)begin
 		if(rst)begin
 			rega<=0;
 			regb<=0;
