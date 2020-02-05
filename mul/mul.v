@@ -545,7 +545,8 @@ module MUL#(
 	reg [391:0]wcu[0:7];
 	integer idx,idxx;
 	
-	
+	reg cnt5s0;
+	reg [1:0]cnt7s0;
 	reg [3:0]ccnt,rcnt;			// 8 ccnt => 1 rcnt
 	reg cnt7_7_2;
 	
@@ -777,6 +778,8 @@ module MUL#(
 			ccnt<=0;
 			rcnt<=0;
 			cnt7_7_2<=0;
+			cnt5s0<=0;
+			cnt7s0<=0;
 		end
 		else begin
 			rega<=rega;
@@ -793,6 +796,8 @@ module MUL#(
 			ccnt<=ccnt;
 			rcnt<=rcnt;
 			cnt7_7_2<=cnt7_7_2;
+			cnt5s0<=cnt5s0;
+			cnt7s0<=cnt7s0;
 			case(PS)
 				WAIT:begin
 					if(i_valid)begin
@@ -893,7 +898,28 @@ module MUL#(
 					ccnt<=ccnt+1;
 					
 					// shift
-					if(stride==0)begin	//stride = 1
+					if(Wsize!=0 && stride==0)begin	
+						if(cnt5s0 || !cnt7s0)begin
+							rega<=regb;
+							regb<=regc;
+							regc<=regd;
+							regd<=rege;
+							rege<=regf;
+							regf<=regg;
+							regg<=regh;
+							regh<=rega;	
+							
+							ccnt<=ccnt+1;
+							if(ccnt==7)begin
+								ccnt<=0;
+								rcnt<=rcnt+1;
+							end
+						end
+						cnt5s0 <= ~cnt5s0;		//2 cyc shift 1
+						cnt7s0 <= cnt7s0+1;		//4 cyc shift 1
+						if(cnt7s0==3)cnt7s0 <= 0;
+					end
+					else begin
 						rega<=regb;
 						regb<=regc;
 						regc<=regd;
@@ -902,12 +928,13 @@ module MUL#(
 						regf<=regg;
 						regg<=regh;
 						regh<=rega;	
+						
+						ccnt<=ccnt+1;
 						if(ccnt==7)begin
 							ccnt<=0;
 							rcnt<=rcnt+1;
 						end
 					end
-					
 									
 					// COMPUTE -> WAIT
 					if(ctrl==HOLD)begin								
@@ -929,6 +956,8 @@ module MUL#(
 						widcnt<=0;					
 						ccnt<=0;
 						rcnt<=0;
+						cnt5s0<=0;
+						cnt7s0<=0;
 					end	
 				end			
 			endcase
