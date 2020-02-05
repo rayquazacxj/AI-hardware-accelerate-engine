@@ -762,7 +762,7 @@ module MUL#(
 
 	/* get data*/
 	always@(posedge clk or negedge rst)begin
-		if(rst)begin
+		if(!rst)begin
 			rega<=0;
 			regb<=0;
 			regc<=0;
@@ -803,15 +803,28 @@ module MUL#(
 						rege<=regf;
 						regf<=regg;
 						regg<=regh;
-						regh<=i_data;
+						regh<=rega;
+						case(wsize)
+							0:begin
+								case(stride)
+									0:regc<=i_data;
+									1:regd<=i_data;
+								endcase	
+							end
+							1:begin
+								case(stride)
+									0:regh<=i_data;		//full
+									1:regf<=i_data;
+								endcase	
+							end
+							default:begin
+								regh<=i_data;			//full
+							end
+						endcase	
 					end
 					else if(w_valid)begin //3 , 5 full	
 						case(widstart)
 							0:begin
-							/*
-								w[319:256]<=w_data;
-								w[256:0]<=w[319:63];
-							end*/
 								case(widcnt)
 									0:w[63: 0]<=w_data;
 									1:w[127:64]<=w_data;
@@ -841,11 +854,7 @@ module MUL#(
 								endcase
 							
 							end
-							32:begin
-							/*
-								w[256+32:256-63+32]<=w_data;
-								w[256-63+32:32]<=w[256+32:63+32];
-							end*/	
+							32:begin	
 								case(widcnt)
 									0:w[63+KEEP: 0+KEEP]<=w_data;
 									1:w[127+KEEP:64+KEEP]<=w_data;
@@ -875,10 +884,7 @@ module MUL#(
 								endcase
 							end
 						endcase
-						//w[63+widstart+(widcnt+1)*64 : widstart+widcnt*64]<=w_data;
-						widcnt<=widcnt+1;
-						//if((Wsize==0 && widcnt==18)||(Wsize==1 && widcnt==25)||(Wsize==2 && widcnt==25 && cnt_7_7_2==0) || (Wsize==2 && widcnt==24 && cnt_7_7_2))widcnt<=0;
-						
+						widcnt<=widcnt+1;	
 					end
 				end
 				
@@ -901,20 +907,7 @@ module MUL#(
 							rcnt<=rcnt+1;
 						end
 					end
-					else begin			//stride = 2
-						rega<=regc;
-						regb<=regd;
-						regc<=rege;
-						regd<=regf;
-						rege<=regg;
-						regf<=regh;
-						regg<=rega;
-						regh<=regb;
-						if(ccnt==3)begin
-							ccnt<=0;
-							rcnt<=rcnt+1;
-						end
-					end
+					
 									
 					// COMPUTE -> WAIT
 					if(ctrl==HOLD)begin								
