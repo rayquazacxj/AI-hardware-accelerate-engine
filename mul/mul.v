@@ -376,7 +376,7 @@ module CUBE#(
 endmodule
 
 
-module IPF#(
+module MUL#(
 	parameter In_Width   = 8, 
 	parameter Out_Width  = 9,
 	parameter Addr_Width = 16
