@@ -759,39 +759,14 @@ module IPF#(
 			0:begin
 				for(idx=0;idx<8;idx=idx+8)begin
 					for(idxx=idx;idxx<8;idxx=idxx+1)begin
-						wcu[idx]={8'b0,w[(W1*idx+igroup)+:72]};
+						wcu[idx]={8'b0,w[(W1*idx+igroup)+:W1]};
 					end
 				end
-			end
-				/*
-				for(idx=0;idx<8;idx=idx+1)begin		//igroup = 0 / 288
-					wcu[idx]={8'b0,w[(0+igroup)+:72]};
-				end
-				for(idx=8;idx<16;idx=idx+1)begin
-					wcu[idx]={8'b0,w[(W1+igroup)+:72]};
-				end
-				for(idx=16;idx<24;idx=idx+1)begin
-					wcu[idx]={8'b0,w[(W1*2+igroup)+:72]};
-				end
-				for(idx=24;idx<32;idx=idx+1)begin
-					wcu[idx]={8'b0,w[W1*3+igroup)+:72]};
-				end
-				for(idx=32;idx<40;idx=idx+1)begin		//igroup = 0 / 288
-					wcu[idx]={8'b0,w[(W1*4+igroup)+:72]};
-				end
-				for(idx=40;idx<48;idx=idx+1)begin
-					wcu[idx]={8'b0,w[(W1*5+igroup)+:72]};
-				end
-				for(idx=48;idx<56;idx=idx+1)begin
-					wcu[idx]={8'b0,w[(W1*6+igroup)+:72]};
-				end
-				for(idx=56;idx<64;idx=idx+1)begin
-					wcu[idx]={8'b0,w[W1*7+igroup)+:72]};
-				end
-			end
-			1:begin*/
+			end	
+			1:begin
 			default:begin
 			end
+			
 		endcase	
 	end
 	/*get icu*/
@@ -925,7 +900,9 @@ module IPF#(
 					end
 					else if(w_valid)begin //3 , 5 full	
 						case(widstart)
-							0:begin
+							0:w[(widcnt*64)-1 +: 64]<=w_data;
+							32:w[(widcnt*64)-1+KEEP +:KEEP]<=w_data;
+							/*
 								case(widcnt)
 									0:w[63: 0]<=w_data;
 									1:w[127:64]<=w_data;
@@ -953,7 +930,8 @@ module IPF#(
 									23:w[1472+D1:1472]<=w_data;
 									24:w[1536+D1:1536]<=w_data;
 								endcase
-							
+							*/
+							/*
 							end
 							32:begin	
 								case(widcnt)
@@ -983,7 +961,7 @@ module IPF#(
 									23:w[1472+D1+KEEP:1472+KEEP]<=w_data;
 									24:w[1536+D1+KEEP:1536+KEEP]<=w_data;	
 								endcase
-							end
+							end*/
 						endcase
 						widcnt<=widcnt+1;	
 					end
