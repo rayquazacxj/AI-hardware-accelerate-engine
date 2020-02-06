@@ -699,7 +699,6 @@ module IPF#(
 			cnt5s0<=0;
 			cnt7s0<=0;
 			cnts2<=0;
-			igroup<=0;
 		end
 		else begin
 			rega<=rega;
@@ -815,7 +814,6 @@ module IPF#(
 						end
 						widcnt<=0;					
 						ccnt<=0;
-						rcnt<=0;
 						cnt5s0<=0;
 						cnt7s0<=0;
 						cnts2<=0;
