@@ -440,9 +440,6 @@ module IPF#(
 	reg [3:0]ccnt;				// 8 ccnt => 1 rcnt
 	reg cnt7_7_2;				// 7 * 7 weight 2 round full
 	
-	
-	//wire [9215:0]result_tmp;
-	/*
 	CUBE #(.NO3(0),.NO5(0),.ID5(0),.NO7(0),.ID7(0))C0(.wsize(Wsize),.i_dat(icu0),.w_dat(wcu[0]),.result(result_tmp[1151:1008]));
 	CUBE #(.NO3(1),.NO5(0),.ID5(1),.NO7(0),.ID7(1))C1(.wsize(Wsize),.i(icu1),.w(wcu[0]),.result(result_tmp[1151:1008]));
 	CUBE #(.NO3(2),.NO5(0),.ID5(2),.NO7(0),.ID7(2))C2(.wsize(Wsize),.i(icu2),.w(wcu[0]),.result(result_tmp[1151:1008]));
@@ -508,9 +505,8 @@ module IPF#(
 	CUBE #(.NO3(5),.NO5(4),.ID5(3),.NO7(1),.ID7(6))C61(.wsize(Wsize),.i(icu0),.w(wcu[7]),.result(result_tmp[1151:1008]));
 	CUBE #(.NO3(6),.NO5(4),.ID5(3),.NO7(1),.ID7(6))C62(.wsize(Wsize),.i(icu0),.w(wcu[7]),.result(result_tmp[1151:1008]));
 	CUBE #(.NO3(7),.NO5(4),.ID5(3),.NO7(1),.ID7(6))C63(.wsize(Wsize),.i(icu0),.w(wcu[7]),.result(result_tmp[1151:1008]));
-	*/
+
 	assign finish = (PS == FINISH);
-	
 	
 	/* FSM */
 	always@(posedge clk or negedge rst)begin
@@ -718,68 +714,53 @@ module IPF#(
 			cnt7s0  <=cnt7s0;
 			cnts2   <=cnts2;
 			igroup<=igroup;
-			case(PS)
-				WAIT:begin
-					if(i_valid)begin
-						rega<=regb;
-						regb<=regc;
-						regc<=regd;
-						regd<=rege;
-						rege<=regf;
-						regf<=regg;
-						regg<=regh;
-						regh<=rega;
-						case(Wsize)
-							0:begin
-								case(stride)
-									0:regc<=i_data;
-									1:regd<=i_data;
-								endcase	
-							end
-							1:begin
-								case(stride)
-									0:regh<=i_data;		//full
-									1:regf<=i_data;
-								endcase	
-							end
-							default:begin
-								regh<=i_data;			//full
-							end
-						endcase	
-					end
-					else if(w_valid)begin //3 , 5 full	
-						case(widstart)
-							0:w[(widcnt*64)-1 +: 64]<=w_data;
-							32:w[(widcnt*64)-1+KEEP +:KEEP]<=w_data;
-						endcase
-						widcnt<=widcnt+1;	
-					end
+			
+			if(i_valid)begin
+				if(PS==WAIT)begin
+					rega<=regb;
+					regb<=regc;
+					regc<=regd;
+					regd<=rege;
+					rege<=regf;
+					regf<=regg;
+					regg<=regh;
+					regh<=rega;
 				end
 				
-				COMPUTE:begin
-					// counter
-					ccnt<=ccnt+1;
-					
-					// shift
-					if(Wsize!=0 && stride==0)begin	
-						if(cnt5s0 || (!cnt7s0 && Wsize==2))begin
-							rega<=regb;
-							regb<=regc;
-							regc<=regd;
-							regd<=rege;
-							rege<=regf;
-							regf<=regg;
-							regg<=regh;
-							regh<=rega;	
-							ccnt<=ccnt+1;
-							if(ccnt==7)ccnt<=0;
-								
-						end
-						cnt5s0 <= ~cnt5s0;		//2 cyc shift 1
-						cnt7s0 <= cnt7s0+1;		//4 cyc shift 1
-						if(cnt7s0==3)cnt7s0 <= 0;
+				case(Wsize)
+					0:begin
+						case(stride)
+							0:regc<=i_data;
+							1:regd<=i_data;
+						endcase	
 					end
-					else begin
+					1:begin
+						case(stride)
+							0:regh<=i_data;		//full
+							1:regf<=i_data;
+						endcase	
+					end
+					default:begin
+						regh<=i_data;			//full
+					end
+				endcase	
+			end
+			if(w_valid)begin //3 , 5 full	
+				case(widstart)
+					0:w[(widcnt*64)-1 +: 64]<=w_data;
+					32:w[(widcnt*64)-1+KEEP +:KEEP]<=w_data;
+				endcase
+				widcnt<=widcnt+1;	
+			end
+		
+				
+			if(PS==COMPUTE)begin
+				// counter
+				ccnt<=ccnt+1;
+				
+				// shift
+				if(Wsize!=0 && stride==0)begin	
+					if(cnt5s0 || (!cnt7s0 && Wsize==2))begin
 						rega<=regb;
 						regb<=regc;
 						regc<=regd;
@@ -788,38 +769,54 @@ module IPF#(
 						regf<=regg;
 						regg<=regh;
 						regh<=rega;	
-						
 						ccnt<=ccnt+1;
-						cnts2<=~cnts2;
 						if(ccnt==7)ccnt<=0;
 							
 					end
-									
-					// COMPUTE -> WAIT
-					if(ctrl==HOLD)begin								
-						if(Wsize==2)begin	// 7 * 7
-							cnt7_7_2<= ~cnt7_7_2;		
-							if(cnt7_7_2==0)begin
-								w<=w[1599:1568];
-								widstart<=32;
-							end
-							else begin
-								w<=0;
-								widstart<=0;
-							end
+					cnt5s0 <= ~cnt5s0;		//2 cyc shift 1
+					cnt7s0 <= cnt7s0+1;		//4 cyc shift 1
+					if(cnt7s0==3)cnt7s0 <= 0;
+				end
+				else begin
+					rega<=regb;
+					regb<=regc;
+					regc<=regd;
+					regd<=rege;
+					rege<=regf;
+					regf<=regg;
+					regg<=regh;
+					regh<=rega;	
+					
+					ccnt<=ccnt+1;
+					cnts2<=~cnts2;
+					if(ccnt==7)ccnt<=0;
+						
+				end
+								
+				// COMPUTE -> WAIT
+				if(ctrl==HOLD)begin								
+					if(Wsize==2)begin	// 7 * 7
+						cnt7_7_2<= ~cnt7_7_2;		
+						if(cnt7_7_2==0)begin
+							w<=w[1599:1568];
+							widstart<=32;
 						end
 						else begin
 							w<=0;
 							widstart<=0;
 						end
-						widcnt<=0;					
-						ccnt<=0;
-						cnt5s0<=0;
-						cnt7s0<=0;
-						cnts2<=0;
-					end	
-				end			
-			endcase
+					end
+					else begin
+						w<=0;
+						widstart<=0;
+					end
+					widcnt<=0;					
+					ccnt<=0;
+					cnt5s0<=0;
+					cnt7s0<=0;
+					cnts2<=0;
+				end	
+			end			
 		end
 	end
 	
