@@ -1,10 +1,10 @@
 module CUBE#(
 	
-	parameter NO3 = 0,
-	parameter NO5 = 0,
-	parameter ID5 = 0,
-	parameter NO7 = 0,
-	parameter ID7 = 0
+	parameter NO3 = 3'd0,
+	parameter NO5 = 2'd0,
+	parameter ID5 = 2'd0,
+	parameter NO7 = 1'd0,
+	parameter ID7 = 4'd0
 	
 )(
 	input clk,
@@ -158,6 +158,7 @@ module CUBE#(
 									6:locali={i[SA +D1+(NO7+6)*8:SA +(NO7+6)*8],{D2{1'b0}},i[SB +D1+(NO7+6)*8:SB +(NO7+6)*8],{D2{1'b0}},i[D1+(NO7+6)*8:(NO7+6)*8],{D2{1'b0}}};
 									7:locali={i[SA +D1+(NO7+6)*8:SA +(NO7+6)*8],{D2{1'b0}},i[SB +D1+(NO7+6)*8:SB +(NO7+6)*8],{D2{1'b0}},i[D1+(NO7+6)*8:(NO7+6)*8],{D2{1'b0}}};
 									8:locali={i[SA +D1+(NO7+6)*8:SA +(NO7+6)*8],{D7{1'b0}},{D1{1'b0}}};
+									9:locali=72'b0;
 								endcase
 							end
 							1:begin		//2~ , 3~
@@ -186,6 +187,7 @@ module CUBE#(
 									6:locali={i[SA +D1+NO7*8:SA +NO7*8],{D2{1'b0}},i[SB +D1+NO7*8:SB +NO7*8],{D2{1'b0}},i[D1+NO7*8:NO7*8],{D2{1'b0}}};
 									7:locali={i[SA +D1+NO7*8:SA +NO7*8],{D2{1'b0}},i[SB +D1+NO7*8:SB +NO7*8],{D2{1'b0}},i[D1+NO7*8:NO7*8],{D2{1'b0}}};
 									8:locali={i[SA +D1+NO7*8:SA +NO7*8],{D7{1'b0}},{D1{1'b0}}};
+									9:locali=72'b0;
 								endcase
 							end
 							2:begin		//4~ , 5~
@@ -214,6 +216,7 @@ module CUBE#(
 									6:locali={i[SA +D1+(NO7+2)*8:SA +(NO7+2)*8],{D2{1'b0}},i[SB +D1+(NO7+2)*8:SB +(NO7+2)*8],{D2{1'b0}},i[D1+(NO7+2)*8:(NO7+2)*8],{D2{1'b0}}};
 									7:locali={i[SA +D1+(NO7+2)*8:SA +(NO7+2)*8],{D2{1'b0}},i[SB +D1+(NO7+2)*8:SB +(NO7+2)*8],{D2{1'b0}},i[D1+(NO7+2)*8:(NO7+2)*8],{D2{1'b0}}};
 									8:locali={i[SA +D1+(NO7+2)*8:SA +(NO7+2)*8],{D7{1'b0}},{D1{1'b0}}};
+									9:locali=72'b0;
 								endcase
 							end
 							3:begin		//6~ , 7~
@@ -242,6 +245,7 @@ module CUBE#(
 									6:locali={i[SA +D1+(NO7+4)*8:SA +(NO7+4)*8],{D2{1'b0}},i[SB +D1+(NO7+4)*8:SB +(NO7+4)*8],{D2{1'b0}},i[D1+(NO7+4)*8:(NO7+4)*8],{D2{1'b0}}};
 									7:locali={i[SA +D1+(NO7+4)*8:SA +(NO7+4)*8],{D2{1'b0}},i[SB +D1+(NO7+4)*8:SB +(NO7+4)*8],{D2{1'b0}},i[D1+(NO7+4)*8:(NO7+4)*8],{D2{1'b0}}};
 									8:locali={i[SA +D1+(NO7+4)*8:SA +(NO7+4)*8],{D7{1'b0}},{D1{1'b0}}};
+									9:locali=72'b0;
 								endcase
 							end
 						endcase
@@ -289,6 +293,7 @@ module CUBE#(
 											0:locali={i[SA +D1:SA],{D7{1'b0}},{D1{1'b0}}};
 										endcase
 									end
+									9:locali=72'b0;
 								endcase
 							end
 							1:begin		// 4~ ,6~
@@ -347,6 +352,7 @@ module CUBE#(
 											0:locali={i[SA +D1+P4:SA +P4],{D7{1'b0}},{D1{1'b0}}};
 										endcase
 									end
+									9:locali=72'b0;
 								endcase
 							end
 						endcase
@@ -376,7 +382,7 @@ module CUBE#(
 endmodule
 
 
-module MUL#(
+module IPF#(
 	parameter In_Width   = 8, 
 	parameter Out_Width  = 9,
 	parameter Addr_Width = 16
@@ -390,7 +396,7 @@ module MUL#(
 	input i_valid,w_valid,
 	input  [1:0] Wsize,
 	input  stride,
-	output reg [9215:0] result,
+	output [9215:0] result,
 	output reg res_valid,
 
 	output finish
@@ -441,73 +447,73 @@ module MUL#(
 	reg cnt7_7_2;				// 7 * 7 weight 2 round full
 	reg [1:0]round;
 	
-	CUBE #(.NO3(0),.NO5(0),.ID5(0),.NO7(0),.ID7(0))C0(.wsize(Wsize),.i_dat(icu[0]),.w_dat(wcu[0]),.rst(rst),clk(clk),.stride(stride),.round(round),.result(result_tmp[1151:1008]));
-	CUBE #(.NO3(1),.NO5(0),.ID5(1),.NO7(0),.ID7(1))C1(.wsize(Wsize),.i_dat(icu[1]),.w_dat(wcu[1]),.rst(rst),clk(clk),.stride(stride),.round(round),.result(result_tmp[1151:1008]));
-	CUBE #(.NO3(2),.NO5(0),.ID5(2),.NO7(0),.ID7(2))C2(.wsize(Wsize),.i_dat(icu[2]),.w_dat(wcu[2]),.rst(rst),clk(clk),.stride(stride),.round(round),.result(result_tmp[1151:1008]));
-	CUBE #(.NO3(3),.NO5(0),.ID5(3),.NO7(0),.ID7(3))C3(.wsize(Wsize),.i_dat(icu[3]),.w_dat(wcu[3]),.rst(rst),clk(clk),.stride(stride),.round(round),.result(result_tmp[1151:1008]));
-	CUBE #(.NO3(4),.NO5(1),.ID5(0),.NO7(0),.ID7(4))C4(.wsize(Wsize),.i_dat(icu[4]),.w_dat(wcu[4]),.rst(rst),clk(clk),.stride(stride),.round(round),.result(result_tmp[1151:1008]));
-	CUBE #(.NO3(5),.NO5(1),.ID5(1),.NO7(0),.ID7(5))C5(.wsize(Wsize),.i_dat(icu[5]),.w_dat(wcu[5]),.rst(rst),clk(clk),.stride(stride),.round(round),.result(result_tmp[1151:1008]));
-	CUBE #(.NO3(6),.NO5(1),.ID5(2),.NO7(0),.ID7(6))C6(.wsize(Wsize),.i_dat(icu[6]),.w_dat(wcu[6]),.rst(rst),clk(clk),.stride(stride),.round(round),.result(result_tmp[1151:1008]));
-	CUBE #(.NO3(7),.NO5(1),.ID5(3),.NO7(0),.ID7(7))C7(.wsize(Wsize),.i_dat(icu[7]),.w_dat(wcu[7]),.rst(rst),clk(clk),.stride(stride),.round(round),.result(result_tmp[1151:1008]));
-	CUBE #(.NO3(0),.NO5(2),.ID5(0),.NO7(0),.ID7(8))C8(.wsize(Wsize),.i_dat(icu[8]),.w_dat(wcu[8]),.rst(rst),clk(clk),.stride(stride),.round(round),.result(result_tmp[1151:1008]));
-	CUBE #(.NO3(1),.NO5(2),.ID5(1),.NO7(0),.ID7(9))C9(.wsize(Wsize),.i_dat(icu[1]),.w_dat(wcu[9]),.rst(rst),clk(clk),.stride(stride),.round(round),.result(result_tmp[1151:1008]));
-	CUBE #(.NO3(2),.NO5(2),.ID5(2),.NO7(0),.ID7(9))C10(.wsize(Wsize),.i_dat(icu[0]),.w_dat(wcu[10]),.rst(rst),clk(clk),.stride(stride),.round(round),.result(result_tmp[1151:1008]));
-	CUBE #(.NO3(3),.NO5(2),.ID5(3),.NO7(0),.ID7(9))C11(.wsize(Wsize),.i_dat(icu[1]),.w_dat(wcu[11]),.rst(rst),clk(clk),.stride(stride),.round(round),.result(result_tmp[1151:1008]));
-	CUBE #(.NO3(4),.NO5(3),.ID5(0),.NO7(0),.ID7(9))C12(.wsize(Wsize),.i_dat(icu[0]),.w_dat(wcu[12]),.rst(rst),clk(clk),.stride(stride),.round(round),.result(result_tmp[1151:1008]));
-	CUBE #(.NO3(5),.NO5(3),.ID5(1),.NO7(0),.ID7(9))C13(.wsize(Wsize),.i_dat(icu[1]),.w_dat(wcu[13]),.rst(rst),clk(clk),.stride(stride),.round(round),.result(result_tmp[1151:1008]));
-	CUBE #(.NO3(6),.NO5(3),.ID5(2),.NO7(0),.ID7(9))C14(.wsize(Wsize),.i_dat(icu[0]),.w_dat(wcu[14]),.rst(rst),clk(clk),.stride(stride),.round(round),.result(result_tmp[1151:1008]));
-	CUBE #(.NO3(7),.NO5(3),.ID5(3),.NO7(0),.ID7(9))C15(.wsize(Wsize),.i_dat(icu[1]),.w_dat(wcu[15]),.rst(rst),clk(clk),.stride(stride),.round(round),.result(result_tmp[1151:1008]));
+	CUBE #(.NO3(0),.NO5(0),.ID5(0),.NO7(0),.ID7(0))C0(.wsize(Wsize),.i_dat(icu[0]),.w_dat(wcu[0]),.rst(rst),.clk(clk),.stride(stride),.round(round),.result(result[1151:1008]));
+	CUBE #(.NO3(1),.NO5(0),.ID5(1),.NO7(0),.ID7(1))C1(.wsize(Wsize),.i_dat(icu[1]),.w_dat(wcu[1]),.rst(rst),.clk(clk),.stride(stride),.round(round),.result(result[1151:1008]));
+	CUBE #(.NO3(2),.NO5(0),.ID5(2),.NO7(0),.ID7(2))C2(.wsize(Wsize),.i_dat(icu[2]),.w_dat(wcu[2]),.rst(rst),.clk(clk),.stride(stride),.round(round),.result(result[1151:1008]));
+	CUBE #(.NO3(3),.NO5(0),.ID5(3),.NO7(0),.ID7(3))C3(.wsize(Wsize),.i_dat(icu[3]),.w_dat(wcu[3]),.rst(rst),.clk(clk),.stride(stride),.round(round),.result(result[1151:1008]));
+	CUBE #(.NO3(4),.NO5(1),.ID5(0),.NO7(0),.ID7(4))C4(.wsize(Wsize),.i_dat(icu[4]),.w_dat(wcu[4]),.rst(rst),.clk(clk),.stride(stride),.round(round),.result(result[1151:1008]));
+	CUBE #(.NO3(5),.NO5(1),.ID5(1),.NO7(0),.ID7(5))C5(.wsize(Wsize),.i_dat(icu[5]),.w_dat(wcu[5]),.rst(rst),.clk(clk),.stride(stride),.round(round),.result(result[1151:1008]));
+	CUBE #(.NO3(6),.NO5(1),.ID5(2),.NO7(0),.ID7(6))C6(.wsize(Wsize),.i_dat(icu[6]),.w_dat(wcu[6]),.rst(rst),.clk(clk),.stride(stride),.round(round),.result(result[1151:1008]));
+	CUBE #(.NO3(7),.NO5(1),.ID5(3),.NO7(0),.ID7(7))C7(.wsize(Wsize),.i_dat(icu[7]),.w_dat(wcu[7]),.rst(rst),.clk(clk),.stride(stride),.round(round),.result(result[1151:1008]));
+	CUBE #(.NO3(0),.NO5(2),.ID5(0),.NO7(0),.ID7(8))C8(.wsize(Wsize),.i_dat(icu[8]),.w_dat(wcu[8]),.rst(rst),.clk(clk),.stride(stride),.round(round),.result(result[1151:1008]));
+	CUBE #(.NO3(1),.NO5(2),.ID5(1),.NO7(0),.ID7(9))C9(.wsize(Wsize),.i_dat(icu[1]),.w_dat(wcu[9]),.rst(rst),.clk(clk),.stride(stride),.round(round),.result(result[1151:1008]));
+	CUBE #(.NO3(2),.NO5(2),.ID5(2),.NO7(0),.ID7(9))C10(.wsize(Wsize),.i_dat(icu[0]),.w_dat(wcu[10]),.rst(rst),.clk(clk),.stride(stride),.round(round),.result(result[1151:1008]));
+	CUBE #(.NO3(3),.NO5(2),.ID5(3),.NO7(0),.ID7(9))C11(.wsize(Wsize),.i_dat(icu[1]),.w_dat(wcu[11]),.rst(rst),.clk(clk),.stride(stride),.round(round),.result(result[1151:1008]));
+	CUBE #(.NO3(4),.NO5(3),.ID5(0),.NO7(0),.ID7(9))C12(.wsize(Wsize),.i_dat(icu[0]),.w_dat(wcu[12]),.rst(rst),.clk(clk),.stride(stride),.round(round),.result(result[1151:1008]));
+	CUBE #(.NO3(5),.NO5(3),.ID5(1),.NO7(0),.ID7(9))C13(.wsize(Wsize),.i_dat(icu[1]),.w_dat(wcu[13]),.rst(rst),.clk(clk),.stride(stride),.round(round),.result(result[1151:1008]));
+	CUBE #(.NO3(6),.NO5(3),.ID5(2),.NO7(0),.ID7(9))C14(.wsize(Wsize),.i_dat(icu[0]),.w_dat(wcu[14]),.rst(rst),.clk(clk),.stride(stride),.round(round),.result(result[1151:1008]));
+	CUBE #(.NO3(7),.NO5(3),.ID5(3),.NO7(0),.ID7(9))C15(.wsize(Wsize),.i_dat(icu[1]),.w_dat(wcu[15]),.rst(rst),.clk(clk),.stride(stride),.round(round),.result(result[1151:1008]));
 	
-	CUBE #(.NO3(0),.NO5(0),.ID5(0),.NO7(1),.ID7(0))C16(.wsize(Wsize),.i_dat(icu[0]),.w_dat(wcu[16]),.rst(rst),clk(clk),.stride(stride),.round(round),.result(result_tmp[1151:1008]));
-	CUBE #(.NO3(1),.NO5(0),.ID5(1),.NO7(1),.ID7(1))C17(.wsize(Wsize),.i_dat(icu[1]),.w_dat(wcu[17]),.rst(rst),clk(clk),.stride(stride),.round(round),.result(result_tmp[1151:1008]));
-	CUBE #(.NO3(2),.NO5(0),.ID5(2),.NO7(1),.ID7(2))C18(.wsize(Wsize),.i_dat(icu[2]),.w_dat(wcu[18]),.rst(rst),clk(clk),.stride(stride),.round(round),.result(result_tmp[1151:1008]));
-	CUBE #(.NO3(3),.NO5(0),.ID5(3),.NO7(1),.ID7(3))C19(.wsize(Wsize),.i_dat(icu[3]),.w_dat(wcu[19]),.rst(rst),clk(clk),.stride(stride),.round(round),.result(result_tmp[1151:1008]));
-	CUBE #(.NO3(4),.NO5(1),.ID5(0),.NO7(1),.ID7(4))C20(.wsize(Wsize),.i_dat(icu[4]),.w_dat(wcu[20]),.rst(rst),clk(clk),.stride(stride),.round(round),.result(result_tmp[1151:1008]));
-	CUBE #(.NO3(5),.NO5(1),.ID5(1),.NO7(1),.ID7(5))C21(.wsize(Wsize),.i_dat(icu[5]),.w_dat(wcu[21]),.rst(rst),clk(clk),.stride(stride),.round(round),.result(result_tmp[1151:1008]));
-	CUBE #(.NO3(6),.NO5(1),.ID5(2),.NO7(1),.ID7(6))C22(.wsize(Wsize),.i_dat(icu[6]),.w_dat(wcu[22]),.rst(rst),clk(clk),.stride(stride),.round(round),.result(result_tmp[1151:1008]));
-	CUBE #(.NO3(7),.NO5(1),.ID5(3),.NO7(1),.ID7(7))C23(.wsize(Wsize),.i_dat(icu[7]),.w_dat(wcu[23]),.rst(rst),clk(clk),.stride(stride),.round(round),.result(result_tmp[1151:1008]));
-	CUBE #(.NO3(0),.NO5(2),.ID5(0),.NO7(1),.ID7(8))C24(.wsize(Wsize),.i_dat(icu[8]),.w_dat(wcu[24]),.rst(rst),clk(clk),.stride(stride),.round(round),.result(result_tmp[1151:1008]));
-	CUBE #(.NO3(1),.NO5(2),.ID5(1),.NO7(1),.ID7(9))C25(.wsize(Wsize),.i_dat(icu[1]),.w_dat(wcu[25]),.rst(rst),clk(clk),.stride(stride),.round(round),.result(result_tmp[1151:1008]));
-	CUBE #(.NO3(2),.NO5(2),.ID5(2),.NO7(1),.ID7(9))C26(.wsize(Wsize),.i_dat(icu[0]),.w_dat(wcu[26]),.rst(rst),clk(clk),.stride(stride),.round(round),.result(result_tmp[1151:1008]));
-	CUBE #(.NO3(3),.NO5(2),.ID5(3),.NO7(1),.ID7(9))C27(.wsize(Wsize),.i_dat(icu[1]),.w_dat(wcu[27]),.rst(rst),clk(clk),.stride(stride),.round(round),.result(result_tmp[1151:1008]));
-	CUBE #(.NO3(4),.NO5(3),.ID5(0),.NO7(1),.ID7(9))C28(.wsize(Wsize),.i_dat(icu[0]),.w_dat(wcu[28]),.rst(rst),clk(clk),.stride(stride),.round(round),.result(result_tmp[1151:1008]));
-	CUBE #(.NO3(5),.NO5(3),.ID5(1),.NO7(1),.ID7(9))C29(.wsize(Wsize),.i_dat(icu[1]),.w_dat(wcu[29]),.rst(rst),clk(clk),.stride(stride),.round(round),.result(result_tmp[1151:1008]));
-	CUBE #(.NO3(6),.NO5(3),.ID5(2),.NO7(1),.ID7(9))C30(.wsize(Wsize),.i_dat(icu[0]),.w_dat(wcu[30]),.rst(rst),clk(clk),.stride(stride),.round(round),.result(result_tmp[1151:1008]));
-	CUBE #(.NO3(7),.NO5(3),.ID5(3),.NO7(1),.ID7(9))C31(.wsize(Wsize),.i_dat(icu[1]),.w_dat(wcu[31]),.rst(rst),clk(clk),.stride(stride),.round(round),.result(result_tmp[1151:1008]));
+	CUBE #(.NO3(0),.NO5(0),.ID5(0),.NO7(1),.ID7(0))C16(.wsize(Wsize),.i_dat(icu[0]),.w_dat(wcu[16]),.rst(rst),.clk(clk),.stride(stride),.round(round),.result(result[1151:1008]));
+	CUBE #(.NO3(1),.NO5(0),.ID5(1),.NO7(1),.ID7(1))C17(.wsize(Wsize),.i_dat(icu[1]),.w_dat(wcu[17]),.rst(rst),.clk(clk),.stride(stride),.round(round),.result(result[1151:1008]));
+	CUBE #(.NO3(2),.NO5(0),.ID5(2),.NO7(1),.ID7(2))C18(.wsize(Wsize),.i_dat(icu[2]),.w_dat(wcu[18]),.rst(rst),.clk(clk),.stride(stride),.round(round),.result(result[1151:1008]));
+	CUBE #(.NO3(3),.NO5(0),.ID5(3),.NO7(1),.ID7(3))C19(.wsize(Wsize),.i_dat(icu[3]),.w_dat(wcu[19]),.rst(rst),.clk(clk),.stride(stride),.round(round),.result(result[1151:1008]));
+	CUBE #(.NO3(4),.NO5(1),.ID5(0),.NO7(1),.ID7(4))C20(.wsize(Wsize),.i_dat(icu[4]),.w_dat(wcu[20]),.rst(rst),.clk(clk),.stride(stride),.round(round),.result(result[1151:1008]));
+	CUBE #(.NO3(5),.NO5(1),.ID5(1),.NO7(1),.ID7(5))C21(.wsize(Wsize),.i_dat(icu[5]),.w_dat(wcu[21]),.rst(rst),.clk(clk),.stride(stride),.round(round),.result(result[1151:1008]));
+	CUBE #(.NO3(6),.NO5(1),.ID5(2),.NO7(1),.ID7(6))C22(.wsize(Wsize),.i_dat(icu[6]),.w_dat(wcu[22]),.rst(rst),.clk(clk),.stride(stride),.round(round),.result(result[1151:1008]));
+	CUBE #(.NO3(7),.NO5(1),.ID5(3),.NO7(1),.ID7(7))C23(.wsize(Wsize),.i_dat(icu[7]),.w_dat(wcu[23]),.rst(rst),.clk(clk),.stride(stride),.round(round),.result(result[1151:1008]));
+	CUBE #(.NO3(0),.NO5(2),.ID5(0),.NO7(1),.ID7(8))C24(.wsize(Wsize),.i_dat(icu[8]),.w_dat(wcu[24]),.rst(rst),.clk(clk),.stride(stride),.round(round),.result(result[1151:1008]));
+	CUBE #(.NO3(1),.NO5(2),.ID5(1),.NO7(1),.ID7(9))C25(.wsize(Wsize),.i_dat(icu[1]),.w_dat(wcu[25]),.rst(rst),.clk(clk),.stride(stride),.round(round),.result(result[1151:1008]));
+	CUBE #(.NO3(2),.NO5(2),.ID5(2),.NO7(1),.ID7(9))C26(.wsize(Wsize),.i_dat(icu[0]),.w_dat(wcu[26]),.rst(rst),.clk(clk),.stride(stride),.round(round),.result(result[1151:1008]));
+	CUBE #(.NO3(3),.NO5(2),.ID5(3),.NO7(1),.ID7(9))C27(.wsize(Wsize),.i_dat(icu[1]),.w_dat(wcu[27]),.rst(rst),.clk(clk),.stride(stride),.round(round),.result(result[1151:1008]));
+	CUBE #(.NO3(4),.NO5(3),.ID5(0),.NO7(1),.ID7(9))C28(.wsize(Wsize),.i_dat(icu[0]),.w_dat(wcu[28]),.rst(rst),.clk(clk),.stride(stride),.round(round),.result(result[1151:1008]));
+	CUBE #(.NO3(5),.NO5(3),.ID5(1),.NO7(1),.ID7(9))C29(.wsize(Wsize),.i_dat(icu[1]),.w_dat(wcu[29]),.rst(rst),.clk(clk),.stride(stride),.round(round),.result(result[1151:1008]));
+	CUBE #(.NO3(6),.NO5(3),.ID5(2),.NO7(1),.ID7(9))C30(.wsize(Wsize),.i_dat(icu[0]),.w_dat(wcu[30]),.rst(rst),.clk(clk),.stride(stride),.round(round),.result(result[1151:1008]));
+	CUBE #(.NO3(7),.NO5(3),.ID5(3),.NO7(1),.ID7(9))C31(.wsize(Wsize),.i_dat(icu[1]),.w_dat(wcu[31]),.rst(rst),.clk(clk),.stride(stride),.round(round),.result(result[1151:1008]));
 	
-	CUBE #(.NO3(0),.NO5(0),.ID5(0),.NO7(0),.ID7(0))C32(.wsize(Wsize),.i_dat(icu[0]),.w_dat(wcu[32]),.rst(rst),clk(clk),.stride(stride),.round(round),.result(result_tmp[1151:1008]));
-	CUBE #(.NO3(1),.NO5(0),.ID5(1),.NO7(0),.ID7(1))C33(.wsize(Wsize),.i_dat(icu[1]),.w_dat(wcu[33]),.rst(rst),clk(clk),.stride(stride),.round(round),.result(result_tmp[1151:1008]));
-	CUBE #(.NO3(2),.NO5(0),.ID5(2),.NO7(0),.ID7(2))C34(.wsize(Wsize),.i_dat(icu[2]),.w_dat(wcu[34]),.rst(rst),clk(clk),.stride(stride),.round(round),.result(result_tmp[1151:1008]));
-	CUBE #(.NO3(3),.NO5(0),.ID5(3),.NO7(0),.ID7(3))C35(.wsize(Wsize),.i_dat(icu[3]),.w_dat(wcu[35]),.rst(rst),clk(clk),.stride(stride),.round(round),.result(result_tmp[1151:1008]));
-	CUBE #(.NO3(4),.NO5(1),.ID5(0),.NO7(0),.ID7(4))C36(.wsize(Wsize),.i_dat(icu[4]),.w_dat(wcu[36]),.rst(rst),clk(clk),.stride(stride),.round(round),.result(result_tmp[1151:1008]));
-	CUBE #(.NO3(5),.NO5(1),.ID5(1),.NO7(0),.ID7(5))C37(.wsize(Wsize),.i_dat(icu[5]),.w_dat(wcu[37]),.rst(rst),clk(clk),.stride(stride),.round(round),.result(result_tmp[1151:1008]));
-	CUBE #(.NO3(6),.NO5(1),.ID5(2),.NO7(0),.ID7(6))C38(.wsize(Wsize),.i_dat(icu[6]),.w_dat(wcu[38]),.rst(rst),clk(clk),.stride(stride),.round(round),.result(result_tmp[1151:1008]));
-	CUBE #(.NO3(7),.NO5(1),.ID5(3),.NO7(0),.ID7(7))C39(.wsize(Wsize),.i_dat(icu[7]),.w_dat(wcu[39]),.rst(rst),clk(clk),.stride(stride),.round(round),.result(result_tmp[1151:1008]));
-	CUBE #(.NO3(0),.NO5(2),.ID5(0),.NO7(0),.ID7(8))C40(.wsize(Wsize),.i_dat(icu[8]),.w_dat(wcu[40]),.rst(rst),clk(clk),.stride(stride),.round(round),.result(result_tmp[1151:1008]));
-	CUBE #(.NO3(1),.NO5(2),.ID5(1),.NO7(0),.ID7(9))C41(.wsize(Wsize),.i_dat(icu[1]),.w_dat(wcu[44]),.rst(rst),clk(clk),.stride(stride),.round(round),.result(result_tmp[1151:1008]));
-	CUBE #(.NO3(2),.NO5(2),.ID5(2),.NO7(0),.ID7(9))C42(.wsize(Wsize),.i_dat(icu[0]),.w_dat(wcu[42]),.rst(rst),clk(clk),.stride(stride),.round(round),.result(result_tmp[1151:1008]));
-	CUBE #(.NO3(3),.NO5(2),.ID5(3),.NO7(0),.ID7(9))C43(.wsize(Wsize),.i_dat(icu[1]),.w_dat(wcu[45]),.rst(rst),clk(clk),.stride(stride),.round(round),.result(result_tmp[1151:1008]));
-	CUBE #(.NO3(4),.NO5(3),.ID5(0),.NO7(0),.ID7(9))C44(.wsize(Wsize),.i_dat(icu[0]),.w_dat(wcu[44]),.rst(rst),clk(clk),.stride(stride),.round(round),.result(result_tmp[1151:1008]));
-	CUBE #(.NO3(5),.NO5(3),.ID5(1),.NO7(0),.ID7(9))C45(.wsize(Wsize),.i_dat(icu[1]),.w_dat(wcu[45]),.rst(rst),clk(clk),.stride(stride),.round(round),.result(result_tmp[1151:1008]));
-	CUBE #(.NO3(6),.NO5(3),.ID5(2),.NO7(0),.ID7(9))C46(.wsize(Wsize),.i_dat(icu[0]),.w_dat(wcu[46]),.rst(rst),clk(clk),.stride(stride),.round(round),.result(result_tmp[1151:1008]));
-	CUBE #(.NO3(7),.NO5(3),.ID5(3),.NO7(0),.ID7(9))C47(.wsize(Wsize),.i_dat(icu[1]),.w_dat(wcu[47]),.rst(rst),clk(clk),.stride(stride),.round(round),.result(result_tmp[1151:1008]));
+	CUBE #(.NO3(0),.NO5(0),.ID5(0),.NO7(0),.ID7(0))C32(.wsize(Wsize),.i_dat(icu[0]),.w_dat(wcu[32]),.rst(rst),.clk(clk),.stride(stride),.round(round),.result(result[1151:1008]));
+	CUBE #(.NO3(1),.NO5(0),.ID5(1),.NO7(0),.ID7(1))C33(.wsize(Wsize),.i_dat(icu[1]),.w_dat(wcu[33]),.rst(rst),.clk(clk),.stride(stride),.round(round),.result(result[1151:1008]));
+	CUBE #(.NO3(2),.NO5(0),.ID5(2),.NO7(0),.ID7(2))C34(.wsize(Wsize),.i_dat(icu[2]),.w_dat(wcu[34]),.rst(rst),.clk(clk),.stride(stride),.round(round),.result(result[1151:1008]));
+	CUBE #(.NO3(3),.NO5(0),.ID5(3),.NO7(0),.ID7(3))C35(.wsize(Wsize),.i_dat(icu[3]),.w_dat(wcu[35]),.rst(rst),.clk(clk),.stride(stride),.round(round),.result(result[1151:1008]));
+	CUBE #(.NO3(4),.NO5(1),.ID5(0),.NO7(0),.ID7(4))C36(.wsize(Wsize),.i_dat(icu[4]),.w_dat(wcu[36]),.rst(rst),.clk(clk),.stride(stride),.round(round),.result(result[1151:1008]));
+	CUBE #(.NO3(5),.NO5(1),.ID5(1),.NO7(0),.ID7(5))C37(.wsize(Wsize),.i_dat(icu[5]),.w_dat(wcu[37]),.rst(rst),.clk(clk),.stride(stride),.round(round),.result(result[1151:1008]));
+	CUBE #(.NO3(6),.NO5(1),.ID5(2),.NO7(0),.ID7(6))C38(.wsize(Wsize),.i_dat(icu[6]),.w_dat(wcu[38]),.rst(rst),.clk(clk),.stride(stride),.round(round),.result(result[1151:1008]));
+	CUBE #(.NO3(7),.NO5(1),.ID5(3),.NO7(0),.ID7(7))C39(.wsize(Wsize),.i_dat(icu[7]),.w_dat(wcu[39]),.rst(rst),.clk(clk),.stride(stride),.round(round),.result(result[1151:1008]));
+	CUBE #(.NO3(0),.NO5(2),.ID5(0),.NO7(0),.ID7(8))C40(.wsize(Wsize),.i_dat(icu[8]),.w_dat(wcu[40]),.rst(rst),.clk(clk),.stride(stride),.round(round),.result(result[1151:1008]));
+	CUBE #(.NO3(1),.NO5(2),.ID5(1),.NO7(0),.ID7(9))C41(.wsize(Wsize),.i_dat(icu[1]),.w_dat(wcu[44]),.rst(rst),.clk(clk),.stride(stride),.round(round),.result(result[1151:1008]));
+	CUBE #(.NO3(2),.NO5(2),.ID5(2),.NO7(0),.ID7(9))C42(.wsize(Wsize),.i_dat(icu[0]),.w_dat(wcu[42]),.rst(rst),.clk(clk),.stride(stride),.round(round),.result(result[1151:1008]));
+	CUBE #(.NO3(3),.NO5(2),.ID5(3),.NO7(0),.ID7(9))C43(.wsize(Wsize),.i_dat(icu[1]),.w_dat(wcu[45]),.rst(rst),.clk(clk),.stride(stride),.round(round),.result(result[1151:1008]));
+	CUBE #(.NO3(4),.NO5(3),.ID5(0),.NO7(0),.ID7(9))C44(.wsize(Wsize),.i_dat(icu[0]),.w_dat(wcu[44]),.rst(rst),.clk(clk),.stride(stride),.round(round),.result(result[1151:1008]));
+	CUBE #(.NO3(5),.NO5(3),.ID5(1),.NO7(0),.ID7(9))C45(.wsize(Wsize),.i_dat(icu[1]),.w_dat(wcu[45]),.rst(rst),.clk(clk),.stride(stride),.round(round),.result(result[1151:1008]));
+	CUBE #(.NO3(6),.NO5(3),.ID5(2),.NO7(0),.ID7(9))C46(.wsize(Wsize),.i_dat(icu[0]),.w_dat(wcu[46]),.rst(rst),.clk(clk),.stride(stride),.round(round),.result(result[1151:1008]));
+	CUBE #(.NO3(7),.NO5(3),.ID5(3),.NO7(0),.ID7(9))C47(.wsize(Wsize),.i_dat(icu[1]),.w_dat(wcu[47]),.rst(rst),.clk(clk),.stride(stride),.round(round),.result(result[1151:1008]));
 	
-	CUBE #(.NO3(0),.NO5(0),.ID5(0),.NO7(1),.ID7(0))C48(.wsize(Wsize),.i_dat(icu[0]),.w_dat(wcu[48]),.rst(rst),clk(clk),.stride(stride),.round(round),.result(result_tmp[1151:1008]));
-	CUBE #(.NO3(1),.NO5(0),.ID5(1),.NO7(1),.ID7(1))C49(.wsize(Wsize),.i_dat(icu[1]),.w_dat(wcu[49]),.rst(rst),clk(clk),.stride(stride),.round(round),.result(result_tmp[1151:1008]));
-	CUBE #(.NO3(2),.NO5(0),.ID5(2),.NO7(1),.ID7(2))C50(.wsize(Wsize),.i_dat(icu[2]),.w_dat(wcu[50]),.rst(rst),clk(clk),.stride(stride),.round(round),.result(result_tmp[1151:1008]));
-	CUBE #(.NO3(3),.NO5(0),.ID5(3),.NO7(1),.ID7(3))C51(.wsize(Wsize),.i_dat(icu[3]),.w_dat(wcu[51]),.rst(rst),clk(clk),.stride(stride),.round(round),.result(result_tmp[1151:1008]));
-	CUBE #(.NO3(4),.NO5(1),.ID5(0),.NO7(1),.ID7(4))C52(.wsize(Wsize),.i_dat(icu[4]),.w_dat(wcu[52]),.rst(rst),clk(clk),.stride(stride),.round(round),.result(result_tmp[1151:1008]));
-	CUBE #(.NO3(5),.NO5(1),.ID5(1),.NO7(1),.ID7(5))C53(.wsize(Wsize),.i_dat(icu[5]),.w_dat(wcu[53]),.rst(rst),clk(clk),.stride(stride),.round(round),.result(result_tmp[1151:1008]));
-	CUBE #(.NO3(6),.NO5(1),.ID5(2),.NO7(1),.ID7(6))C54(.wsize(Wsize),.i_dat(icu[6]),.w_dat(wcu[54]),.rst(rst),clk(clk),.stride(stride),.round(round),.result(result_tmp[1151:1008]));
-	CUBE #(.NO3(7),.NO5(1),.ID5(3),.NO7(1),.ID7(7))C55(.wsize(Wsize),.i_dat(icu[7]),.w_dat(wcu[55]),.rst(rst),clk(clk),.stride(stride),.round(round),.result(result_tmp[1151:1008]));
-	CUBE #(.NO3(0),.NO5(2),.ID5(0),.NO7(1),.ID7(8))C56(.wsize(Wsize),.i_dat(icu[8]),.w_dat(wcu[56]),.rst(rst),clk(clk),.stride(stride),.round(round),.result(result_tmp[1151:1008]));
-	CUBE #(.NO3(1),.NO5(2),.ID5(1),.NO7(1),.ID7(9))C57(.wsize(Wsize),.i_dat(icu[1]),.w_dat(wcu[57]),.rst(rst),clk(clk),.stride(stride),.round(round),.result(result_tmp[1151:1008]));
-	CUBE #(.NO3(2),.NO5(2),.ID5(2),.NO7(1),.ID7(9))C58(.wsize(Wsize),.i_dat(icu[0]),.w_dat(wcu[58]),.rst(rst),clk(clk),.stride(stride),.round(round),.result(result_tmp[1151:1008]));
-	CUBE #(.NO3(3),.NO5(2),.ID5(3),.NO7(1),.ID7(9))C59(.wsize(Wsize),.i_dat(icu[1]),.w_dat(wcu[59]),.rst(rst),clk(clk),.stride(stride),.round(round),.result(result_tmp[1151:1008]));
-	CUBE #(.NO3(4),.NO5(3),.ID5(0),.NO7(1),.ID7(9))C60(.wsize(Wsize),.i_dat(icu[0]),.w_dat(wcu[60]),.rst(rst),clk(clk),.stride(stride),.round(round),.result(result_tmp[1151:1008]));
-	CUBE #(.NO3(5),.NO5(3),.ID5(1),.NO7(1),.ID7(9))C61(.wsize(Wsize),.i_dat(icu[1]),.w_dat(wcu[61]),.rst(rst),clk(clk),.stride(stride),.round(round),.result(result_tmp[1151:1008]));
-	CUBE #(.NO3(6),.NO5(3),.ID5(2),.NO7(1),.ID7(9))C62(.wsize(Wsize),.i_dat(icu[0]),.w_dat(wcu[62]),.rst(rst),clk(clk),.stride(stride),.round(round),.result(result_tmp[1151:1008]));
-	CUBE #(.NO3(7),.NO5(3),.ID5(3),.NO7(1),.ID7(9))C63(.wsize(Wsize),.i_dat(icu[1]),.w_dat(wcu[63]),.rst(rst),clk(clk),.stride(stride),.round(round),.result(result_tmp[1151:1008]));
+	CUBE #(.NO3(0),.NO5(0),.ID5(0),.NO7(1),.ID7(0))C48(.wsize(Wsize),.i_dat(icu[0]),.w_dat(wcu[48]),.rst(rst),.clk(clk),.stride(stride),.round(round),.result(result[1151:1008]));
+	CUBE #(.NO3(1),.NO5(0),.ID5(1),.NO7(1),.ID7(1))C49(.wsize(Wsize),.i_dat(icu[1]),.w_dat(wcu[49]),.rst(rst),.clk(clk),.stride(stride),.round(round),.result(result[1151:1008]));
+	CUBE #(.NO3(2),.NO5(0),.ID5(2),.NO7(1),.ID7(2))C50(.wsize(Wsize),.i_dat(icu[2]),.w_dat(wcu[50]),.rst(rst),.clk(clk),.stride(stride),.round(round),.result(result[1151:1008]));
+	CUBE #(.NO3(3),.NO5(0),.ID5(3),.NO7(1),.ID7(3))C51(.wsize(Wsize),.i_dat(icu[3]),.w_dat(wcu[51]),.rst(rst),.clk(clk),.stride(stride),.round(round),.result(result[1151:1008]));
+	CUBE #(.NO3(4),.NO5(1),.ID5(0),.NO7(1),.ID7(4))C52(.wsize(Wsize),.i_dat(icu[4]),.w_dat(wcu[52]),.rst(rst),.clk(clk),.stride(stride),.round(round),.result(result[1151:1008]));
+	CUBE #(.NO3(5),.NO5(1),.ID5(1),.NO7(1),.ID7(5))C53(.wsize(Wsize),.i_dat(icu[5]),.w_dat(wcu[53]),.rst(rst),.clk(clk),.stride(stride),.round(round),.result(result[1151:1008]));
+	CUBE #(.NO3(6),.NO5(1),.ID5(2),.NO7(1),.ID7(6))C54(.wsize(Wsize),.i_dat(icu[6]),.w_dat(wcu[54]),.rst(rst),.clk(clk),.stride(stride),.round(round),.result(result[1151:1008]));
+	CUBE #(.NO3(7),.NO5(1),.ID5(3),.NO7(1),.ID7(7))C55(.wsize(Wsize),.i_dat(icu[7]),.w_dat(wcu[55]),.rst(rst),.clk(clk),.stride(stride),.round(round),.result(result[1151:1008]));
+	CUBE #(.NO3(0),.NO5(2),.ID5(0),.NO7(1),.ID7(8))C56(.wsize(Wsize),.i_dat(icu[8]),.w_dat(wcu[56]),.rst(rst),.clk(clk),.stride(stride),.round(round),.result(result[1151:1008]));
+	CUBE #(.NO3(1),.NO5(2),.ID5(1),.NO7(1),.ID7(9))C57(.wsize(Wsize),.i_dat(icu[1]),.w_dat(wcu[57]),.rst(rst),.clk(clk),.stride(stride),.round(round),.result(result[1151:1008]));
+	CUBE #(.NO3(2),.NO5(2),.ID5(2),.NO7(1),.ID7(9))C58(.wsize(Wsize),.i_dat(icu[0]),.w_dat(wcu[58]),.rst(rst),.clk(clk),.stride(stride),.round(round),.result(result[1151:1008]));
+	CUBE #(.NO3(3),.NO5(2),.ID5(3),.NO7(1),.ID7(9))C59(.wsize(Wsize),.i_dat(icu[1]),.w_dat(wcu[59]),.rst(rst),.clk(clk),.stride(stride),.round(round),.result(result[1151:1008]));
+	CUBE #(.NO3(4),.NO5(3),.ID5(0),.NO7(1),.ID7(9))C60(.wsize(Wsize),.i_dat(icu[0]),.w_dat(wcu[60]),.rst(rst),.clk(clk),.stride(stride),.round(round),.result(result[1151:1008]));
+	CUBE #(.NO3(5),.NO5(3),.ID5(1),.NO7(1),.ID7(9))C61(.wsize(Wsize),.i_dat(icu[1]),.w_dat(wcu[61]),.rst(rst),.clk(clk),.stride(stride),.round(round),.result(result[1151:1008]));
+	CUBE #(.NO3(6),.NO5(3),.ID5(2),.NO7(1),.ID7(9))C62(.wsize(Wsize),.i_dat(icu[0]),.w_dat(wcu[62]),.rst(rst),.clk(clk),.stride(stride),.round(round),.result(result[1151:1008]));
+	CUBE #(.NO3(7),.NO5(3),.ID5(3),.NO7(1),.ID7(9))C63(.wsize(Wsize),.i_dat(icu[1]),.w_dat(wcu[63]),.rst(rst),.clk(clk),.stride(stride),.round(round),.result(result[1151:1008]));
 
 	assign finish = (PS == FINISH);
 	
@@ -718,7 +724,6 @@ module MUL#(
 			cnt7s0  <=cnt7s0;
 			cnts2   <=cnts2;
 			round   <=round;
-			igroup<=igroup;
 			
 			if(i_valid)begin
 				if(PS==WAIT)begin
