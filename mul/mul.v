@@ -11,7 +11,7 @@ module CUBE#(
 	input [1:0]round,
 	input [1:0]wsize,
 	input [191:0]i_dat,		// 3 REG
-	input [391:0]w_dat,		// max 7 * 7 * 8 bits
+	input [79:0]w_dat,		// max 7 * 7 * 8 bits
 	output reg[143:0]result
 );
 	parameter SA= 128;
@@ -38,7 +38,7 @@ module CUBE#(
 	reg [71:0]localw;
 	
 	reg [191:0]i,		
-	reg [391:0]w,	
+	reg [79:0]w,	
 	
 	always@(posedge clk or negedge rst)begin
 		if(!rst)begin
@@ -461,17 +461,8 @@ module CUBE#(
 	end
 	*/
 	always@(*)begin
-		case(wsize)
-			0:localw = w[71:0];
-			1:localw = w[ID5*72+71:ID5*72];
-			2:begin
-				case(ID7)
-					5:localw = {32'b0,w[391:360]};
-					6:localw = 0;
-					default:localw = w[ID5*72+71:ID5*72];
-				endcase
-			end
-		endcase
+		if(wsize==2 && ID7 == 8)localw = {w[79:72],64'b0};
+		else localw = w[71:0];
 	end
 	
 	always@(*)begin
@@ -522,13 +513,17 @@ module MUL#(
 	parameter KEEP =32;
 
 	reg [STATE_Width-1:0] PS, NS;
-    
-	wire[191:0]icu0; 	//REG A B C			//can reg? 3 regx
-	wire[191:0]icu1;	//REG A B C ,B C D	
-	wire[191:0]icu2;	//REG A B C ,C D E	
-	wire[191:0]icu3;	//REG A B C ,D E F 
-	wire[191:0]icu4;	//REG A B C ,B C D , E F G
-	wire[191:0]icu5;	//REG A B C ,C D E , E F G 
+    /*
+	reg[191:0]icu0; 	//REG A B C			//can reg? 3 regx
+	reg[191:0]icu1;	//REG A B C ,B C D	
+	reg[191:0]icu2;	//REG A B C ,C D E	
+	reg[191:0]icu3;	//REG A B C ,D E F 
+	reg[191:0]icu4;	//REG A B C ,B C D , E F G
+	reg[191:0]icu5;	//REG A B C ,C D E , E F G 
+	reg[191:0]icu6;	//REG A B C ,D E F 
+	reg[191:0]icu7;	//REG A B C ,B C D , E F G
+	reg[191:0]icu8;*/
+	
 	
 	reg [63:0]rega;
 	reg [63:0]regb;
@@ -538,19 +533,20 @@ module MUL#(
 	reg [63:0]regf;
 	reg [63:0]regg;
 	reg [63:0]regh;
+	reg [191:0]icu[0:8];
 	
 	reg [1599:0]w;	 
-	reg [3:0]widcnt;			//current regw save 4 w
+	reg [3:0]widcnt;			
 	reg [5:0]widstart;
-	reg [391:0]wcu[0:7];
+	reg [79:0]wcu[0:7];
 	integer idx,idxx;
 	
-	reg cnt5s0;
-	reg [1:0]cnt7s0;
+	reg cnt5s0;					// 5 * 5 ,stride=1 , 2 cyc shift 1
+	reg [1:0]cnt7s0;			// 7 * 7 ,stride=1 , 4 cyc shift 1
+	reg cnts2;					// stride = 2 cnt
 	reg [3:0]ccnt,rcnt;			// 8 ccnt => 1 rcnt
-	reg cnt7_7_2;
+	reg cnt7_7_2;				// 7 * 7 weight 2 round full
 	
-	wire [9215:0]result_tmp;
 	
 	
 	CUBE #(.NO3(0),.NO5(0),.ID5(0),.NO7(0),.ID7(0))C0(.wsize(Wsize),.i(icu0),.w(wcu[0]),.result(result_tmp[1151:1008]));
@@ -618,14 +614,6 @@ module MUL#(
 	CUBE #(.NO3(5),.NO5(4),.ID5(3),.NO7(1),.ID7(6))C61(.wsize(Wsize),.i(icu0),.w(wcu[7]),.result(result_tmp[1151:1008]));
 	CUBE #(.NO3(6),.NO5(4),.ID5(3),.NO7(1),.ID7(6))C62(.wsize(Wsize),.i(icu0),.w(wcu[7]),.result(result_tmp[1151:1008]));
 	CUBE #(.NO3(7),.NO5(4),.ID5(3),.NO7(1),.ID7(6))C63(.wsize(Wsize),.i(icu0),.w(wcu[7]),.result(result_tmp[1151:1008]));
-	
- 
-	assign icu0 = {regc,regb,rega};
-	assign icu1 = (Wsize==0)?{regc,regb,rega} : {regd,regc,regb};
-	assign icu2 = (Wsize==0)?{regc,regb,rega} : {rege,regd,regc};
-	assign icu3 = (Wsize==0)?{regc,regb,rega} : (Wsize==1)? {regc,regb,rega}: {regf,rege,regd};
-	assign icu4 = (Wsize==0)?{regc,regb,rega} : (Wsize==1)? {regd,regc,regb}: {regg,regf,rege};
-	assign icu5 = (Wsize==0)?{regc,regb,rega} : (Wsize==1)? {rege,regd,regc}: {regg,regf,rege};
 	
 	assign finish = (PS == FINISH);
 	
@@ -761,6 +749,65 @@ module MUL#(
 		endcase
 	end
 
+	/*get icu*/
+	always@(*)begin
+		case(wsize)
+			0:begin
+				if(stride && !cnts2)begin	// stride = 2
+					for(idx=0;idx<9;idx=idx+1)begin
+						icu[idx]={regb,regc,regd};
+					end
+				end
+				else begin					// stride = 1 , 2
+					for(idx=0;idx<9;idx=idx+1)begin
+						icu[idx]={rega,regb,regc};
+					end
+				end
+			end
+			1:begin
+				if(stride && !cnts2)begin
+					for(idx=0;idx<9;idx=idx+2)begin
+						icu[idx]={regb,regc,regd};
+					end
+					for(idx=1;idx<=9;idx=idx+2)begin
+						icu[idx]={rege,regf,64'b0};
+					end
+				end
+				else begin
+					for(idx=0;idx<9;idx=idx+2)begin
+						icu[idx]={rega,regb,regc};
+					end
+					for(idx=1;idx<9;idx=idx+2)begin
+						icu[idx]={regd,rege,64'b0};
+					end
+				end	
+			end
+			2:begin
+				if(stride && cnts2)begin
+					for(idx=0;idx<9;idx=idx+3)begin
+						icu[idx]={regh,rega,regb};
+					end
+					for(idx=1;idx<9;idx=idx+3)begin
+						icu[idx]={regc,regd,rege};
+					end
+					for(idx=2;idx<9;idx=idx+3)begin
+						icu[idx]={regf,128'b0};
+					end
+				end
+				else begin
+					for(idx=0;idx<9;idx=idx+3)begin
+						icu[idx]={rega,regb,regc};
+					end
+					for(idx=1;idx<9;idx=idx+3)begin
+						icu[idx]={regd,rege,regf};
+					end
+					for(idx=2;idx<9;idx=idx+3)begin
+						icu[idx]={regg,128'b0};
+					end
+				end	
+			end
+		endcase			
+	end
 	/* get data*/
 	always@(posedge clk or negedge rst)begin
 		if(!rst)begin
@@ -780,6 +827,7 @@ module MUL#(
 			cnt7_7_2<=0;
 			cnt5s0<=0;
 			cnt7s0<=0;
+			cnts2<=0;
 		end
 		else begin
 			rega<=rega;
@@ -791,13 +839,14 @@ module MUL#(
 			regg<=regg;
 			regh<=regh;
 			w	<=w;
-			widcnt<=widcnt;
+			widcnt  <=widcnt;
 			widstart<=widstart;
 			ccnt<=ccnt;
 			rcnt<=rcnt;
 			cnt7_7_2<=cnt7_7_2;
-			cnt5s0<=cnt5s0;
-			cnt7s0<=cnt7s0;
+			cnt5s0  <=cnt5s0;
+			cnt7s0  <=cnt7s0;
+			cnts2   <=cnts2;
 			case(PS)
 				WAIT:begin
 					if(i_valid)begin
@@ -899,7 +948,7 @@ module MUL#(
 					
 					// shift
 					if(Wsize!=0 && stride==0)begin	
-						if(cnt5s0 || !cnt7s0)begin
+						if(cnt5s0 || (!cnt7s0 && Wsize==2))begin
 							rega<=regb;
 							regb<=regc;
 							regc<=regd;
@@ -908,7 +957,6 @@ module MUL#(
 							regf<=regg;
 							regg<=regh;
 							regh<=rega;	
-							
 							ccnt<=ccnt+1;
 							if(ccnt==7)begin
 								ccnt<=0;
@@ -930,6 +978,7 @@ module MUL#(
 						regh<=rega;	
 						
 						ccnt<=ccnt+1;
+						cnts2<=~cnts2;
 						if(ccnt==7)begin
 							ccnt<=0;
 							rcnt<=rcnt+1;
@@ -958,6 +1007,7 @@ module MUL#(
 						rcnt<=0;
 						cnt5s0<=0;
 						cnt7s0<=0;
+						cnts2<=0;
 					end	
 				end			
 			endcase
