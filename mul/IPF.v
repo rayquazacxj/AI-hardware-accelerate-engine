@@ -355,113 +355,7 @@ module CUBE#(
 			end
 		endcase
 	end		
-				/*	
-				case(ID5)	
-					0:begin	//REG C B A
-						case(NO5)
-							4:locali = {i[SB+ D4+NO5*8: SB+ 0+NO5*8],i[D1:0],i[ D4+NO5*8: 0+NO5*8]};						//	7654 | 07654
-							5:locali = {i[SB+ D1: SB+ 0],i[SB+ D3+NO5*8: SB+ 0+NO5*8],i[D2:0],i[ D3+NO5*8: 0+NO5*8]};	//	0765 | 10765
-							6:locali = {i[SB+ D2: SB+ 0],i[SB+ D2+NO5*8: SB+ 0+NO5*8],i[D3:0],i[ D2+NO5*8: 0+NO5*8]};	//  1076 | 21076
-							7:locali = {i[SB+ D3: SB+ 0],i[SB+ D1+NO5*8: SB+ 0+NO5*8],i[D4:0],i[ D1+NO5*8: 0+NO5*8]};		//  2107 | 32107
-							default:locali = {i[SB+ D4+NO5*8: SB+ 0+NO5*8],i[ D5+NO5*8: 0+NO5*8]};	
-						endcase
-					end
-					1:begin	 // REG D C B
-						case(NO5)
-							4:locali = {i[SC + D3+NO5*8: SC + 0 +NO5*8],i[SB+ D1+NO5*8: SB+ 0+NO5*8],i[SB + D4+NO5*8 : SB + 0+NO5*8],i[D1+(NO5-4)*8:(NO5-4)*8]};
-							5:locali = {i[SC + D3+NO5*8: SC + 0 +NO5*8],i[SB+ D2: SB+ 0],i[SB + D3+NO5*8 : SB + 0+NO5*8],i[D1+(NO5-4)*8:(NO5-4)*8]};
-							6:locali = {i[SC + D1: SC + 0],i[SC + D2+NO5*8: SC + 0 +NO5*8],i[SB+ D3: SB+ 0],i[SB + D2+NO5*8 : SB + 0+NO5*8],i[D1+(NO5-4)*8:(NO5-4)*8]};
-							7:locali = {i[SC + D2: SC + 0],i[SC + D1+NO5*8: SC + 0 +NO5*8],i[SB+ D4: SB+ 0],i[SB + D1+NO5*8 : SB + 0+NO5*8],i[D1+(NO5-4)*8:(NO5-4)*8]};
-							default:locali = {i[SC + D3+NO5*8: SC + 0 +NO5*8],i[SB + D5+NO5*8 : SB + 0+NO5*8],i[D1+(NO5+4)*8:(NO5+4)*8]};
-						endcase
-					end
-					2:begin	 // REG E D C
-						case(NO5)
-							4:locali = {{16{1'b0}},i[SC + D1: SC +0],i[SC + D4+NO5*8 : SC + 0+NO5*8],i[SB + D1:SB +0],i[SB + D1+(NO5+3)*8 : SB + 0+(NO5+3)*8]};
-							5:locali = {{16{1'b0}},i[SC + D2: SC +0],i[SC + D3+NO5*8 : SC + 0+NO5*8],i[SB + D2+(NO5-5)*8 : SB + 0+(NO5-5)*8]};
-							6:locali = {{16{1'b0}},i[SC + D3: SC +0],i[SC + D2+NO5*8 : SC + 0+NO5*8],i[SB + D2+(NO5-5)*8 : SB + 0+(NO5-5)*8]};
-							7:locali = {{16{1'b0}},i[SC + D4: SC +0],i[SC + D1+NO5*8 : SC + 0+NO5*8],i[SB + D2+(NO5-5)*8 : SB + 0+(NO5-5)*8]};
-							default:locali= {{16{1'b0}},i[SC +D5+NO5*8 : SC +0+NO5*8],i[SB + D2+(NO5+3)*8 : SB + 0+(NO5+3)*8]};
-						endcase
-					end
-					3:locali={72{1'b0}};
-				endcase
-			end*/
-			/*
-			2:begin  //7 * 7
-				case(ID7)
-					0:begin		// REG C B A
-						case(NO7)
-							2:locali={i[SB+ D2+NO7*8:SB+ 0+NO7*8],i[D1:0],i[D6+NO7*8: 0+NO7*8]};
-							3:locali={i[SB+ D2+NO7*8:SB+ 0+NO7*8],i[D2:0],i[D5+NO7*8: 0+NO7*8]};
-							4:locali={i[SB+ D2+NO7*8:SB+ 0+NO7*8],i[D3:0],i[D4+NO7*8: 0+NO7*8]};
-							5:locali={i[SB+ D2+NO7*8:SB+ 0+NO7*8],i[D4:0],i[D3+NO7*8: 0+NO7*8]};
-							6:locali={i[SB+ D2+NO7*8:SB+ 0+NO7*8],i[D5:0],i[D2+NO7*8: 0+NO7*8]};
-							7:locali={i[SB+ D1:SB+ 0],i[SB+ D1+NO7*8:SB+ 0+NO7*8],i[D6:0],i[D1+NO7*8: 0+NO7*8]};
-							default:locali={i[SB+ D2+NO7*8 :SB+ 0+NO7*8],i[D7+NO7*8: 0+NO7*8]};
-						endcase
-					end
-					1:begin	  //REG D C B
-						case(NO7)
-							2:locali={i[SB +D4+NO7*8:SB +0+NO7*8],i[D1:0],i[D4+(NO7+2)*8:0+(NO7+2)*8]};
-							3:locali={i [SB +D4+NO7*8:SB +0+NO7*8],i[D2:0],i[D3+(NO7+2)*8:0+(NO7+2)*8]};
-							4:locali={i[SB +D4+NO7*8:SB +0+NO7*8],i[D3:0],i[D2+(NO7+2)*8:0+(NO7+2)*8]};
-							5:locali={i[SB +D1:SB+0],i[SB +D3+NO7*8:SB +0+NO7*8],i[D4:0],i[D1+(NO7+2)*8:0+(NO7+2)*8]};
-							6:locali={i[SB +D2:SB+0],i[SB +D2+NO7*8:SB +0+NO7*8],i[D5:0]};
-							7:locali={i[SB +D3:SB+0],i[SB +D1+NO7*8:SB +0+NO7*8],i[D5+8:8]};
-							default:locali={i[SB +D4+NO7*8:SB +0+NO7*8],i[D5+(NO7+2)*8:0+(NO7+2)*8]};
-						endcase
-					end
-					2:begin	 //REG E D C
-						case(NO7)
-							2:locali={i[SB +D6+NO7*8:SB +NO7*8],i[D1:0],i[D2+ (NO7+4)*8: (NO7+4)*8]};
-							3:locali={i[SB +D1:SB+0],i[SB +D5+NO7*8:SB +NO7*8],i[D2:0],i[D1+ (NO7+4)*8: (NO7+4)*8]};
-							4:locali={i[SB +D2:SB+0],i[SB +D4+NO7*8:SB +NO7*8],i[D3+ (NO7-4)*8: (NO7-4)*8]};
-							5:locali={i[SB +D3:SB+0],i[SB +D3+NO7*8:SB +NO7*8],i[D3+ (NO7-4)*8: (NO7-4)*8]};
-							6:locali={i[SB +D4:SB+0],i[SB +D2+NO7*8:SB +NO7*8],i[D3+ (NO7-4)*8: (NO7-4)*8]};
-							7:locali={i[SB +D5:SB+0],i[SB +D1+NO7*8:SB +NO7*8],i[D3+ (NO7-4)*8: (NO7-4)*8]};
-							default:locali={i[SB +D6+NO7*8:SB +NO7*8],i[D3+ (NO7+4)*8: (NO7+4)*8]};
-						endcase
-					end
-					3:begin	 //REG F E D
-						case(NO7)
-							2:locali={i[SC +D1+NO7*8:SC +NO7*8],i[SB +D1:SB +0],i[SB +D6+NO7*8:SB +0+NO7*8],i[D1+(NO7-2)*8:(NO7-2)*8]};
-							3:locali={i[SC +D1+NO7*8:SC +NO7*8],i[SB +D2:SB +0],i[SB +D5+NO7*8:SB +0+NO7*8],i[D1+(NO7-2)*8:(NO7-2)*8]};
-							4:locali={i[SC +D1+NO7*8:SC +NO7*8],i[SB +D3:SB +0],i[SB +D4+NO7*8:SB +0+NO7*8],i[D1+(NO7-2)*8:(NO7-2)*8]};
-							5:locali={i[SC +D1+NO7*8:SC +NO7*8],i[SB +D4:SB +0],i[SB +D3+NO7*8:SB +0+NO7*8],i[D1+(NO7-2)*8:(NO7-2)*8]};
-							6:locali={i[SC +D1+NO7*8:SC +NO7*8],i[SB +D5:SB +0],i[SB +D2+NO7*8:SB +0+NO7*8],i[D1+(NO7-2)*8:(NO7-2)*8]};
-							7:locali={i[SC +D1+NO7*8:SC +NO7*8],i[SB +D6:SB +0],i[SB +D1+NO7*8:SB +0+NO7*8],i[D1+(NO7-2)*8:(NO7-2)*8]};
-							default:locali={i[SC +D1+NO7*8:SC +NO7*8],i[SB +D7+NO7*8:SB +NO7*8],i[D1+(NO7+6)*8:(NO7+6)*8]};
-						endcase
-					end
-					4:begin	 //REG G F E
-						case(NO7)
-							2:locali={i[SC +D3+NO7*8:SC +0+NO7*8],i[SB +D1:SB +0],i[SB +D5+(NO7+1)*8:SB +0+(NO7+1)*8]};
-							3:locali={i[SC +D3+NO7*8:SC +0+NO7*8],i[SB +D2:SB +0],i[SB +D4+(NO7+1)*8:SB +0+(NO7+1)*8]};
-							4:locali={i[SC +D3+NO7*8:SC +0+NO7*8],i[SB +D3:SB +0],i[SB +D3+(NO7+1)*8:SB +0+(NO7+1)*8]};
-							5:locali={i[SC +D3+NO7*8:SC +0+NO7*8],i[SB +D4:SB +0],i[SB +D2+(NO7+1)*8:SB +0+(NO7+1)*8]};
-							6:locali={i[SC +D1:SC +0],i[SC +D2+NO7*8:SC +0+NO7*8],i[SB +D5:SB +0],i[SB +D1+(NO7+1)*8:SB +0+(NO7+1)*8]};
-							7:locali={i[SC +D2:SC +0],i[SC +D1+NO7*8:SC +0+NO7*8],i[SB +D6:SB +0]};
-							default:locali={i[SC +D3+NO7*8:SC +0+NO7*8],i[SB +D6+(NO7+1)*8:SB +0+(NO7+1)*8]};
-						endcase
-					end
-					5:begin  //REG G F END
-						case(NO7)	
-							2:locali={{40{1'b0}},i[SC +D1:SC +0],i[SC +D3+(NO7+3)*8:SC +0+(NO7+3)*8]};
-							3:locali={{40{1'b0}},i[SC +D2:SC +0],i[SC +D2+(NO7+3)*8:SC +0+(NO7+3)*8]};
-							4:locali={{40{1'b0}},i[SC +D3:SC +0],i[SC +D1+(NO7+3)*8:SC +0+(NO7+3)*8]};
-							5:locali={{40{1'b0}},i[SC +D4:SC +0]};
-							6:locali={{40{1'b0}},i[SC +D4+8:SC +8]};
-							7:locali={{40{1'b0}},i[SC +D4+15:SC +15]};
-							default:locali={{40{1'b0}},i[SC +D4+(NO7+3)*8:SC +0+(NO7+3)*8]};
-						endcase
-					end
-					6:locali={72{1'b0}};
-				endcase
-			end
-		endcase
-	end
-	*/
+
 	always@(*)begin
 		if(wsize==2 && ID7 == 8)localw = {w[79:72],64'b0};
 		else localw = w[71:0];
@@ -511,22 +405,14 @@ module IPF#(
 	parameter START = 2'd1;
 	parameter END = 2'd0;
 	
-	parameter D1 = 63;
+	parameter D1 = 8;
+	parameter D2 = 16;
+	parameter D3 = 24;
+	parameter P1 = 8;
 	parameter W1 = 72;
 	parameter KEEP =32;
 
 	reg [STATE_Width-1:0] PS, NS;
-    /*
-	reg[191:0]icu0; 	//REG A B C			//can reg? 3 regx
-	reg[191:0]icu1;	//REG A B C ,B C D	
-	reg[191:0]icu2;	//REG A B C ,C D E	
-	reg[191:0]icu3;	//REG A B C ,D E F 
-	reg[191:0]icu4;	//REG A B C ,B C D , E F G
-	reg[191:0]icu5;	//REG A B C ,C D E , E F G 
-	reg[191:0]icu6;	//REG A B C ,D E F 
-	reg[191:0]icu7;	//REG A B C ,B C D , E F G
-	reg[191:0]icu8;*/
-	
 	
 	reg [63:0]rega;
 	reg [63:0]regb;
@@ -537,18 +423,21 @@ module IPF#(
 	reg [63:0]regg;
 	reg [63:0]regh;
 	reg [191:0]icu[0:8];
-	reg [10:0]igroup;
+	
 	
 	reg [1599:0]w;	 
 	reg [3:0]widcnt;			
 	reg [5:0]widstart;
 	reg [79:0]wcu[0:63];
-	integer idx,idxx;
+	reg [9:0]wgroup;
+	reg wgroup_cnt;
+	integer idx,idxx,idi;
+	
 	
 	reg cnt5s0;					// 5 * 5 ,stride=1 , 2 cyc shift 1
 	reg [1:0]cnt7s0;			// 7 * 7 ,stride=1 , 4 cyc shift 1
 	reg cnts2;					// stride = 2 cnt
-	reg [3:0]ccnt,rcnt;			// 8 ccnt => 1 rcnt
+	reg [3:0]ccnt;				// 8 ccnt => 1 rcnt
 	reg cnt7_7_2;				// 7 * 7 weight 2 round full
 	
 	
@@ -660,114 +549,76 @@ module IPF#(
 			end
 		endcase
 	end
-
-/*
-	/* get wcu 
-	always@(*)begin
-		case(PS)
-			COMPUTE:begin
-				case(Wsize)
-					0:begin		//3 * 3
-						case(rcnt)
-							0:begin
-								for(idx=0;idx<8;idx=idx+1)begin
-									wcu[idx]={320'b0,w[idx*72+:72]};
-								end
-							end
-							1:begin
-								for(idx=0;idx<8;idx=idx+1)begin
-									wcu[idx]={320'b0,w[576+idx*72 +:72]};
-								end
-							end
-						endcase
-					end
-					1:begin		//5 * 5
-						wcu[6]=0;
-						wcu[7]=0;
-						case(rcnt)
-							0:begin
-								for(idx=0;idx<3;idx=idx+1)begin
-									wcu[idx]={192'b0,w[199:0]};
-								end
-								for(idxx=3;idxx<6;idxx=idxx+1)begin
-									wcu[idxx]={192'b0,w[399 :200]};
-								end
-							end
-							1:begin
-								for(idx=0;idx<3;idx=idx+1)begin
-									wcu[idx]={192'b0,w[599:400]};
-								end
-								for(idxx=3;idxx<6;idxx=idxx+1)begin
-									wcu[idxx]={192'b0,w[799 :600]};
-								end
-							end
-							2:begin
-								for(idx=0;idx<3;idx=idx+1)begin
-									wcu[idx]={192'b0,w[999:800]};
-								end
-								for(idxx=6;idxx<6;idxx=idxx+1)begin
-									wcu[idxx]={192'b0,w[1199 :1000]};
-								end
-							end
-							3:begin
-								for(idx=0;idx<3;idx=idx+1)begin
-									wcu[idx]={192'b0,w[1399:1200]};
-								end
-								for(idxx=3;idxx<6;idxx=idxx+1)begin
-									wcu[idxx]={192'b0,w[1599 :1400]};
-								end
-							end
-						endcase
-					end
-					2:begin		// 7 * 7
-						wcu[6]=0;
-						wcu[7]=0;
-						case(rcnt)
-							0:begin
-								for(idx=0;idx<6;idx=idx+1)begin
-									wcu[idx]=w[491:0];
-								end
-							end
-							1:begin
-								for(idx=0;idx<6;idx=idx+1)begin
-									wcu[idx]={192'b0,w[783:492]};
-								end
-							end
-							2:begin
-								for(idx=0;idx<6;idx=idx+1)begin
-									wcu[idx]={192'b0,w[1175:784]};
-								end
-							end
-							3:begin
-								for(idx=0;idx<6;idx=idx+1)begin
-									wcu[idx]={192'b0,w[1567:1176]};
-								end
-							end
-						endcase
-					end
-				endcase
-			end
-			default:begin
-				for(idx=0;idx<8;idx=idx+1)begin
-					wcu[idx]=0;
-				end
-			end
-		endcase
-	end*/
+	
+	/* get wcu */
+	always@(posedge clk or negedge rst)begin
+		wgroup<=wgroup;
+		wgroup_cnt<= ~wgroup_cnt;
+		
+		if(!rst || PS==WAIT)begin
+			wgroup<=0;
+			wgroup_cnt<=1;
+		end
+		else if(stride==0 && ccnt==7)begin
+			case(Wsize)
+				0:wgroup<= 9*P1*8;
+				1:wgroup<= 25*P1*4;
+				2:wgroup<= 49*P1*2;
+			endcase
+		end
+		else if(stride==1 && Wsize==2)wgroup<= (wgroup_cnt)? 0:49*P1*2;
+		else if(stride==1)begin
+			case(Wsize)
+				0:wgroup<= (wgroup_cnt)? 0: 9*P1*8;
+				1:wgroup<= (wgroup_cnt)? 0: 25*P1*4;
+				default:wgroup<= wgroup;
+			endcase
+		end		
+	end
+	
 	always@(*)begin
 		case(Wsize)
 			0:begin
 				for(idx=0;idx<8;idx=idx+8)begin
 					for(idxx=idx;idxx<8;idxx=idxx+1)begin
-						wcu[idx]={8'b0,w[(W1*idx+igroup)+:W1]};
+						wcu[idx]={8'b0,w[(W1*idx+wgroup)+:W1]};
 					end
 				end
 			end	
 			1:begin
-			default:begin
+				for(idi=0;idi<4;idi=idi+1)begin
+					for(idx=0;idx<4;idx=idx+1)begin
+						for(idxx=0;idxx<4;idxx=idxx+1)begin
+							case(idxx)
+								0:wcu[idi+idx+idxx]={8'b0,w[wgroup+idi*(P1*25) +:D3],w[(P1*5)+wgroup+idi*(P1*25) +:D3],w[(P1*10)+wgroup+idi*(P1*25) +:D3]};
+								1:wcu[idi+idx+idxx]={8'b0,w[(P1*15)+wgroup+idi*(P1*25) +:D3],w[(P1*20)+wgroup+idi*(P1*25) +:D3],24'b0};
+								2:wcu[idi+idx+idxx]={8'b0,w[(P1*3)+wgroup+idi*(P1*25) +:D2],8'b0,w[(P1*8)+wgroup+idi*(P1*25) +:D2],8'b0,w[(P1*13)+wgroup+idi*(P1*25) +:D2],8'b0};
+								3:wcu[idi+idx+idxx]={8'b0,w[(P1*18)+wgroup+idi*(P1*25) +:D2],8'b0,w[(P1*23)+wgroup+idi*(P1*25) +:D2],8'b0,24'b0};
+							endcase
+						end
+					end
+				end
 			end
-			
-		endcase	
+			2:begin
+				for(idi=0;idi<2;idi=idi+1)begin		// 0 - 31 , 32 - 63
+					for(idx=0;idx<2;idx=idx+1)begin	// 16 , 16
+						for(idxx=0;idxx<15;idxx=idxx+1)begin
+							case(idxx)
+								0:wcu[(idi+idx)*16+idxx]={w[(P1*48)+wgroup+idi*(P1*49) +:D1],w[wgroup+idi*(P1*49) +:D3],w[(P1*7)+wgroup+idi*(P1*49) +:D3],w[(P1*14)+wgroup+idi*(P1*49) +:D3]};
+								1:wcu[(idi+idx)*16+idxx]={8'b0,w[(P1*21)+wgroup+idi*(P1*49) +:D3],w[(P1*28)+wgroup+idi*(P1*49) +:D3],w[(P1*35)+wgroup+idi*(P1*49) +:D3]};
+								2:wcu[(idi+idx)*16+idxx]={8'b0,w[(P1*42)+wgroup+idi*(P1*49) +:D3],48'b0};
+								3:wcu[(idi+idx)*16+idxx]={8'b0,w[(P1*3)+wgroup+idi*(P1*49) +:D3],w[(P1*10)+wgroup+idi*(P1*49) +:D3],w[(P1*17)+wgroup+idi*(P1*49) +:D3]};
+								4:wcu[(idi+idx)*16+idxx]={8'b0,w[(P1*24)+wgroup+idi*(P1*49) +:D3],w[(P1*31)+wgroup+idi*(P1*49) +:D3],w[(P1*38)+wgroup+idi*(P1*49) +:D3]};
+								5:wcu[(idi+idx)*16+idxx]={8'b0,w[(P1*45)+wgroup+idi*(P1*49) +:D3],48'b0};
+								6:wcu[(idi+idx)*16+idxx]={8'b0,w[(P1*6)+wgroup+idi*(P1*49) +:D1],16'b0,w[(P1*13)+wgroup+idi*(P1*49) +:D1],16'b0,w[(P1*20)+wgroup+idi*(P1*49) +:D1],16'b0};
+								7:wcu[(idi+idx)*16+idxx]={8'b0,w[(P1*27)+wgroup+idi*(P1*49) +:D1],16'b0,w[(P1*34)+wgroup+idi*(P1*49) +:D1],16'b0,w[(P1*41)+wgroup+idi*(P1*49) +:D1],16'b0};
+								default:wcu[(idi+idx)*16+idxx]=0;
+							endcase
+						end
+					end
+				end	
+			end
+		endcase
 	end
 	/*get icu*/
 	always@(*)begin
@@ -828,6 +679,7 @@ module IPF#(
 			end
 		endcase			
 	end
+	
 	/* get data*/
 	always@(posedge clk or negedge rst)begin
 		if(!rst)begin
@@ -843,7 +695,6 @@ module IPF#(
 			widcnt<=0;
 			widstart<=0;
 			ccnt<=0;
-			rcnt<=0;
 			cnt7_7_2<=0;
 			cnt5s0<=0;
 			cnt7s0<=0;
@@ -863,7 +714,6 @@ module IPF#(
 			widcnt  <=widcnt;
 			widstart<=widstart;
 			ccnt<=ccnt;
-			rcnt<=rcnt;
 			cnt7_7_2<=cnt7_7_2;
 			cnt5s0  <=cnt5s0;
 			cnt7s0  <=cnt7s0;
@@ -902,66 +752,6 @@ module IPF#(
 						case(widstart)
 							0:w[(widcnt*64)-1 +: 64]<=w_data;
 							32:w[(widcnt*64)-1+KEEP +:KEEP]<=w_data;
-							/*
-								case(widcnt)
-									0:w[63: 0]<=w_data;
-									1:w[127:64]<=w_data;
-									2:w[191:128]<=w_data;
-									3:w[255:192]<=w_data;
-									4:w[319:256]<=w_data;
-									5:w[320+D1:320]<=w_data;
-									6:w[384+D1:384]<=w_data;
-									7:w[448+D1:448]<=w_data;
-									8:w[512+D1:512]<=w_data;
-									9:w[576+D1:576]<=w_data;
-									10:w[640+D1:640]<=w_data;
-									11:w[704+D1:704]<=w_data;
-									12:w[768+D1:768]<=w_data;
-									13:w[832+D1:832]<=w_data;
-									14:w[896+D1:896]<=w_data;
-									15:w[960+D1:960]<=w_data;
-									16:w[1024+D1:1024]<=w_data;
-									17:w[1088+D1:1088]<=w_data;
-									18:w[1152+D1:1152]<=w_data;
-									19:w[1216+D1:1216]<=w_data;
-									20:w[1280+D1:1280]<=w_data;
-									21:w[1344+D1:1344]<=w_data;
-									22:w[1408+D1:1408]<=w_data;
-									23:w[1472+D1:1472]<=w_data;
-									24:w[1536+D1:1536]<=w_data;
-								endcase
-							*/
-							/*
-							end
-							32:begin	
-								case(widcnt)
-									0:w[63+KEEP: 0+KEEP]<=w_data;
-									1:w[127+KEEP:64+KEEP]<=w_data;
-									2:w[191+KEEP:128+KEEP]<=w_data;
-									3:w[255+KEEP:192+KEEP]<=w_data;
-									4:w[319+KEEP:256+KEEP]<=w_data;
-									5:w[320+D1+KEEP:320+KEEP]<=w_data;
-									6:w[384+D1+KEEP:384+KEEP]<=w_data;
-									7:w[448+D1+KEEP:448+KEEP]<=w_data;
-									8:w[512+D1+KEEP:512+KEEP]<=w_data;
-									9:w[576+D1+KEEP:576+KEEP]<=w_data;
-									10:w[640+D1+KEEP:640+KEEP]<=w_data;
-									11:w[704+D1+KEEP:704+KEEP]<=w_data;
-									12:w[768+D1+KEEP:768+KEEP]<=w_data;
-									13:w[832+D1+KEEP:832+KEEP]<=w_data;
-									14:w[896+D1+KEEP:896+KEEP]<=w_data;
-									15:w[960+D1+KEEP:960+KEEP]<=w_data;
-									16:w[1024+D1+KEEP:1024+KEEP]<=w_data;
-									17:w[1088+D1+KEEP:1088+KEEP]<=w_data;
-									18:w[1152+D1+KEEP:1152+KEEP]<=w_data;
-									19:w[1216+D1+KEEP:1216+KEEP]<=w_data;
-									20:w[1280+D1+KEEP:1280+KEEP]<=w_data;
-									21:w[1344+D1+KEEP:1344+KEEP]<=w_data;
-									22:w[1408+D1+KEEP:1408+KEEP]<=w_data;
-									23:w[1472+D1+KEEP:1472+KEEP]<=w_data;
-									24:w[1536+D1+KEEP:1536+KEEP]<=w_data;	
-								endcase
-							end*/
 						endcase
 						widcnt<=widcnt+1;	
 					end
@@ -983,10 +773,8 @@ module IPF#(
 							regg<=regh;
 							regh<=rega;	
 							ccnt<=ccnt+1;
-							if(ccnt==7)begin
-								ccnt<=0;
-								rcnt<=rcnt+1;
-							end
+							if(ccnt==7)ccnt<=0;
+								
 						end
 						cnt5s0 <= ~cnt5s0;		//2 cyc shift 1
 						cnt7s0 <= cnt7s0+1;		//4 cyc shift 1
@@ -1004,10 +792,8 @@ module IPF#(
 						
 						ccnt<=ccnt+1;
 						cnts2<=~cnts2;
-						if(ccnt==7)begin
-							ccnt<=0;
-							rcnt<=rcnt+1;
-						end
+						if(ccnt==7)ccnt<=0;
+							
 					end
 									
 					// COMPUTE -> WAIT
