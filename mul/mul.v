@@ -13,7 +13,7 @@ module CUBE#(
 	input [1:0]round,
 	input [1:0]wsize,
 	input [191:0]i_dat,		// 3 REG
-	input [79:0]w_dat,		// max 7 * 7 * 8 bits
+	input [79:0]w_dat,		
 	output reg[143:0]result
 );
 	parameter SA= 128;
@@ -367,9 +367,14 @@ module CUBE#(
 		else localw = w[71:0];
 	end
 	
-	always@(*)begin
-		for(j=0;j<9;j=j+1)begin
-			result[16*j +: 16]= localw[8*j +: 8] * locali[8*j +: 8];
+	always@(posedge clk or negedge rst_n)begin  
+		if(!rst_n)begin
+			result<=0;
+		end
+		else begin
+			for(j=0;j<9;j=j+1)begin
+				result[16*j +: 16] <= localw[8*j +: 8] * locali[8*j +: 8];
+			end
 		end
 	end
 	
@@ -382,7 +387,7 @@ module CUBE#(
 endmodule
 
 
-module IPF#(
+module MUL#(
 	parameter In_Width   = 8, 
 	parameter Out_Width  = 9,
 	parameter Addr_Width = 16
@@ -556,29 +561,34 @@ module IPF#(
 	end
 	
 	/* get wcu */
-	always@(posedge clk or negedge rst)begin
-		wgroup<=wgroup;
-		wgroup_cnt<= ~wgroup_cnt;
-		
-		if(!rst || PS==WAIT)begin
+	always@(posedge clk or negedge rst_n)begin
+		if(!rst_n)begin
 			wgroup<=0;
 			wgroup_cnt<=1;
 		end
-		else if(stride==0 && ccnt==7)begin
-			case(Wsize)
-				0:wgroup<= 9*P1*8;
-				1:wgroup<= 25*P1*4;
-				2:wgroup<= 49*P1*2;
-			endcase
+		else begin
+			wgroup_cnt<=~wgroup_cnt;
+			if(PS==WAIT)begin
+				wgroup<=0;
+				wgroup_cnt<=1;
+			end
+			if(stride==0 && ccnt==7)begin
+				case(Wsize)
+					0:wgroup<= 9*P1*8;
+					1:wgroup<= 25*P1*4;
+					2:wgroup<= 49*P1*2;
+				endcase
+				
+			end
+			else if(stride==1 && Wsize==2)wgroup<= (wgroup_cnt)? 0:49*P1*2;
+			else if(stride==1)begin
+				case(Wsize)
+					0:wgroup<= (wgroup_cnt)? 0: 9*P1*8;
+					1:wgroup<= (wgroup_cnt)? 0: 25*P1*4;
+					default:wgroup<= wgroup;
+				endcase
+			end		
 		end
-		else if(stride==1 && Wsize==2)wgroup<= (wgroup_cnt)? 0:49*P1*2;
-		else if(stride==1)begin
-			case(Wsize)
-				0:wgroup<= (wgroup_cnt)? 0: 9*P1*8;
-				1:wgroup<= (wgroup_cnt)? 0: 25*P1*4;
-				default:wgroup<= wgroup;
-			endcase
-		end		
 	end
 	
 	always@(*)begin
@@ -707,6 +717,7 @@ module IPF#(
 			round<=0;
 		end
 		else begin
+		/*
 			rega<=rega;
 			regb<=regb;
 			regc<=regc;
@@ -723,7 +734,7 @@ module IPF#(
 			cnt5s0  <=cnt5s0;
 			cnt7s0  <=cnt7s0;
 			cnts2   <=cnts2;
-			round   <=round;
+			round   <=round;*/
 			
 			if(i_valid)begin
 				if(PS==WAIT)begin
