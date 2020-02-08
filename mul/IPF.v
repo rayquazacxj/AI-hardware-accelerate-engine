@@ -387,7 +387,7 @@ module CUBE#(
 endmodule
 
 
-module MUL#(
+module IPF#(
 	parameter In_Width   = 8, 
 	parameter Out_Width  = 9,
 	parameter Addr_Width = 16
@@ -400,14 +400,16 @@ module MUL#(
 	input  [63:0] w_data,
 	input i_valid,w_valid,
 	input  [1:0] Wsize,
+	
+	input  [1:0]RLPadding,
 	input  stride,
 	input  [3:0]wgroup,
 	input  [2:0]wround,
+	
 	output [9215:0] result,
 	output reg res_valid,
 
 	output finish
-
 );
 	parameter STATE_Width = 3;
 	parameter FINISH  = 3'd1;
@@ -417,6 +419,8 @@ module MUL#(
 	parameter HOLD = 2'd2;
 	parameter START = 2'd1;
 	parameter END = 2'd0;
+	
+	parameter LPadding = 2'd2;
 	
 	parameter D1 = 8;
 	parameter D2 = 16;
@@ -694,20 +698,20 @@ module MUL#(
 			cnt7_7_2<=0;		
 		end
 		else begin
-			if(i_valid)begin
+			if(i_valid || RLPadding == LPadding)begin    //RPadding : ctrl start (when !rst , regX<=0)
 				case(Wsize)
 					0:begin		// 3 * 3
 						case(stride)
 							0:begin
 								rega<=regb;
 								regb<=regc;
-								regc<=i_data;
+								regc<= (i_valid)? i_data : 0;
 							end
 							1:begin
 								rega<=regb;
 								regb<=regc;
 								regc<=regd;
-								regd<=i_data;
+								regd<=(i_valid)? i_data : 0;
 							end
 						endcase
 					end
@@ -718,7 +722,7 @@ module MUL#(
 								regb<=regc;
 								regc<=regd;
 								regd<=rege;
-								rege<=i_data;
+								rege<=(i_valid)? i_data : 0;
 							end
 							1:begin
 								rega<=regb;
@@ -726,7 +730,7 @@ module MUL#(
 								regc<=regd;
 								regd<=rege;
 								rege<=regf;
-								regf<=i_data;
+								regf<=(i_valid)? i_data : 0;
 							end
 						endcase
 					end
@@ -739,7 +743,7 @@ module MUL#(
 								regd<=rege;
 								rege<=regf;
 								regf<=regg;
-								regg<=i_data;
+								regg<=(i_valid)? i_data : 0;
 							end
 							1:begin
 								rega<=regb;
@@ -749,13 +753,14 @@ module MUL#(
 								rege<=regf;
 								regf<=regg;
 								regg<=regh;
-								regh<=i_data;
+								regh<=(i_valid)? i_data : 0;
 							end
 						endcase
 					end
 				endcase
 			end
 			
+
 			if(w_valid)begin //3 , 5 full	
 				case(widstart)
 					0:w[(widcnt*64)-1 +: 64]<=w_data;
@@ -782,112 +787,6 @@ module MUL#(
 				end
 				widcnt<=0;									
 			end	
-			
-			/*
-				if(PS==WAIT)begin
-					rega<=regb;
-					regb<=regc;
-					regc<=regd;
-					regd<=rege;
-					rege<=regf;
-					regf<=regg;
-					regg<=regh;
-					regh<=rega;
-				end
-				
-				case(Wsize)
-					0:begin
-						case(stride)
-							0:regc<=i_data;
-							1:regd<=i_data;
-						endcase	
-					end
-					1:begin
-						case(stride)
-							0:regh<=i_data;		//full
-							1:regf<=i_data;
-						endcase	
-					end
-					default:begin
-						regh<=i_data;			//full
-					end
-				endcase	
-			end
-			if(w_valid)begin //3 , 5 full	
-				case(widstart)
-					0:w[(widcnt*64)-1 +: 64]<=w_data;
-					32:w[(widcnt*64)-1+KEEP +:KEEP]<=w_data;
-				endcase
-				widcnt<=widcnt+1;	
-			end
-		
-				
-			if(PS==COMPUTE)begin
-				// counter
-				ccnt<=ccnt+1;
-				
-				// shift
-				if(Wsize!=0 && stride==0)begin	
-					if(cnt5s0 || (!cnt7s0 && Wsize==2))begin
-						rega<=regb;
-						regb<=regc;
-						regc<=regd;
-						regd<=rege;
-						rege<=regf;
-						regf<=regg;
-						regg<=regh;
-						regh<=rega;	
-						
-						ccnt<=ccnt+1;
-						if(ccnt==7)ccnt<=0;		
-					end
-					cnt5s0 <= ~cnt5s0;		//2 cyc shift 1
-					cnt7s0 <= cnt7s0+1;		//4 cyc shift 1
-					round  <= (Wsize==1)? ~cnt5s0 : cnt7s0+1;		
-					if(cnt7s0==3)cnt7s0 <= 0;
-				end
-				else begin
-					rega<=regb;
-					regb<=regc;
-					regc<=regd;
-					regd<=rege;
-					rege<=regf;
-					regf<=regg;
-					regg<=regh;
-					regh<=rega;	
-					
-					ccnt<=ccnt+1;
-					cnts2<=~cnts2;
-					round<=~cnts2;
-					if(ccnt==7)ccnt<=0;
-						
-				end
-								
-				// COMPUTE -> WAIT
-				if(ctrl==HOLD)begin								
-					if(Wsize==2)begin	// 7 * 7
-						cnt7_7_2<= ~cnt7_7_2;		
-						if(cnt7_7_2==0)begin
-							w<=w[1599:1568];
-							widstart<=32;
-						end
-						else begin
-							w<=0;
-							widstart<=0;
-						end
-					end
-					else begin
-						w<=0;
-						widstart<=0;
-					end
-					widcnt<=0;					
-					ccnt<=0;
-					cnt5s0<=0;
-					cnt7s0<=0;
-					cnts2<=0;
-					round<=0;
-				end	
-			end	*/		
 		end
 	end
 	
