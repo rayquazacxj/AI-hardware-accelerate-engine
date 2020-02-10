@@ -43,6 +43,7 @@ module CUBE#(
 	reg [191:0]i;	//REG C B A get row	
 	reg [79:0]w;	
 	
+	
 	always@(posedge clk or negedge rst)begin
 		if(!rst)begin
 			i<=0;
@@ -53,14 +54,19 @@ module CUBE#(
 			w<=w_dat;
 		end
 	end
+	/*
+	always@(*)begin
+		i<=i_dat;
+		w<=w_dat;
+	end*/
 			
 			
 	always@(*)begin
 		case(wsize)		
 			0:begin		//3 * 3
 				case(NO3)
-					6:locali={i[D1:0],i[D2+NO3*8 :NO3*8],i[SB +D1:SB +0],i[SB +D2+NO3*8 : SB +NO3*8],i[SA +D1:SA +0],i[SA +D2+NO3*8 : SC +NO3*8]};
-					7:locali={i[D2:0],i[D1+NO3*8 :NO3*8],i[SB +D2:SB +0],i[SB +D1+NO3*8 : SB +NO3*8],i[SA +D2:SA +0],i[SA +D1+NO3*8 : SC +NO3*8]};
+					6:locali={i[D1:0],i[D2+NO3*8 :NO3*8],i[SB +D1:SB +0],i[SB +D2+NO3*8 : SB +NO3*8],i[SA +D1:SA +0],i[SA +D2+NO3*8 : SA +NO3*8]};
+					7:locali={i[D2:0],i[D1+NO3*8 :NO3*8],i[SB +D2:SB +0],i[SB +D1+NO3*8 : SB +NO3*8],i[SA +D2:SA +0],i[SA +D1+NO3*8 : SA +NO3*8]};
 					default: locali = {i[D3+NO3*8 : NO3*8] ,i[SB +D3+NO3*8 :SB +NO3*8] ,i[SA +D3+NO3*8 : SA +NO3*8] };
 				endcase	
 			end
@@ -74,7 +80,7 @@ module CUBE#(
 									0:locali = {i[D3+NO5*8:NO5*8],i[SB +D3+NO5*8:SB +NO5*8],i[SA +D3+NO5*8:SA +NO5*8]};
 									1:locali = {{D3{1'b0}},i[SB +D3+NO5*8:SB +NO5*8],i[SA +D3+NO5*8:SA +NO5*8]};
 									2:locali = {{D1{1'b0}},i[D2+NO5*8:NO5*8],{D1{1'b0}},i[SB +D2+NO5*8:SB +NO5*8],{D1{1'b0}},i[SA +D2+NO5*8:SA +NO5*8]};
-									3:locali = {{D3{1'b0}},{D1{1'b0},i[SB +D2+NO5*8:SB +NO5*8],{D1{1'b0}},i[SA +D2+NO5*8:SA +NO5*8]}};
+									3:locali = {{D3{1'b0}},{D1{1'b0}},i[SB +D2+NO5*8:SB +NO5*8],{D1{1'b0}},i[SA +D2+NO5*8:SA +NO5*8]};
 								endcase
 								//endcase
 							end
@@ -156,8 +162,8 @@ module CUBE#(
 									3:locali={i[D3+(NO7+3)*8:(NO7+3)*8],i[SB +D3+(NO7+3)*8:SB +(NO7+3)*8],i[SA +D3+(NO7+3)*8:SA +(NO7+3)*8]};
 									4:locali={i[D3+(NO7+3)*8:(NO7+3)*8],i[SB +D3+(NO7+3)*8:SB +(NO7+3)*8],i[SA +D3+(NO7+3)*8:SA +(NO7+3)*8]};
 									5:locali={{D6{1'b0}},i[SA +D3+(NO7+3)*8:SA +(NO7+3)*8]};
-									6:locali={D2{1'b0}},i[D1+(NO7+6)*8:(NO7+6)*8],{D2{1'b0}},i[SB +D1+(NO7+6)*8:SB +(NO7+6)*8],{D2{1'b0}},i[SA +D1+(NO7+6)*8:SA +(NO7+6)*8]};
-									7:locali={D2{1'b0}},i[D1+(NO7+6)*8:(NO7+6)*8],{D2{1'b0}},i[SB +D1+(NO7+6)*8:SB +(NO7+6)*8],{D2{1'b0}},i[SA +D1+(NO7+6)*8:SA +(NO7+6)*8]};
+									6:locali={{D2{1'b0}},i[D1+(NO7+6)*8:(NO7+6)*8],{D2{1'b0}},i[SB +D1+(NO7+6)*8:SB +(NO7+6)*8],{D2{1'b0}},i[SA +D1+(NO7+6)*8:SA +(NO7+6)*8]};
+									7:locali={{D2{1'b0}},i[D1+(NO7+6)*8:(NO7+6)*8],{D2{1'b0}},i[SB +D1+(NO7+6)*8:SB +(NO7+6)*8],{D2{1'b0}},i[SA +D1+(NO7+6)*8:SA +(NO7+6)*8]};
 									8:locali={{D7{1'b0}},{D1{1'b0}},i[SA +D1+(NO7+6)*8:SA +(NO7+6)*8]};
 									9:locali=72'b0;
 								endcase
@@ -185,8 +191,8 @@ module CUBE#(
 											1:locali={{D6{1'b0}},i[SA +D1+NO7*8:SA +NO7*8],i[SA +D2:SA]};
 										endcase
 									end
-									6:locali={D2{1'b0}},i[D1+NO7*8:NO7*8],{D2{1'b0}},i[SB +D1+NO7*8:SB +NO7*8],{D2{1'b0}},i[SA +D1+NO7*8:SA +NO7*8]};
-									7:locali={D2{1'b0}},i[D1+NO7*8:NO7*8],{D2{1'b0}},i[SB +D1+NO7*8:SB +NO7*8],{D2{1'b0}},i[SA +D1+NO7*8:SA +NO7*8]};
+									6:locali={{D2{1'b0}},i[D1+NO7*8:NO7*8],{D2{1'b0}},i[SB +D1+NO7*8:SB +NO7*8],{D2{1'b0}},i[SA +D1+NO7*8:SA +NO7*8]};
+									7:locali={{D2{1'b0}},i[D1+NO7*8:NO7*8],{D2{1'b0}},i[SB +D1+NO7*8:SB +NO7*8],{D2{1'b0}},i[SA +D1+NO7*8:SA +NO7*8]};
 									8:locali={{D7{1'b0}},{D1{1'b0}},i[SA +D1+NO7*8:SA +NO7*8]};
 									9:locali=72'b0;
 								endcase
@@ -214,8 +220,8 @@ module CUBE#(
 											1:locali={{D6{1'b0}},i[SA +D3+(NO7-1)*8:SA +(NO7-1)*8]};
 										endcase
 									end
-									6:locali={D2{1'b0}},i[D1+(NO7+2)*8:(NO7+2)*8],{D2{1'b0}},i[SB +D1+(NO7+2)*8:SB +(NO7+2)*8],{D2{1'b0}},i[SA +D1+(NO7+2)*8:SA +(NO7+2)*8]};
-									7:locali={D2{1'b0}},i[D1+(NO7+2)*8:(NO7+2)*8],{D2{1'b0}},i[SB +D1+(NO7+2)*8:SB +(NO7+2)*8],{D2{1'b0}},i[SA +D1+(NO7+2)*8:SA +(NO7+2)*8]};
+									6:locali={{D2{1'b0}},i[D1+(NO7+2)*8:(NO7+2)*8],{D2{1'b0}},i[SB +D1+(NO7+2)*8:SB +(NO7+2)*8],{D2{1'b0}},i[SA +D1+(NO7+2)*8:SA +(NO7+2)*8]};
+									7:locali={{D2{1'b0}},i[D1+(NO7+2)*8:(NO7+2)*8],{D2{1'b0}},i[SB +D1+(NO7+2)*8:SB +(NO7+2)*8],{D2{1'b0}},i[SA +D1+(NO7+2)*8:SA +(NO7+2)*8]};
 									8:locali={{D7{1'b0}},{D1{1'b0}},i[SA +D1+(NO7+2)*8:SA +(NO7+2)*8]};
 									9:locali=72'b0;
 								endcase
@@ -243,8 +249,8 @@ module CUBE#(
 									3:locali={i[D3+(NO7+1)*8:(NO7+1)*8],i[SB +D3+(NO7+1)*8:SB +(NO7+1)*8],i[SA +D3+(NO7+1)*8:SA +(NO7+1)*8]};
 									4:locali={i[D3+(NO7+1)*8:(NO7+1)*8],i[SB +D3+(NO7+1)*8:SB +(NO7+1)*8],i[SA +D3+(NO7+1)*8:SA +(NO7+1)*8]};
 									5:locali={{D6{1'b0}},i[SA +D3+(NO7+1)*8:SA +(NO7+1)*8]};
-									6:locali={D2{1'b0}},i[D1+(NO7+4)*8:(NO7+4)*8],{D2{1'b0}},i[SB +D1+(NO7+4)*8:SB +(NO7+4)*8],{D2{1'b0}},i[SA +D1+(NO7+4)*8:SA +(NO7+4)*8]};
-									7:locali={D2{1'b0}},i[D1+(NO7+4)*8:(NO7+4)*8],{D2{1'b0}},i[SB +D1+(NO7+4)*8:SB +(NO7+4)*8],{D2{1'b0}},i[SA +D1+(NO7+4)*8:SA +(NO7+4)*8]};
+									6:locali={{D2{1'b0}},i[D1+(NO7+4)*8:(NO7+4)*8],{D2{1'b0}},i[SB +D1+(NO7+4)*8:SB +(NO7+4)*8],{D2{1'b0}},i[SA +D1+(NO7+4)*8:SA +(NO7+4)*8]};
+									7:locali={{D2{1'b0}},i[D1+(NO7+4)*8:(NO7+4)*8],{D2{1'b0}},i[SB +D1+(NO7+4)*8:SB +(NO7+4)*8],{D2{1'b0}},i[SA +D1+(NO7+4)*8:SA +(NO7+4)*8]};
 									8:locali={{D7{1'b0}},{D1{1'b0}},i[SA +D1+(NO7+4)*8:SA +(NO7+4)*8]};
 									9:locali=72'b0;
 								endcase
@@ -278,20 +284,20 @@ module CUBE#(
 									end
 									6:begin
 										case(NO7)
-											0:locali={D2{1'b0}},i[D1+P6:P6],{D2{1'b0}},i[SB +D1+P6:SB +P6],{D2{1'b0}},i[SA +D1+P6:SA +P6]};
-											0:locali={D2{1'b0}},i[D1:0],{D2{1'b0}},i[SB +D1:SB],{D2{1'b0}},i[SA +D1:SA]};
+											0:locali={{D2{1'b0}},i[D1+P6:P6],{D2{1'b0}},i[SB +D1+P6:SB +P6],{D2{1'b0}},i[SA +D1+P6:SA +P6]};
+											1:locali={{D2{1'b0}},i[D1:0],{D2{1'b0}},i[SB +D1:SB],{D2{1'b0}},i[SA +D1:SA]};
 										endcase
 									end
 									7:begin
 										case(NO7)
-											0:locali={D2{1'b0}},i[D1+P6:P6],{D2{1'b0}},i[SB +D1+P6:SB +P6],{D2{1'b0}},i[SA +D1+P6:SA +P6]};
-											0:locali={D2{1'b0}},i[D1:0],{D2{1'b0}},i[SB +D1:SB],{D2{1'b0}},i[SA +D1:SA]};
+											0:locali={{D2{1'b0}},i[D1+P6:P6],{D2{1'b0}},i[SB +D1+P6:SB +P6],{D2{1'b0}},i[SA +D1+P6:SA +P6]};
+											1:locali={{D2{1'b0}},i[D1:0],{D2{1'b0}},i[SB +D1:SB],{D2{1'b0}},i[SA +D1:SA]};
 										endcase
 									end
 									8:begin
 										case(NO7)
 											0:locali={{D7{1'b0}},{D1{1'b0}},i[SA +D1+P6:SA +P6]};
-											0:locali={{D7{1'b0}},{D1{1'b0}},i[SA +D1:SA]};
+											1:locali={{D7{1'b0}},{D1{1'b0}},i[SA +D1:SA]};
 										endcase
 									end
 									9:locali=72'b0;
@@ -302,13 +308,13 @@ module CUBE#(
 									0:begin
 										case(NO7)
 											0:locali={i[D3+P4:P4],i[SB +D3+P4:SB +P4],i[SA +D3+P4:SA +P4]};
-											1:locali={i[D1:0],i[D2+P6:P6],ii[SB +D1:SB],[SB +D2+P6:SB +P6],i[SA +D1:SA],i[SA +D2+P6:SA +P6]};
+											1:locali={i[D1:0],i[D2+P6:P6],i[SB +D1:SB],i[SB +D2+P6:SB +P6],i[SA +D1:SA],i[SA +D2+P6:SA +P6]};
 										endcase
 									end
 									1:begin
 										case(NO7)
 											0:locali={i[D3+P4:P4],i[SB +D3+P4:SB +P4],i[SA +D3+P4:SA +P4]};
-											1:locali={i[D1:0],i[D2+P6:P6],ii[SB +D1:SB],[SB +D2+P6:SB +P6],i[SA +D1:SA],i[SA +D2+P6:SA +P6]};
+											1:locali={i[D1:0],i[D2+P6:P6],i[SB +D1:SB],i[SB +D2+P6:SB +P6],i[SA +D1:SA],i[SA +D2+P6:SA +P6]};
 										endcase
 									end
 									2:begin
@@ -337,20 +343,20 @@ module CUBE#(
 									end
 									6:begin
 										case(NO7)
-											0:locali={D2{1'b0}},i[D1+P2:P2],{D2{1'b0}},i[SB +D1+P2:SB +P2],{D2{1'b0}},i[SA +D1+P2:SA +P2]};
-											0:locali={D2{1'b0}},i[D1+P4:P4],{D2{1'b0}},i[SB +D1+P4:SB +P4],{D2{1'b0}},i[SA +D1+P4:SA +P4]};
+											0:locali={{D2{1'b0}},i[D1+P2:P2],{D2{1'b0}},i[SB +D1+P2:SB +P2],{D2{1'b0}},i[SA +D1+P2:SA +P2]};
+											1:locali={{D2{1'b0}},i[D1+P4:P4],{D2{1'b0}},i[SB +D1+P4:SB +P4],{D2{1'b0}},i[SA +D1+P4:SA +P4]};
 										endcase
 									end
 									7:begin
 										case(NO7)
 											0:locali={{D2{1'b0}},i[D1+P2:P2],{D2{1'b0}},i[SB +D1+P2:SB +P2],{D2{1'b0}},i[SA +D1+P2:SA +P2]};
-											0:locali={{D2{1'b0},i[D1+P4:P4],{D2{1'b0}},i[SB +D1+P4:SB +P4],{D2{1'b0}},i[SA +D1+P4:SA +P4]}};
+											1:locali={{D2{1'b0}},i[D1+P4:P4],{D2{1'b0}},i[SB +D1+P4:SB +P4],{D2{1'b0}},i[SA +D1+P4:SA +P4]};
 										endcase
 									end
 									8:begin
 										case(NO7)
 											0:locali={{D7{1'b0}},{D1{1'b0}},i[SA +D1+P2:SA +P2]};
-											0:locali={{D7{1'b0}},{D1{1'b0}},i[SA +D1+P4:SA +P4]};
+											1:locali={{D7{1'b0}},{D1{1'b0}},i[SA +D1+P4:SA +P4]};
 										endcase
 									end
 									9:locali=72'b0;
@@ -378,6 +384,7 @@ module CUBE#(
 				result[8*j +: 8] <= localw[8*j +: 8] * locali[8*j +: 8];
 			end
 		end
+		
 	end
 	
 		/*
@@ -450,6 +457,8 @@ module IPF#(
 	parameter KEEP =32;
 
 	reg [STATE_Width-1:0] PS, NS;
+	
+	reg res_valid_tmp,res_valid_tmp1;
 	
 	reg [63:0]rega;
 	reg [63:0]regb;
@@ -552,12 +561,24 @@ module IPF#(
 			PS<=NS;
 		end
 	end
+	always@(posedge clk or negedge rst)begin
+		if(!rst)begin
+			res_valid<=0;
+			res_valid_tmp<=0;
+			res_valid_tmp1<=0;
+		end
+		else begin
+			res_valid_tmp1 <= res_valid_tmp;
+			res_valid <= res_valid_tmp1;
+		end
+	end
+	
 	always@(*)begin
 		NS = PS;
-		res_valid=0;
 		case(PS)
 			WAIT:begin
 				NS=WAIT;
+				res_valid_tmp=0;
 				if(ctrl==START)begin
 					NS=COMPUTE;
 				end
@@ -567,7 +588,7 @@ module IPF#(
 			end
 			COMPUTE:begin
 				NS=COMPUTE;
-				res_valid=1;
+				res_valid_tmp=1;
 				if(ctrl==HOLD)begin
 					NS=WAIT;
 				end
