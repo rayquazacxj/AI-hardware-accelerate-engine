@@ -154,7 +154,7 @@ module IPF_tb;
 		i_data_id= 0;
 		w_data_id= 0;
 	
-
+/*
 //------------------------------------3*3 stride 1
 		w_valid=1;
 		repeat(18)begin //3 * 3
@@ -177,6 +177,14 @@ module IPF_tb;
 			i_data_id = i_data_id + 1;
 			@(negedge clk);
 		end
+		$display("END compute  0-7 I ~\n");
+		
+		i_data_id = 0;
+		repeat(8)begin
+			i_data =i_mem[i_data_id];
+			i_data_id = i_data_id + 1;
+			@(negedge clk);
+		end
 		$display("END compute first group \n");	
 		
 //----------------------------------------------
@@ -195,6 +203,16 @@ module IPF_tb;
 			i_data_id = i_data_id + 1;
 			@(negedge clk);
 		end
+		$display("END compute  0-7 I ~\n");
+		
+		i_data_id = 0;
+		repeat(8)begin
+			i_data =i_mem[i_data_id];
+			i_data_id = i_data_id + 1;
+			@(negedge clk);
+		end
+		$display("END compute second group \n");
+		
 		i_valid=0;
 		
 		ctrl=0; // end 
@@ -202,9 +220,9 @@ module IPF_tb;
 		
 		$display("END RUN\n");	
 		
-
+*/
 		
-/*		
+		
 	//------------------------------------3*3 stride2
 		stride=1;
 		w_valid=1;
@@ -232,6 +250,18 @@ module IPF_tb;
 			wgroup_tmp=!wgroup_tmp;
 			
 		end
+		$display("END compute 0-7 I\n");	
+		
+		i_data_id=0;
+		wgroup_tmp=0;
+		repeat(8)begin
+			i_data =i_mem[i_data_id];
+			i_data_id = i_data_id + 1;
+			wgroup=wgroup_tmp;
+			@(negedge clk);
+			wgroup_tmp=!wgroup_tmp;
+			
+		end
 		i_valid=0;
 		$display("END compute\n");	
 		
@@ -239,7 +269,7 @@ module IPF_tb;
 		
 		
 		$display("END RUN\n");	
-*/		
+		
 
 		i_data = 'hz;i_valid=0;
 		w_data = 'hz;w_valid=0;
