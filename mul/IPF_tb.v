@@ -27,6 +27,7 @@ module IPF_tb;
 	reg  [1:0]RLPadding;
 	reg  stride;
 	reg  [3:0]wgroup;
+	reg  wgroup_tmp;
 	reg  [2:0]wround;
 	
 	wire [9215:0] result;
@@ -152,9 +153,9 @@ module IPF_tb;
 		
 		i_data_id= 0;
 		w_data_id= 0;
-		
-//------------------------------------
-		
+	
+
+//------------------------------------3*3 stride 1
 		w_valid=1;
 		repeat(18)begin //3 * 3
 			w_data =w_mem[w_data_id];
@@ -198,53 +199,48 @@ module IPF_tb;
 		
 		ctrl=0; // end 
 		
+		
 		$display("END RUN\n");	
-		/*
-		while(finish==0)begin
+		
+
+		
+/*		
+	//------------------------------------3*3 stride2
+		stride=1;
+		w_valid=1;
+		repeat(18)begin //3 * 3
+			w_data =w_mem[w_data_id];
+			w_data_id = w_data_id+1;
+			@(negedge clk);
+		end
+		w_valid=0;
+		$display("END in W\n");	
+		
+		i_valid=1;
+		repeat(2)begin
+			i_data =i_mem[i_data_id];
+			i_data_id = i_data_id + 1;
+			@(negedge clk);
+		end
+		ctrl=1; // start
+		wgroup_tmp=0;
+		repeat(6)begin
+			i_data =i_mem[i_data_id];
+			i_data_id = i_data_id + 1;
+			wgroup=wgroup_tmp;
+			@(negedge clk);
+			wgroup_tmp=!wgroup_tmp;
 			
-			if(cnt==0|cnt==2|cnt==4|cnt==6|cnt==8)begin
-				if(cnt!=8)begin
-					if(cnt==0|cnt==4)begin
-						i_valid=1;
-						repeat(8)begin
-							i_data =i_mem[i_data_id];
-							i_data_id = i_data_id + 1;
-							@(negedge clk);
-						end
-					end
-					i_valid=0;
-					w_valid=1;
-					if(cnt==2|cnt==6)begin
-						repeat(4)begin // 8 8 8 8
-							if(w_data_id==9)w_data_id=0;	// w0 - w7
-							w_data =w_mem[w_data_id];
-							w_data_id = w_data_id+1;
-							@(negedge clk);
-						end
-					end
-					else begin
-					repeat(5)begin //8(4) 8 8 8 8
-							if(w_data_id==9)w_data_id=0;	// w0 - w7
-							w_data =w_mem[w_data_id];
-							w_data_id = w_data_id+1;
-							@(negedge clk);
-						end
-					end
-					ctrl=1;
-				end
-				else ctrl=0;
-			end
-			else begin
-				repeat(32)@(negedge clk);
-				ctrl=2;
-				@(negedge clk);
-			end
+		end
+		i_valid=0;
+		$display("END compute\n");	
 		
-			cnt = cnt +1;
-			i_valid=0;
-			w_valid=0;
-		end	*/
+		ctrl=0; // end 
 		
+		
+		$display("END RUN\n");	
+*/		
+
 		i_data = 'hz;i_valid=0;
 		w_data = 'hz;w_valid=0;
 		

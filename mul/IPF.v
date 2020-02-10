@@ -46,19 +46,15 @@ module CUBE#(
 	
 	always@(posedge clk or negedge rst)begin
 		if(!rst)begin
-			i<=0;
 			w<=0;
+			i<=0;
 		end
 		else begin
 			i<=i_dat;
 			w<=w_dat;
 		end
 	end
-	/*
-	always@(*)begin
-		i<=i_dat;
-		w<=w_dat;
-	end*/
+	
 			
 			
 	always@(*)begin
@@ -458,7 +454,7 @@ module IPF#(
 
 	reg [STATE_Width-1:0] PS, NS;
 	
-	reg res_valid_tmp,res_valid_tmp1;
+	reg res_valid_tmp,res_valid_tmp1,res_valid_tmp2;
 	
 	reg [63:0]rega;
 	reg [63:0]regb;
@@ -476,6 +472,7 @@ module IPF#(
 	reg [5:0]widstart;
 	reg [79:0]wcu[0:63];
 	reg [9:0]wgroup_start;
+	reg [3:0]wgroup_dff;
 	integer idx,idxx,idi;
 	
 	reg cnt7_7_2;				// 7 * 7 weight 2 round full
@@ -566,10 +563,12 @@ module IPF#(
 			res_valid<=0;
 			res_valid_tmp<=0;
 			res_valid_tmp1<=0;
+			res_valid_tmp2<=0;
 		end
 		else begin
 			res_valid_tmp1 <= res_valid_tmp;
-			res_valid <= res_valid_tmp1;
+			res_valid_tmp2 <= res_valid_tmp1;
+			res_valid <= res_valid_tmp2;
 		end
 	end
 	
@@ -597,6 +596,7 @@ module IPF#(
 				end
 			end
 			FINISH:begin
+				res_valid_tmp=0;
 				NS=FINISH;
 			end
 		endcase
@@ -606,7 +606,7 @@ module IPF#(
 	always@(posedge clk or negedge rst)begin
 		if(!rst)wgroup_start<=0;
 		else begin	
-			case(wgroup)
+			case(wgroup_dff)
 				0:wgroup_start<= 0;
 				1:begin
 					case(Wsize)
@@ -619,7 +619,7 @@ module IPF#(
 		end
 	end
 		
-	always@(*)begin
+	always@(*)begin	
 		case(Wsize)
 			0:begin
 				for(idx=0; idx<8; idx=idx+1)begin
@@ -664,64 +664,82 @@ module IPF#(
 			end
 		endcase
 	end
+	
 	/*get icu*/
-	always@(*)begin
-		case(Wsize)
-			0:begin
-				if(stride && !wgroup)begin	// B C D
-					for(idx=0;idx<9;idx=idx+1)begin
-						icu[idx]={regb,regc,regd};
-					end
-				end
-				else begin					// A B C
-					for(idx=0;idx<9;idx=idx+1)begin
-						icu[idx]={rega,regb,regc};
-					end
-				end
+	always@(posedge clk or negedge rst)begin
+		if(!rst)begin
+			wgroup_dff<=0;
+		end
+		else begin
+			wgroup_dff<=wgroup;
+		end
+	end
+		
+	
+	always@(posedge clk or negedge rst)begin 
+		if(!rst)begin
+			for(idx=0;idx<9;idx=idx+1)begin
+				icu[idx]=0;
 			end
-			1:begin
-				if(stride && !wgroup)begin	  // B C D E F
-					for(idx=0;idx<9;idx=idx+2)begin
-						icu[idx]={regb,regc,regd};
+		end
+		else begin	
+			case(Wsize)
+				0:begin
+					if(stride && !wgroup_dff)begin	// B C D
+						for(idx=0;idx<9;idx=idx+1)begin
+							icu[idx]={regb,regc,regd};
+						end
 					end
-					for(idx=1;idx<=9;idx=idx+2)begin
-						icu[idx]={rege,regf,64'b0};
-					end
-				end
-				else begin					 //  A B C D E
-					for(idx=0;idx<9;idx=idx+2)begin
-						icu[idx]={rega,regb,regc};
-					end
-					for(idx=1;idx<9;idx=idx+2)begin
-						icu[idx]={regd,rege,64'b0};
-					end
-				end	
-			end
-			2:begin
-				if(stride && !wgroup)begin		//B C D E F G H 
-					for(idx=0;idx<9;idx=idx+3)begin
-						icu[idx]={regb,regc,regd};
-					end
-					for(idx=1;idx<9;idx=idx+3)begin
-						icu[idx]={rege,regf,regg};
-					end
-					for(idx=2;idx<9;idx=idx+3)begin
-						icu[idx]={regh,128'b0};
+					else begin					// A B C
+						for(idx=0;idx<9;idx=idx+1)begin
+							icu[idx]={rega,regb,regc};
+						end
 					end
 				end
-				else begin   				  // A B C D E F G
-					for(idx=0;idx<9;idx=idx+3)begin
-						icu[idx]={rega,regb,regc};
+				1:begin
+					if(stride && !wgroup_dff)begin	  // B C D E F
+						for(idx=0;idx<9;idx=idx+2)begin
+							icu[idx]={regb,regc,regd};
+						end
+						for(idx=1;idx<=9;idx=idx+2)begin
+							icu[idx]={rege,regf,64'b0};
+						end
 					end
-					for(idx=1;idx<9;idx=idx+3)begin
-						icu[idx]={regd,rege,regf};
+					else begin					 //  A B C D E
+						for(idx=0;idx<9;idx=idx+2)begin
+							icu[idx]={rega,regb,regc};
+						end
+						for(idx=1;idx<9;idx=idx+2)begin
+							icu[idx]={regd,rege,64'b0};
+						end
+					end	
+				end
+				2:begin
+					if(stride && !wgroup_dff)begin		//B C D E F G H 
+						for(idx=0;idx<9;idx=idx+3)begin
+							icu[idx]={regb,regc,regd};
+						end
+						for(idx=1;idx<9;idx=idx+3)begin
+							icu[idx]={rege,regf,regg};
+						end
+						for(idx=2;idx<9;idx=idx+3)begin
+							icu[idx]={regh,128'b0};
+						end
 					end
-					for(idx=2;idx<9;idx=idx+3)begin
-						icu[idx]={regg,128'b0};
-					end
-				end	
-			end
-		endcase			
+					else begin   				  // A B C D E F G
+						for(idx=0;idx<9;idx=idx+3)begin
+							icu[idx]={rega,regb,regc};
+						end
+						for(idx=1;idx<9;idx=idx+3)begin
+							icu[idx]={regd,rege,regf};
+						end
+						for(idx=2;idx<9;idx=idx+3)begin
+							icu[idx]={regg,128'b0};
+						end
+					end	
+				end
+			endcase	
+		end
 	end
 	
 	/* get data*/
