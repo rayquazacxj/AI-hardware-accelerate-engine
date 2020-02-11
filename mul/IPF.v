@@ -462,7 +462,7 @@ module IPF#(
 
 	reg [STATE_Width-1:0] PS, NS;
 	
-	reg res_valid_tmp,res_valid_tmp1,res_valid_tmp2,res_valid_tmp3;
+	reg res_valid_tmp,res_valid_tmp1,res_valid_tmp2;
 	
 	reg [63:0]rega;
 	reg [63:0]regb;
@@ -485,7 +485,7 @@ module IPF#(
 	integer idx,idxx,idi;
 	
 	reg cnt7_7_2;				// 7 * 7 weight 2 round full
-	reg cnt_5_5_s1;
+	
 	
 	reg[10:0]widtest;
 	
@@ -574,14 +574,10 @@ module IPF#(
 			res_valid_tmp<=0;
 			res_valid_tmp1<=0;
 			res_valid_tmp2<=0;
-			res_valid_tmp3<=0;
-			cnt_5_5_s1<=1;
 		end
 		else begin
 			res_valid_tmp1 <= res_valid_tmp;
 			res_valid_tmp2 <= res_valid_tmp1;
-			//res_valid_tmp3 <= res_valid_tmp2;	//5*5 stride1
-			//if(Wsize==1 && cnt_5_5_s1==1)res_valid <=res_valid_tmp3;
 			res_valid <= res_valid_tmp2;
 		end
 	end

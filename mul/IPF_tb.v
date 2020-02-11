@@ -271,6 +271,7 @@ module IPF_tb;
 		$display("END RUN\n");	
 */	
 
+/*
 	//---------------------------------5*5 stride1
 		Wsize=1;
 		w_valid=1;
@@ -355,6 +356,59 @@ module IPF_tb;
 		//$display("END compute second round & first group~\n");
 			
 		//-------------------------------------
+*/
+	
+	//---------------------------------------5*5stride2	
+		Wsize=1;
+		stride=1;
+		w_valid=1;
+		repeat(25)begin //5 * 5
+			w_data =w_mem[w_data_id];
+			w_data_id = w_data_id+1;
+			@(negedge clk);
+		end
+		w_valid=0;
+		$display("END in 5*5 W\n");	
+		
+		i_valid=1;
+		repeat(4)begin
+			i_data =i_mem[i_data_id];
+			i_data_id = i_data_id + 1;
+			@(negedge clk);
+		end
+		ctrl=1; // start
+		wgroup_tmp=0;
+		repeat(4)begin
+			i_data =i_mem[i_data_id];
+			i_data_id = i_data_id + 1;
+			wgroup=wgroup_tmp;
+			@(negedge clk);
+			wgroup_tmp=!wgroup_tmp;
+		end
+		$display("END compute 0-7i \n");
+		
+		i_data_id=0;	
+		repeat(8)begin
+			i_data =i_mem[i_data_id];
+			i_data_id = i_data_id + 1;
+			wgroup=wgroup_tmp;
+			@(negedge clk);
+			wgroup_tmp=!wgroup_tmp;
+		end
+		i_valid=0;	
+		$display("END compute 8-15i~ \n");
+		
+		ctrl=2;
+		repeat(10)@(negedge clk);
+		
+		
+		ctrl=0; // end 
+		$display("END compute 5*5stride2~ \n");
+		
+
+	//-------------------------------------------------
+
+
 		i_data = 'hz;i_valid=0;
 		w_data = 'hz;w_valid=0;
 		
