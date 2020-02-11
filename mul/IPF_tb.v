@@ -3,8 +3,8 @@
 `define End_CYCLE  10000000
 
 `define PAT        "./mul_data_i.dat" 
-`define WPA		   "./mul_data_w.dat"   
-//`define EXP0       "./data_res.dat"
+//`define WPA		   "./mul_data_w.dat"   3*3_w_data
+`define WPA		   "./mul_data_w_5_5.dat"  
 
 
 `define N_PAT      256**2
@@ -54,7 +54,7 @@ module IPF_tb;
 	wire finish;
 	
 	reg [63:0] i_mem [0:7];
-	reg [63:0] w_mem  [0:42];		//3 *3 18 , 5*5 25
+	reg [63:0] w_mem  [0:24];		//3 *3 18 , 5*5 25
 	//reg [1151:0] exp_mem  [0:`ANS_NUM];	//`ANS_NUM res
 
 	//reg [1151:0] ipf_dbg, exp_dbg;
@@ -222,7 +222,7 @@ module IPF_tb;
 		
 */
 		
-		
+/*		
 	//------------------------------------3*3 stride2
 		stride=1;
 		w_valid=1;
@@ -269,8 +269,92 @@ module IPF_tb;
 		
 		
 		$display("END RUN\n");	
-		
+*/	
 
+	//---------------------------------5*5 stride1
+		Wsize=1;
+		w_valid=1;
+		repeat(25)begin //5 * 5
+			w_data =w_mem[w_data_id];
+			w_data_id = w_data_id+1;
+			@(negedge clk);
+		end
+		w_valid=0;
+		$display("END in 5*5 W\n");	
+		
+		i_valid=1;
+		repeat(4)begin
+			i_data =i_mem[i_data_id];
+			i_data_id = i_data_id + 1;
+			@(negedge clk);
+		end
+		ctrl=1; // start
+		repeat(4)begin
+			i_data =i_mem[i_data_id];
+			i_data_id = i_data_id + 1;
+			@(negedge clk);
+		end
+		i_data_id=0;
+		repeat(8)begin
+			i_data =i_mem[i_data_id];
+			i_data_id = i_data_id + 1;
+			@(negedge clk);
+		end
+		$display("END compute first round(16i) \n");
+		
+		i_data_id=0;
+		ctrl=2; 	// hold
+		repeat(4)begin
+			i_data =i_mem[i_data_id];
+			i_data_id = i_data_id + 1;
+			@(negedge clk);
+		end
+		wround=1;	// round 2
+		ctrl=1; 	// start	
+		repeat(4)begin
+			i_data =i_mem[i_data_id];
+			i_data_id = i_data_id + 1;
+			@(negedge clk);
+		end
+		$display("END compute second round \n");
+		
+		i_data_id=0;
+		ctrl=2; 	// hold
+		repeat(4)begin
+			i_data =i_mem[i_data_id];
+			i_data_id = i_data_id + 1;
+			@(negedge clk);
+		end
+		wround=0;	// round 1
+		ctrl=1; 	// start	
+		repeat(4)begin
+			i_data =i_mem[i_data_id];
+			i_data_id = i_data_id + 1;
+			@(negedge clk);
+		end
+		$display("END compute third \n");
+		
+		i_data_id=0;
+		ctrl=2; 	// hold
+		repeat(4)begin
+			i_data =i_mem[i_data_id];
+			i_data_id = i_data_id + 1;
+			@(negedge clk);
+		end
+		wround=1;	// round 2
+		ctrl=1; 	// start	
+		repeat(4)begin
+			i_data =i_mem[i_data_id];
+			i_data_id = i_data_id + 1;
+			@(negedge clk);
+		end
+		$display("END compute third-round2~ \n");
+		
+		i_valid=0;
+		ctrl=0;		// end
+		//$display("END compute second round & first group~\n");
+			
+		//-------------------------------------
 		i_data = 'hz;i_valid=0;
 		w_data = 'hz;w_valid=0;
 		
