@@ -3,8 +3,9 @@
 `define End_CYCLE  10000000
 
 `define PAT        "./mul_data_i.dat" 
-//`define WPA		   "./mul_data_w.dat"   3*3_w_data
-`define WPA		   "./mul_data_w_5_5.dat"  
+`define WPA		   "./mul_data_w_7_7.dat"
+//`define WPA		   "./mul_data_w.dat"   3*3_w_data 
+//`define WPA		   "./mul_data_w_5_5.dat"  
 
 
 `define N_PAT      256**2
@@ -49,6 +50,22 @@ module IPF_tb;
 	wire [71:0] tmp_result13;
 	wire [71:0] tmp_result14;
 	wire [71:0] tmp_result15;
+	wire [71:0] tmp_result16;
+	wire [71:0] tmp_result17;
+	wire [71:0] tmp_result18;
+	wire [71:0] tmp_result19;
+	wire [71:0] tmp_result20;
+	wire [71:0] tmp_result21;
+	wire [71:0] tmp_result22;
+	wire [71:0] tmp_result23;
+	wire [71:0] tmp_result24;
+	wire [71:0] tmp_result25;
+	wire [71:0] tmp_result26;
+	wire [71:0] tmp_result27;
+	wire [71:0] tmp_result28;
+	wire [71:0] tmp_result29;
+	wire [71:0] tmp_result30;
+	wire [71:0] tmp_result31;
 
 
 	wire finish;
@@ -100,7 +117,23 @@ module IPF_tb;
 		.tmp_result12(tmp_result12),
 		.tmp_result13(tmp_result13),
 		.tmp_result14(tmp_result14),
-		.tmp_result15(tmp_result15)
+		.tmp_result15(tmp_result15),
+		.tmp_result16(tmp_result16),
+		.tmp_result17(tmp_result17),
+		.tmp_result18(tmp_result18),
+		.tmp_result19(tmp_result19),
+		.tmp_result20(tmp_result20),
+		.tmp_result21(tmp_result21),
+		.tmp_result22(tmp_result22),
+		.tmp_result23(tmp_result23),
+		.tmp_result24(tmp_result24),
+		.tmp_result25(tmp_result25),
+		.tmp_result26(tmp_result26),
+		.tmp_result27(tmp_result27),
+		.tmp_result28(tmp_result28),
+		.tmp_result29(tmp_result29),
+		.tmp_result30(tmp_result30),
+		.tmp_result31(tmp_result31)
 		
 	);
 	/*		
@@ -357,7 +390,7 @@ module IPF_tb;
 			
 		//-------------------------------------
 */
-	
+/*
 	//---------------------------------------5*5stride2	
 		Wsize=1;
 		stride=1;
@@ -405,10 +438,97 @@ module IPF_tb;
 		ctrl=0; // end 
 		$display("END compute 5*5stride2~ \n");
 		
-
 	//-------------------------------------------------
-
-
+*/
+	
+	//---------------------------------------7*7 stride1
+		Wsize=2;
+		w_valid=1;
+		repeat(25)begin //7 * 7
+			w_data =w_mem[w_data_id];
+			w_data_id = w_data_id+1;
+			@(negedge clk);
+		end
+		w_valid=0;
+		$display("END in 7*7 W\n");	
+		
+		i_valid=1;
+		repeat(6)begin
+			i_data =i_mem[i_data_id];
+			i_data_id = i_data_id + 1;
+			@(negedge clk);
+		end
+		ctrl=1; 	// start
+		repeat(2)begin
+			i_data =i_mem[i_data_id];
+			i_data_id = i_data_id + 1;
+			@(negedge clk);
+		end
+		i_data_id=0;
+		repeat(8)begin
+			i_data =i_mem[i_data_id];
+			i_data_id = i_data_id + 1;
+			@(negedge clk);
+		end
+		$display("END compute first round(16i) , 7*7 1st round \n");
+		
+		ctrl=2;		//hold
+		i_data_id=0;	
+		repeat(6)begin
+			i_data =i_mem[i_data_id];
+			i_data_id = i_data_id + 1;
+			@(negedge clk);
+		end
+		wround=1;
+		ctrl=1; // start
+		repeat(2)begin
+			i_data =i_mem[i_data_id];
+			i_data_id = i_data_id + 1;
+			@(negedge clk);
+		end
+		$display("END compute second round(8i) \n");
+		
+		ctrl=2;		//hold
+		i_data_id=0;	
+		repeat(6)begin
+			i_data =i_mem[i_data_id];
+			i_data_id = i_data_id + 1;
+			@(negedge clk);
+		end
+		wround=2;
+		ctrl=1; // start
+		repeat(2)begin
+			i_data =i_mem[i_data_id];
+			i_data_id = i_data_id + 1;
+			@(negedge clk);
+		end
+		$display("END compute 3 round(8i) \n");
+		
+		ctrl=2;		//hold
+		i_data_id=0;	
+		repeat(6)begin
+			i_data =i_mem[i_data_id];
+			i_data_id = i_data_id + 1;
+			@(negedge clk);
+		end
+		wround=3;
+		ctrl=1; // start
+		repeat(2)begin
+			i_data =i_mem[i_data_id];
+			i_data_id = i_data_id + 1;
+			@(negedge clk);
+		end
+		$display("END compute 4 round(8i)~ \n");
+		
+		ctrl=2;
+		repeat(10)@(negedge clk);
+		
+		i_valid=0;
+		ctrl=0;		// end
+		$display("END compute~\n");
+		
+	//----------------------------------------------------------------
+		
 		i_data = 'hz;i_valid=0;
 		w_data = 'hz;w_valid=0;
 		
