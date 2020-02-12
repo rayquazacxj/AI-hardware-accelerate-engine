@@ -440,7 +440,7 @@ module IPF_tb;
 		
 	//-------------------------------------------------
 */
-	
+/*
 	//---------------------------------------7*7 stride1
 		Wsize=2;
 		w_valid=1;
@@ -528,7 +528,74 @@ module IPF_tb;
 		$display("END compute~\n");
 		
 	//----------------------------------------------------------------
+*/
+	
+	//-------------------------------------7*7 stride2
+		Wsize=2;
+		w_valid=1;
+		stride=1;
 		
+		repeat(25)begin //7 * 7
+			w_data =w_mem[w_data_id];
+			w_data_id = w_data_id+1;
+			@(negedge clk);
+		end
+		w_valid=0;
+		$display("END in 7*7 W\n");	
+		
+		i_valid=1;
+		repeat(6)begin
+			i_data =i_mem[i_data_id];
+			i_data_id = i_data_id + 1;
+			@(negedge clk);
+		end
+		
+		ctrl=1; 	// start
+		wgroup_tmp=0;
+		repeat(2)begin
+			i_data =i_mem[i_data_id];
+			i_data_id = i_data_id + 1;
+			wgroup=wgroup_tmp;
+			@(negedge clk);
+			wgroup_tmp=!wgroup_tmp;		
+		end
+		i_data_id=0;
+		repeat(8)begin
+			i_data =i_mem[i_data_id];
+			i_data_id = i_data_id + 1;
+			wgroup=wgroup_tmp;
+			@(negedge clk);
+			wgroup_tmp=!wgroup_tmp;
+		end
+		ctrl=2;		// hold
+		$display("END compute first round(16i) , 7*7 1st round~ \n");
+		
+		i_data_id=0;
+		repeat(6)begin
+			i_data =i_mem[i_data_id];
+			i_data_id = i_data_id + 1;
+			@(negedge clk);
+		end
+		wround=1;
+		ctrl=1; 	// start
+		wgroup_tmp=0;
+		repeat(2)begin
+			i_data =i_mem[i_data_id];
+			i_data_id = i_data_id + 1;
+			wgroup=wgroup_tmp;
+			@(negedge clk);
+			wgroup_tmp=!wgroup_tmp;		
+		end
+		$display("END compute first round(8i) , 7*7 2nd round~ \n");
+		
+		ctrl=2;
+		repeat(10)@(negedge clk);
+		
+		i_valid=0;
+		ctrl=0;		// end
+		$display("END compute~\n");
+	//-------------------------------------------------------------
+	
 		i_data = 'hz;i_valid=0;
 		w_data = 'hz;w_valid=0;
 		
