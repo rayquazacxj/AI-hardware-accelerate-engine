@@ -3,8 +3,8 @@
 `define End_CYCLE  10000000
 
 `define PAT        "./mul_data_i.dat" 
-`define WPA		   "./mul_data_w_7_7.dat"
-//`define WPA		   "./mul_data_w.dat"   3*3_w_data 
+//`define WPA		   "./mul_data_w_7_7.dat"
+`define WPA		   "./mul_data_w.dat"   //3*3_w_data 
 //`define WPA		   "./mul_data_w_5_5.dat"  
 
 
@@ -529,7 +529,7 @@ module IPF_tb;
 		
 	//----------------------------------------------------------------
 */
-	
+/*
 	//-------------------------------------7*7 stride2
 		Wsize=2;
 		w_valid=1;
@@ -588,14 +588,59 @@ module IPF_tb;
 		end
 		$display("END compute first round(8i) , 7*7 2nd round~ \n");
 		
-		ctrl=2;
+		wgroup_tmp=0;
+		i_data_id=0;
+		repeat(8)begin
+			i_data =i_mem[i_data_id];
+			i_data_id = i_data_id + 1;
+			wgroup=wgroup_tmp;
+			@(negedge clk);
+			wgroup_tmp=!wgroup_tmp;
+		end
+		ctrl=2;		// hold
+		
 		repeat(10)@(negedge clk);
 		
 		i_valid=0;
 		ctrl=0;		// end
 		$display("END compute~\n");
 	//-------------------------------------------------------------
-	
+*/	
+		
+	//----------------------------------------3*3 stride1 padding
+		w_valid=1;
+		repeat(18)begin //3 * 3
+			w_data =w_mem[w_data_id];
+			w_data_id = w_data_id+1;
+			@(negedge clk);
+		end
+		w_valid=0;
+		$display("END in W\n");	
+		
+		
+		i_valid=1;
+		ctrl=1; // start  padding
+		
+		repeat(8)begin
+			i_data =i_mem[i_data_id];
+			i_data_id = i_data_id + 1;
+			@(negedge clk);
+		end
+		i_valid=0;
+		RLPadding=2;
+		repeat(2)@(negedge clk);
+		$display("END compute  first padding~ \n");
+		
+		RLPadding=0;
+		ctrl=2;		// hold
+		repeat(10)@(negedge clk);
+		
+		
+		ctrl=0;		// end
+		$display("END compute~\n");
+		
+	//-----------------------------------------------	
+		
 		i_data = 'hz;i_valid=0;
 		w_data = 'hz;w_valid=0;
 		
