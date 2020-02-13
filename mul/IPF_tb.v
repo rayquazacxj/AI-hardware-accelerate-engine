@@ -606,7 +606,7 @@ module IPF_tb;
 		$display("END compute~\n");
 	//-------------------------------------------------------------
 */	
-		
+/*	
 	//----------------------------------------3*3 stride1 padding
 		w_valid=1;
 		repeat(18)begin //3 * 3
@@ -617,10 +617,30 @@ module IPF_tb;
 		w_valid=0;
 		$display("END in W\n");	
 		
+		RLPadding=1;
+		@(negedge clk);
+		RLPadding=0;
 		
 		i_valid=1;
-		ctrl=1; // start  padding
+		ctrl=1; // start  padding	
+		repeat(8)begin
+			i_data =i_mem[i_data_id];
+			i_data_id = i_data_id + 1;
+			@(negedge clk);		
+		end
+		i_valid=0;
+		RLPadding=2;
+		repeat(2)@(negedge clk);	
 		
+		RLPadding=1;
+		ctrl=2;
+		
+		@(negedge clk);
+		
+		ctrl=1; // start  padding	
+		RLPadding=0;
+		i_valid=1;
+		i_data_id = 0;		
 		repeat(8)begin
 			i_data =i_mem[i_data_id];
 			i_data_id = i_data_id + 1;
@@ -629,7 +649,9 @@ module IPF_tb;
 		i_valid=0;
 		RLPadding=2;
 		repeat(2)@(negedge clk);
-		$display("END compute  first padding~ \n");
+		
+		
+		$display("END compute padding~\n");
 		
 		RLPadding=0;
 		ctrl=2;		// hold
@@ -640,6 +662,74 @@ module IPF_tb;
 		$display("END compute~\n");
 		
 	//-----------------------------------------------	
+*/		
+		
+	//--------------------------------------3*3 stride2 padding
+		stride=1;
+		w_valid=1;
+		repeat(18)begin //3 * 3
+			w_data =w_mem[w_data_id];
+			w_data_id = w_data_id+1;
+			@(negedge clk);
+		end
+		w_valid=0;
+		$display("END in W\n");	
+		
+		RLPadding=1;
+		@(negedge clk);
+		RLPadding=0;
+		
+		i_valid=1;
+		ctrl=1; // start
+		wgroup_tmp=0;
+		repeat(8)begin
+			i_data =i_mem[i_data_id];
+			i_data_id = i_data_id + 1;
+			wgroup=wgroup_tmp;
+			@(negedge clk);
+			wgroup_tmp=!wgroup_tmp;
+			
+		end
+		$display("END compute 0-7 I\n");
+
+		i_valid=0;
+		RLPadding=2;
+		repeat(2)begin
+			wgroup=wgroup_tmp;
+			@(negedge clk);
+			wgroup_tmp=!wgroup_tmp;
+		end
+	//-----
+		ctrl=2;
+		RLPadding=1;
+		i_valid=0;
+		
+		@(negedge clk);
+		
+		RLPadding=0;
+		i_valid=1;
+		ctrl=1; // start
+		wgroup_tmp=0;
+		i_data_id =0;
+		repeat(8)begin
+			i_data =i_mem[i_data_id];
+			i_data_id = i_data_id + 1;
+			wgroup=wgroup_tmp;
+			@(negedge clk);
+			wgroup_tmp=!wgroup_tmp;
+			
+		end
+		i_valid=0;
+		$display("END compute padding\n");
+			
+		ctrl=2;		// hold
+		repeat(10)@(negedge clk);
+		$display("END compute\n");	
+		ctrl=0; // end 
+		
+		$display("END RUN\n");
+	//---------------------------------------------
+		
 		
 		i_data = 'hz;i_valid=0;
 		w_data = 'hz;w_valid=0;

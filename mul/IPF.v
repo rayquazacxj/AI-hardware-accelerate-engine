@@ -467,6 +467,7 @@ module IPF#(
 	parameter START = 2'd1;
 	parameter END = 2'd0;
 	
+	parameter RPadding = 2'd1;
 	parameter LPadding = 2'd2;
 	
 	parameter D1 = 8;
@@ -799,7 +800,17 @@ module IPF#(
 			
 		end
 		else begin
-			if(i_valid || RLPadding == LPadding)begin    //RPadding : ctrl start (when !rst , regX<=0)
+			if(RLPadding == RPadding)begin
+				rega<=0;
+				regb<=0;
+				regc<=0;
+				regd<=0;
+				rege<=0;
+				regf<=0;
+				regg<=0;
+				regh<=0;
+			end
+			else if(i_valid || RLPadding == LPadding)begin    
 				case(Wsize)
 					0:begin		// 3 * 3
 						case(stride)
