@@ -497,7 +497,7 @@ module IPF#(
 
 	reg [STATE_Width-1:0] PS, NS;
 	
-	reg res_valid_tmp,res_valid_tmp1,res_valid_tmp2;
+	reg res_valid_tmp,res_valid_tmp1;
 	
 	reg [3:0]i_format_tmp,i_format_tmp1,w_format_tmp,w_format_tmp1;
 	
@@ -602,12 +602,16 @@ module IPF#(
 			res_valid<=0;
 			res_valid_tmp<=0;
 			res_valid_tmp1<=0;
-			res_valid_tmp2<=0;
 		end
 		else begin
+			case(PS)
+				WAIT:    res_valid_tmp<=0;
+				COMPUTE: res_valid_tmp<=1;
+				FINISH:  res_valid_tmp<=0;
+			endcase
+		
 			res_valid_tmp1 <= res_valid_tmp;
-			res_valid_tmp2 <= res_valid_tmp1;
-			res_valid <= res_valid_tmp2;
+			res_valid <= res_valid_tmp1;
 		end
 	end
 	
@@ -644,7 +648,7 @@ module IPF#(
 		case(PS)
 			WAIT:begin
 				NS=WAIT;
-				res_valid_tmp=0;
+				//res_valid_tmp=0;
 				if(ctrl==START)begin
 					NS=COMPUTE;
 				end
@@ -654,7 +658,7 @@ module IPF#(
 			end
 			COMPUTE:begin
 				NS=COMPUTE;
-				res_valid_tmp=1;
+				//res_valid_tmp=1;
 				if(ctrl==HOLD)begin
 					NS=WAIT;
 				end
@@ -664,7 +668,7 @@ module IPF#(
 				
 			end
 			FINISH:begin
-				res_valid_tmp=0;
+				//res_valid_tmp=0;
 				NS=FINISH;
 			end
 		endcase

@@ -182,8 +182,8 @@ module IPF_tb;
 		wround=0;
 		stride=0;
 		RLPadding=0;
-		i_format=4;
-		w_format=4;
+		i_format=2;
+		w_format=2;
 		
 		@(posedge clk)rst=0; 	//wait , when pos clk => active(rst=0)
 		#(`CYCLE*2)rst=1; 		//wait 2 cyc
@@ -192,7 +192,7 @@ module IPF_tb;
 		i_data_id= 0;
 		w_data_id= 0;
 	
-/*
+
 //------------------------------------3*3 stride 1
 		w_valid=1;
 		repeat(18)begin //3 * 3
@@ -241,7 +241,7 @@ module IPF_tb;
 			i_data_id = i_data_id + 1;
 			@(negedge clk);
 		end
-		$display("END compute  0-7 I ~\n");
+		$display("END compute  0-7 I \n");
 		
 		i_data_id = 0;
 		repeat(8)begin
@@ -257,8 +257,7 @@ module IPF_tb;
 		
 		
 		$display("END RUN\n");	
-		
-*/
+	
 		
 /*		
 	//------------------------------------3*3 stride2
@@ -735,7 +734,8 @@ module IPF_tb;
 		$display("END RUN\n");
 	//---------------------------------------------
 */		
-	
+
+/*	
 	//------------------------------------------3*3 format
 		i_format=2;
 		w_format=3;
@@ -776,7 +776,7 @@ module IPF_tb;
 		ctrl=0; // end 
 		
 	//--------------------------------------------------	
-		
+*/	
 		i_data = 'hz;i_valid=0;
 		w_data = 'hz;w_valid=0;
 		
