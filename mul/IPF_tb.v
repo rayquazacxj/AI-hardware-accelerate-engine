@@ -24,6 +24,7 @@ module IPF_tb;
 	reg  [63:0] w_data;
 	reg i_valid,w_valid;
 	reg  [1:0] Wsize;
+	reg  [3:0] i_format,w_format;
 	
 	reg  [1:0]RLPadding;
 	reg  stride;
@@ -93,6 +94,8 @@ module IPF_tb;
 		.w_valid(w_valid),
 		.w_data(w_data), 
 		.Wsize(Wsize),
+		.i_format(i_format),
+		.w_format(w_format),
 		.res_valid(res_valid), 
 		.result(result), 
 		.finish(finish),
@@ -179,6 +182,8 @@ module IPF_tb;
 		wround=0;
 		stride=0;
 		RLPadding=0;
+		i_format=4;
+		w_format=4;
 		
 		@(posedge clk)rst=0; 	//wait , when pos clk => active(rst=0)
 		#(`CYCLE*2)rst=1; 		//wait 2 cyc
@@ -663,7 +668,7 @@ module IPF_tb;
 		
 	//-----------------------------------------------	
 */		
-		
+/*		
 	//--------------------------------------3*3 stride2 padding
 		stride=1;
 		w_valid=1;
@@ -729,7 +734,48 @@ module IPF_tb;
 		
 		$display("END RUN\n");
 	//---------------------------------------------
+*/		
+	
+	//------------------------------------------3*3 format
+		i_format=2;
+		w_format=3;
 		
+		w_valid=1;
+		repeat(18)begin //3 * 3
+			w_data =w_mem[w_data_id];
+			w_data_id = w_data_id+1;
+			@(negedge clk);
+		end
+		w_valid=0;
+		$display("END in W\n");	
+		
+		i_valid=1;
+		repeat(2)begin
+			i_data =i_mem[i_data_id];
+			i_data_id = i_data_id + 1;
+			@(negedge clk);
+		end
+		ctrl=1; // start
+		repeat(4)begin
+			i_data =i_mem[i_data_id];
+			i_data_id = i_data_id + 1;
+			@(negedge clk);
+		end
+		i_format=2;
+		w_format=1;
+		repeat(2)begin
+			i_data =i_mem[i_data_id];
+			i_data_id = i_data_id + 1;
+			@(negedge clk);
+		end
+		
+		ctrl=2;		// hold
+		repeat(10)@(negedge clk);
+		
+		$display("END compute~\n");	
+		ctrl=0; // end 
+		
+	//--------------------------------------------------	
 		
 		i_data = 'hz;i_valid=0;
 		w_data = 'hz;w_valid=0;
