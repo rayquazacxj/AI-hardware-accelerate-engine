@@ -2,10 +2,10 @@
 `define SDFFILE    "./IPF.sdf"	  
 `define End_CYCLE  10000000
 
-`define PAT        "./mul_data_i.dat" 
-//`define WPA		   "./mul_data_w_7_7.dat"
-`define WPA		   "./mul_data_w.dat"   //3*3_w_data 
-//`define WPA		   "./mul_data_w_5_5.dat"  
+`define PAT        "./mul_data_i_3d.dat" 
+//`define WPA		   "./mul_data_w_7_7_3d.dat"
+`define WPA		   "./mul_data_w_3d.dat"   //3*3_w_data 
+//`define WPA		   "./mul_data_w_5_5_3d.dat"  
 
 
 `define N_PAT      256**2
@@ -20,8 +20,8 @@ module IPF_tb;
 	reg rst;
 	reg [1:0]ctrl;			//0: end , 1:start , 2:hold   
 	
-	reg  [63:0] i_data; 		
-	reg  [63:0] w_data;
+	reg  [511:0] i_data; 		
+	reg  [511:0] w_data;
 	reg i_valid,w_valid;
 	reg  [1:0] Wsize;
 	reg  [3:0] i_format,w_format;
@@ -32,47 +32,47 @@ module IPF_tb;
 	reg  wgroup_tmp;
 	reg  [2:0]wround;
 	
-	wire [9215:0] result;
+	wire [73727:0] result;
 	wire res_valid;
 	
-	wire [71:0] tmp_result0;
-	wire [71:0] tmp_result1;
-	wire [71:0] tmp_result2;
-	wire [71:0] tmp_result3;
-	wire [71:0] tmp_result4;
-	wire [71:0] tmp_result5;
-	wire [71:0] tmp_result6;
-	wire [71:0] tmp_result7;
-	wire [71:0] tmp_result8;
-	wire [71:0] tmp_result9;
-	wire [71:0] tmp_result10;
-	wire [71:0] tmp_result11;
-	wire [71:0] tmp_result12;
-	wire [71:0] tmp_result13;
-	wire [71:0] tmp_result14;
-	wire [71:0] tmp_result15;
-	wire [71:0] tmp_result16;
-	wire [71:0] tmp_result17;
-	wire [71:0] tmp_result18;
-	wire [71:0] tmp_result19;
-	wire [71:0] tmp_result20;
-	wire [71:0] tmp_result21;
-	wire [71:0] tmp_result22;
-	wire [71:0] tmp_result23;
-	wire [71:0] tmp_result24;
-	wire [71:0] tmp_result25;
-	wire [71:0] tmp_result26;
-	wire [71:0] tmp_result27;
-	wire [71:0] tmp_result28;
-	wire [71:0] tmp_result29;
-	wire [71:0] tmp_result30;
-	wire [71:0] tmp_result31;
+	wire [575:0] tmp_result0;
+	wire [575:0] tmp_result1;
+	wire [575:0] tmp_result2;
+	wire [575:0] tmp_result3;
+	wire [575:0] tmp_result4;
+	wire [575:0] tmp_result5;
+	wire [575:0] tmp_result6;
+	wire [575:0] tmp_result7;
+	wire [575:0] tmp_result8;
+	wire [575:0] tmp_result9;
+	wire [575:0] tmp_result10;
+	wire [575:0] tmp_result11;
+	wire [575:0] tmp_result12;
+	wire [575:0] tmp_result13;
+	wire [575:0] tmp_result14;
+	wire [575:0] tmp_result15;
+	wire [575:0] tmp_result16;
+	wire [575:0] tmp_result17;
+	wire [575:0] tmp_result18;
+	wire [575:0] tmp_result19;
+	wire [575:0] tmp_result20;
+	wire [575:0] tmp_result21;
+	wire [575:0] tmp_result22;
+	wire [575:0] tmp_result23;
+	wire [575:0] tmp_result24;
+	wire [575:0] tmp_result25;
+	wire [575:0] tmp_result26;
+	wire [575:0] tmp_result27;
+	wire [575:0] tmp_result28;
+	wire [575:0] tmp_result29;
+	wire [575:0] tmp_result30;
+	wire [575:0] tmp_result31;
 
 
 	wire finish;
 	
-	reg [63:0] i_mem [0:7];
-	reg [63:0] w_mem  [0:24];		//3 *3 18 , 5*5 25
+	reg [511:0] i_mem [0:7];
+	reg [511:0] w_mem  [0:24];		//3 *3 18 , 5*5 25
 	//reg [1151:0] exp_mem  [0:`ANS_NUM];	//`ANS_NUM res
 
 	//reg [1151:0] ipf_dbg, exp_dbg;
@@ -249,7 +249,7 @@ module IPF_tb;
 			i_data_id = i_data_id + 1;
 			@(negedge clk);
 		end
-		$display("END compute second group \n");
+		$display("END compute second group~ \n");
 		
 		i_valid=0;
 		
