@@ -602,6 +602,7 @@ module IPF#(
 			res_valid<=0;
 			res_valid_tmp<=0;
 			res_valid_tmp1<=0;
+			//res_valid_tmp2<=0;
 		end
 		else begin
 			case(PS)
@@ -609,9 +610,10 @@ module IPF#(
 				COMPUTE: res_valid_tmp<=1;
 				FINISH:  res_valid_tmp<=0;
 			endcase
-		
+			
 			res_valid_tmp1 <= res_valid_tmp;
 			res_valid <= res_valid_tmp1;
+			//res_valid <= res_valid_tmp2;
 		end
 	end
 	

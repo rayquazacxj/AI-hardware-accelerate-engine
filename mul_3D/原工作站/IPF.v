@@ -684,9 +684,9 @@ module IPF#(
 				0:wgroup_start<= 0;
 				1:begin
 					case(Wsize)
-						0:wgroup_start<= 9*P1*8;
-						1:wgroup_start<= 25*P1*4;
-						2:wgroup_start<= 49*P1*2;
+						0:wgroup_start<= 4608;
+						1:wgroup_start<= 6400;
+						2:wgroup_start<= 6272;
 					endcase
 				end
 			endcase
