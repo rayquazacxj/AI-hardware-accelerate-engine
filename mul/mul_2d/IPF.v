@@ -416,7 +416,7 @@ module IPF#(
 	parameter Addr_Width = 16
 )(
 	input clk,
-	input rst,
+	input rst_n,
 	input [1:0]ctrl,			//0: end , 1:start , 2:hold   
 	
 	input  [63:0] i_data, 		
