@@ -1,5 +1,4 @@
 module CUBE#(
-	
 	parameter NO3 = 0,
 	parameter NO5 = 0,
 	parameter ID5 = 0,
@@ -12,29 +11,29 @@ module CUBE#(
 	input stride,
 	input [2:0]round,
 	input [1:0]wsize,
-	input [191:0]i_dat,		// 3 REG
-	input [79:0]w_dat,
+	input [191:0]i_dat,		// 3 regX
+	input [79:0]w_dat,		// 10 data 
 	input [3:0]i_format,w_format,
 	output reg[143:0]result
 );
-	parameter SA= 128;
-	parameter SB = 64;
+	parameter SA= 128;  //rega start position , i_dat[191: SA] is rega's data
+	parameter SB = 64;  //i_dat[SB+63: SB] is regb's data
 	parameter SC = 0;
-	parameter D1 = 7;
+	parameter D1 = 7;   
 	parameter D2 = 15;
 	parameter D3 = 23;
 	parameter D4 = 31;
 	parameter D5 = 39;
 	parameter D6 = 47;
 	parameter D7 = 55;
-	parameter P1 = 8;
+	parameter P1 = 8;   //data 1 start position
 	parameter P2 = 16;
 	parameter P3 = 24;
 	parameter P4 = 32;
 	parameter P5 = 40;
 	parameter P6 = 48;
 	parameter P7 = 56;
-	parameter DATA1 = 8;
+	parameter DATA1 = 8; // 1 data contain 8 bits , used for filling 0, ex: {DATA1{1'b0}}
 	parameter DATA2 = 16;
 	parameter DATA3 = 24;
 	parameter DATA6 = 48;
@@ -47,7 +46,7 @@ module CUBE#(
 	reg [71:0]locali; 	
 	reg [71:0]localw;
 	
-	reg [191:0]i;	//REG C B A get row	
+	reg [191:0]i;	
 	reg [79:0]w;
 	reg [3:0]i_format_dff,w_format_dff;
 	
@@ -68,7 +67,7 @@ module CUBE#(
 	end
 	
 			
-			
+	/* mapping i_dat to locali */	
 	always@(*)begin
 		case(wsize)		
 			0:begin		//3 * 3
@@ -81,9 +80,8 @@ module CUBE#(
 			1:begin		//5 * 5
 				case(stride)
 					0:begin
-						case(round)	// 2 round
+						case(round)	//5*5 has 2 rounds
 							0:begin
-								//case(NO5) // 4 NO
 								case(ID5)
 									0:locali = {i[D3+NO5*8:NO5*8],i[SB +D3+NO5*8:SB +NO5*8],i[SA +D3+NO5*8:SA +NO5*8]};
 									1:locali = {{DATA3{1'b0}},i[SB +D3+NO5*8:SB +NO5*8],i[SA +D3+NO5*8:SA +NO5*8]};
@@ -93,21 +91,21 @@ module CUBE#(
 							end
 							1:begin
 								case(ID5)
-									0:begin		//3 *3
+									0:begin	   //3 * 3
 										case(NO5)
 											2:locali = {i[D1:0],i[D2+(NO5+4)*8:(NO5+4)*8],i[SB +D1:SB],i[SB +D2+(NO5+4)*8:SB +(NO5+4)*8],i[SA +D1:SA],i[SA +D2+(NO5+4)*8:SA +(NO5+4)*8]};
 											3:locali = {i[D2:0],i[D1+(NO5+4)*8:(NO5+4)*8],i[SB +D2:SB],i[SB +D1+(NO5+4)*8:SB +(NO5+4)*8],i[SA +D2:SA],i[SA +D1+(NO5+4)*8:SA +(NO5+4)*8]};
 											default:locali={i[D3+(NO5+4)*8:(NO5+4)*8],i[SB +D3+(NO5+4)*8:SB +(NO5+4)*8],i[SA +D3+(NO5+4)*8:SA +(NO5+4)*8]};
 										endcase
 									end
-									1:begin		//3 * 2
+									1:begin		//3 * 2 , last col fills 0
 										case(NO5)
 											2:locali = {{DATA3{1'b0}},i[SB +D1:SB],i[SB +D2+(NO5+4)*8:SB +(NO5+4)*8],i[SA +D1:SA],i[SA +D2+(NO5+4)*8:SA +(NO5+4)*8]};
 											3:locali = {{DATA3{1'b0}},i[SB +D2:SB],i[SB +D1+(NO5+4)*8:SB +(NO5+4)*8],i[SA +D2:SA],i[SA +D1+(NO5+4)*8:SA +(NO5+4)*8]};
 											default:locali={{DATA3{1'b0}},i[SB +D3+(NO5+4)*8:SB +(NO5+4)*8],i[SA +D3+(NO5+4)*8:SA +(NO5+4)*8]};
 										endcase
 									end
-									2:begin		// 2 * 3
+									2:begin		// 2 * 3 , last row fills 0
 										case(NO5)
 											0:locali={{DATA1{1'b0}},i[D1:0],i[D1+(NO5+7)*8:(NO5+7)*8],{DATA1{1'b0}},i[SB +D1:SB],i[SB +D1+(NO5+7)*8:SB +(NO5+7)*8],{DATA1{1'b0}},i[SA +D1:SA],i[SA +D1+(NO5+7)*8:SA +(NO5+7)*8]}; //NO5_0
 											default:locali = {{DATA1{1'b0}},i[D2+(NO5-1)*8:(NO5-1)*8],i[D2+(NO5-1)*8:(NO5-1)*8],{DATA1{1'b0}},i[SB +D2+(NO5-1)*8:SB +(NO5-1)*8],{DATA1{1'b0}},i[SA +D2+(NO5-1)*8:SA +(NO5-1)*8]};
@@ -161,7 +159,7 @@ module CUBE#(
 				case(stride)
 					0:begin		// stride 1
 						case(round)
-							0:begin		//0~ ,1~
+							0:begin		//0~6,1~7
 								case(ID7)		//NO7 : 0 , 1
 									0:locali={i[D3+NO7*8:NO7*8],i[SB +D3+NO7*8:SB +NO7*8],i[SA +D3+NO7*8:SA +NO7*8]};
 									1:locali={i[D3+NO7*8:NO7*8],i[SB +D3+NO7*8:SB +NO7*8],i[SA +D3+NO7*8:SA +NO7*8]};
@@ -175,7 +173,7 @@ module CUBE#(
 									9:locali=72'b0;
 								endcase
 							end
-							1:begin		//2~ , 3~
+							1:begin		//2~7+0 , 3~7+0~1
 								case(ID7)		//NO7 : 0 , 1
 									0:locali={i[D3+(NO7+2)*8:(NO7+2)*8],i[SB +D3+(NO7+2)*8:SB +(NO7+2)*8],i[SA +D3+(NO7+2)*8:SA +(NO7+2)*8]};
 									1:locali={i[D3+(NO7+2)*8:(NO7+2)*8],i[SB +D3+(NO7+2)*8:SB +(NO7+2)*8],i[SA +D3+(NO7+2)*8:SA +(NO7+2)*8]};
@@ -204,7 +202,7 @@ module CUBE#(
 									9:locali=72'b0;
 								endcase
 							end
-							2:begin		//4~ , 5~
+							2:begin		//4~7+0~2 , 5~7+0~3
 								case(ID7)		//NO7 : 0 , 1
 									0:locali={i[D3+(NO7+4)*8:(NO7+4)*8],i[SB +D3+(NO7+4)*8:SB +(NO7+4)*8],i[SA +D3+(NO7+4)*8:SA +(NO7+4)*8]};
 									1:locali={i[D3+(NO7+4)*8:(NO7+4)*8],i[SB +D3+(NO7+4)*8:SB +(NO7+4)*8],i[SA +D3+(NO7+4)*8:SA +(NO7+4)*8]};
@@ -233,7 +231,7 @@ module CUBE#(
 									9:locali=72'b0;
 								endcase
 							end
-							3:begin		//6~ , 7~
+							3:begin		//6~7+0~4 , 7+0~5
 								case(ID7)		//NO7 : 0 , 1
 									0:begin
 										case(NO7)
@@ -376,12 +374,13 @@ module CUBE#(
 		endcase
 	end		
 
+	/* mapping w to localw */
 	always@(*)begin
-		if(wsize==2 && ID7 == 8)localw = {64'b0,w[79:72]};
+		if(wsize==2 && ID7 == 8)localw = {64'b0,w[79:72]}; 
 		else localw = w[71:0];
 	end
 	
-	
+	/* multiple */
 	always@(posedge clk or negedge rst_n)begin  
 		if(!rst_n)begin
 			result<=0;
@@ -402,10 +401,11 @@ module CUBE#(
 	end
 	
 		/*
-		 0 3 6
-		 1 4 7
-		 2 5 8
-		 result = [ 8 , 5 , 2 , 7 , 4 , 1 , 6 , 3 , 0 ] for add
+		0 3 6
+		1 4 7
+		2 5 8
+		current : result = [ 8 , 7 , 6 , 5 , 4 , 3 , 2 , 1 , 0 ]
+		seem to be better for add_tree(?) : result = [ 8 , 5 , 2 , 7 , 4 , 1 , 6 , 3 , 0 ] 
 		*/
 endmodule
 
@@ -445,13 +445,14 @@ module IPF#(
 	parameter RPadding = 2'd1;
 	parameter LPadding = 2'd2;
 	
-	parameter RES_LEN =144;
+	parameter RES_LEN = 144;
+	
 	parameter D1 = 8;
 	parameter D2 = 16;
 	parameter D3 = 24;
 	parameter P1 = 8;
 	parameter W1 = 72;
-	parameter KEEP =32;
+	parameter KEEP = 32;
 
 	reg [STATE_Width-1:0] PS, NS;
 	
@@ -479,7 +480,7 @@ module IPF#(
 	reg [3:0]wgroup_dff;
 	integer idx,idxx,idi;
 	
-	reg cnt7_7_2;				// 7 * 7 weight 2 round full
+	reg cnt7_7_2;	// 7 * 7 weight 2 round full 
 	
 	
 	CUBE #(.NO3(0),.NO5(0),.ID5(0),.NO7(0),.ID7(0))C0(.wsize(Wsize),.i_dat(icu[0]),.w_dat(wcu[0]),.rst_n(rst_n),.clk(clk),.stride(stride),.round(round),.i_format(i_format_tmp1),.w_format(w_format_tmp1),.result(result[0 +: RES_LEN]));
@@ -549,7 +550,7 @@ module IPF#(
 	CUBE #(.NO3(6),.NO5(3),.ID5(2),.NO7(1),.ID7(9))C62(.wsize(Wsize),.i_dat(icu[0]),.w_dat(wcu[62]),.rst_n(rst_n),.clk(clk),.stride(stride),.round(round),.i_format(i_format),.w_format(w_format),.result(result[8784 +: RES_LEN]));
 	CUBE #(.NO3(7),.NO5(3),.ID5(3),.NO7(1),.ID7(9))C63(.wsize(Wsize),.i_dat(icu[1]),.w_dat(wcu[63]),.rst_n(rst_n),.clk(clk),.stride(stride),.round(round),.i_format(i_format),.w_format(w_format),.result(result[9072 +: RES_LEN]));
 	
-	
+	/* res_valid : raising after i_data came in 4 cycles */
 	always@(posedge clk or negedge rst_n)begin
 		if(!rst_n)begin
 			res_valid<=0;
@@ -561,11 +562,11 @@ module IPF#(
 				WAIT:    res_valid_tmp<=0;
 				COMPUTE: res_valid_tmp<=1;
 			endcase
-		
 			res_valid_tmp1 <= res_valid_tmp;
 			res_valid <= res_valid_tmp1;
 		end
 	end
+	
 	
 	always@(posedge clk or negedge rst_n)begin
 		if(!rst_n)begin
@@ -613,13 +614,22 @@ module IPF#(
 		endcase
 	end
 	
+	always@(posedge clk or negedge rst_n)begin
+		if(!rst_n)begin
+			wgroup_dff<=0;
+		end
+		else begin
+			wgroup_dff<=wgroup;
+		end
+	end
 	/* get wcu */
+	/* decide wgroup_start*/
 	always@(posedge clk or negedge rst_n)begin
 		if(!rst_n)wgroup_start<=0;
 		else begin	
 			case(wgroup_dff)
-				0:wgroup_start<= 0;
-				1:begin
+				0:wgroup_start<= 0;  		  //wgroup1
+				1:begin					 	  //wgroup2
 					case(Wsize)
 						0:wgroup_start<= 576; //9*P1*8
 						1:wgroup_start<= 800; //25*P1*4
@@ -629,21 +639,21 @@ module IPF#(
 			endcase
 		end
 	end
-		
+	/* mapping w to wcu */	
 	always@(*)begin	
 		case(Wsize)
 			0:begin
-				for(idx=0; idx<8; idx=idx+1)begin
-					for(idxx= (idx*8) ; idxx< 8+ (idx*8); idxx=idxx+1)begin
+				for(idx=0; idx<8; idx=idx+1)begin   						// 8 channels
+					for(idxx= (idx*8) ; idxx< 8+ (idx*8); idxx=idxx+1)begin // NO3_0 ~ NO3_7
 						wcu[idxx]={8'b0,w[(W1*idx)+wgroup_start +:W1]};
 					end
 				end
 				
 			end	
 			1:begin
-				for(idi=0;idi<4;idi=idi+1)begin
-					for(idx=0;idx<4;idx=idx+1)begin
-						for(idxx=0;idxx<4;idxx=idxx+1)begin
+				for(idi=0;idi<4;idi=idi+1)begin  							// 4 channels
+					for(idx=0;idx<4;idx=idx+1)begin							// NO5_0 ~ NO5_3
+						for(idxx=0;idxx<4;idxx=idxx+1)begin					// ID5_0 ~ ID5_3
 							case(idxx)
 								0:wcu[16*idi+4*idx+idxx]={8'b0,w[(P1*10)+wgroup_start+idi*(P1*25) +:D3],w[(P1*5)+wgroup_start+idi*(P1*25) +:D3],w[wgroup_start+idi*(P1*25) +:D3]};
 								1:wcu[16*idi+4*idx+idxx]={8'b0,24'b0,w[(P1*20)+wgroup_start+idi*(P1*25) +:D3],w[(P1*15)+wgroup_start+idi*(P1*25) +:D3]};
@@ -656,10 +666,11 @@ module IPF#(
 			end
 			2:begin
 				
-				for(idi=0;idi<2;idi=idi+1)begin		// 0 - 31 , 32 - 63
-					for(idx=0;idx<2;idx=idx+1)begin	// 16 , 16
-						for(idxx=0;idxx<16;idxx=idxx+1)begin
-							case(idxx)
+				for(idi=0;idi<2;idi=idi+1)begin								// 2 channels
+					for(idx=0;idx<2;idx=idx+1)begin							// NO7_0 , NO7_1
+						for(idxx=0;idxx<16;idxx=idxx+1)begin				// ID7_0 ~ ID7_8 (ID7_8(1 data))--|
+									                      //   |----------------------------------------------|
+							case(idxx)                    //   V
 								0:wcu[idi*32+idx*16+idxx]={w[(P1*48)+wgroup_start+idi*(P1*49) +:D1],w[(P1*14)+wgroup_start+idi*(P1*49) +:D3],w[(P1*7)+wgroup_start+idi*(P1*49) +:D3],w[wgroup_start+idi*(P1*49) +:D3]};
 								1:wcu[idi*32+idx*16+idxx]={8'b0,w[(P1*35)+wgroup_start+idi*(P1*49) +:D3],w[(P1*28)+wgroup_start+idi*(P1*49) +:D3],w[(P1*21)+wgroup_start+idi*(P1*49) +:D3]};
 								2:wcu[idi*32+idx*16+idxx]={8'b0,48'b0,w[(P1*42)+wgroup_start+idi*(P1*49) +:D3]};
@@ -668,7 +679,7 @@ module IPF#(
 								5:wcu[idi*32+idx*16+idxx]={8'b0,48'b0,w[(P1*45)+wgroup_start+idi*(P1*49) +:D3]};
 								6:wcu[idi*32+idx*16+idxx]={8'b0,16'b0,w[(P1*20)+wgroup_start+idi*(P1*49) +:D1],16'b0,w[(P1*13)+wgroup_start+idi*(P1*49) +:D1],16'b0,w[(P1*6)+wgroup_start+idi*(P1*49) +:D1]};
 								7:wcu[idi*32+idx*16+idxx]={8'b0,16'b0,w[(P1*41)+wgroup_start+idi*(P1*49) +:D1],16'b0,w[(P1*34)+wgroup_start+idi*(P1*49) +:D1],16'b0,w[(P1*27)+wgroup_start+idi*(P1*49) +:D1]};
-								default:wcu[idi*32+idx*16+idxx]=0;
+								default:wcu[idi*32+idx*16+idxx]=0; // ID7_9 fills 0
 							endcase
 						end
 					end
@@ -689,16 +700,6 @@ module IPF#(
 	end
 	
 	/*get icu*/
-	always@(posedge clk or negedge rst_n)begin
-		if(!rst_n)begin
-			wgroup_dff<=0;
-		end
-		else begin
-			wgroup_dff<=wgroup;
-		end
-	end
-		
-	
 	always@(posedge clk or negedge rst_n)begin 
 		if(!rst_n)begin
 			for(idx=0;idx<9;idx=idx+1)begin
@@ -707,56 +708,85 @@ module IPF#(
 		end
 		else begin	
 			case(Wsize)
-				0:begin
-					if(stride && !wgroup_dff)begin	// B C D
+				0:begin										// 3 * 3
+					if(stride && !wgroup_dff)begin			// B C D
 						for(idx=0;idx<9;idx=idx+1)begin
 							icu[idx]={regb,regc,regd};
 						end
 					end
-					else begin					// A B C
+					else begin								// A B C
 						for(idx=0;idx<9;idx=idx+1)begin
 							icu[idx]={rega,regb,regc};
 						end
 					end
 				end
-				1:begin
+				/*
+				A B C  | D  E 0
+				0 5 10 | 15 20 
+				1 6    |
+				2 7    |
+			    ID5_0  | ID5_1 
+				---------------
+				3 8    |
+				4 9    |
+				0 0    |
+			    ID5_2  | ID5_3 
+				*/
+				1:begin										// 5 * 5
 					if(stride && !wgroup_dff)begin	  		// B C D E F
-						for(idx=0;idx<9;idx=idx+2)begin		// icu0,2,4,6,8 
+						for(idx=0;idx<9;idx=idx+2)begin		// ID5_0  , ID5_2 
 							icu[idx]={regb,regc,regd};
 						end
-						for(idx=1;idx<=9;idx=idx+2)begin	// icu1,3,5,7,9 
+						for(idx=1;idx<=9;idx=idx+2)begin	// ID5_1  , ID5_3 
 							icu[idx]={rege,regf,64'b0};
 						end
 					end
-					else begin					 			//  A B C D E
-						for(idx=0;idx<9;idx=idx+2)begin		// icu0,2,4,6,8 
+					else begin					 			// A B C D E
+						for(idx=0;idx<9;idx=idx+2)begin		// ID5_0  , ID5_2 
 							icu[idx]={rega,regb,regc};
 						end
-						for(idx=1;idx<9;idx=idx+2)begin		// icu1,3,5,7,9 
+						for(idx=1;idx<9;idx=idx+2)begin		// ID5_1  , ID5_3 
 							icu[idx]={regd,rege,64'b0};
 						end
 					end	
 				end
+				/*
+				A B C  | D  E  F  | G  0  0
+				0 7 14 | 21 28 35 | 42
+				1 6    |          |
+				2 7    |          |
+				ID7_0  | ID7_1    | ID7_2
+				---------------------------
+				3 8    |          |
+				4 9    |          |
+				5      |          |
+				ID7_3  | ID7_4    | ID7_5
+				---------------------------
+				6      |          |
+				0      |          |
+				0      |          |
+				ID7_6  | ID7_7    | ID7_8
+				*/
 				2:begin
-					if(stride && !wgroup_dff)begin		//B C D E F G H 
-						for(idx=0;idx<9;idx=idx+3)begin
+					if(stride && !wgroup_dff)begin			// B C D E F G H 
+						for(idx=0;idx<9;idx=idx+3)begin 	// ID7_0  , ID7_3  , ID7_6
 							icu[idx]={regb,regc,regd};
 						end
-						for(idx=1;idx<9;idx=idx+3)begin
+						for(idx=1;idx<9;idx=idx+3)begin		// ID7_1  , ID7_4  , ID7_7
 							icu[idx]={rege,regf,regg};
 						end
-						for(idx=2;idx<9;idx=idx+3)begin
+						for(idx=2;idx<9;idx=idx+3)begin		// ID7_2  , ID7_5  , ID7_8
 							icu[idx]={regh,128'b0};
 						end
 					end
-					else begin   				  // A B C D E F G
-						for(idx=0;idx<9;idx=idx+3)begin
+					else begin   				  			// A B C D E F G
+						for(idx=0;idx<9;idx=idx+3)begin		// ID7_0  , ID7_3  , ID7_6
 							icu[idx]={rega,regb,regc};
 						end
-						for(idx=1;idx<9;idx=idx+3)begin
+						for(idx=1;idx<9;idx=idx+3)begin		// ID7_1  , ID7_4  , ID7_7
 							icu[idx]={regd,rege,regf};
 						end
-						for(idx=2;idx<9;idx=idx+3)begin
+						for(idx=2;idx<9;idx=idx+3)begin		// ID7_2  , ID7_5  , ID7_8
 							icu[idx]={regg,128'b0};
 						end
 					end	
@@ -779,8 +809,7 @@ module IPF#(
 			w	<=0;
 			widcnt<=0;
 			widstart<=0;
-			cnt7_7_2<=0;
-			
+			cnt7_7_2<=0;	
 		end
 		else begin
 			if(RLPadding == RPadding)begin
