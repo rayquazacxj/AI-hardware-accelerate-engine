@@ -1,10 +1,10 @@
-module ADD2#(parameter n=16)(
+module ADD2#(parameter N=16)(
 	input clk,
 	input rst_n,
-	input [n-1:0]i0,
-	input [n-1:0]i1,
+	input [N-1:0]i0,
+	input [N-1:0]i1,
 	output ADD2_valid,
-	output [n:0]ADD2_out
+	output [N:0]ADD2_out
 );
 	reg locali0,locali1;
 	assign ADD2_out = locali0 + locali1;
@@ -22,14 +22,14 @@ module ADD2#(parameter n=16)(
 	end
 endmodule
 
-module ADD3#(parameter n=16)(
-	input 	clk,
-	input 	rst_n,
-	input [n-1:0]i0,
-	input [n-1:0]i1,
-	input [n-1:0]i2,
+module ADD3#(parameter N=16)(
+	input clk,
+	input rst_n,
+	input [N-1:0]i0,
+	input [N-1:0]i1,
+	input [N-1:0]i2,
 	output ADD3_valid,
-	output [n+1:0]ADD3_out
+	output [N+1:0]ADD3_out
 );
 	reg locali0,locali1,locali2;
 	assign ADD3_out = locali0 + locali1 + locali2;
@@ -71,6 +71,7 @@ module FA(
 			ADD2 #(20)A2TO1(.clk(clk),.rst_n(rst_n),.i0(),.i1(),.ADD2_valid(),.ADD2_out());
 		end
 	endgenerate
+	
 endmodule
 
 module FSA#(parameter NO3=0,parameter NO5=0,parameter ID5=0,parameter NO7=0,parameter ID7=0)(
@@ -236,7 +237,7 @@ module A#(parameter NO5=0)(
 	input clk,
 	input rst_n,
 	input stride,
-	input [3:0]wround,
+	input [2:0]wround,
 	input [45:0]i0,
 	input [45:0]i1,
 	input [45:0]i2,
@@ -550,7 +551,7 @@ module B#(parameter NO7=0)(
 	input clk,
 	input rst_n,
 	input stride,
-	input wround,
+	input [2:0]wround,
 	input [45:0]i0,
 	input [45:0]i1,
 	input [45:0]i2,
@@ -733,7 +734,7 @@ module ADDER(
 	output Psum
 );
 	genvar id,idx;
-	reg [45:0]fsa_res[63:0];
+	reg [45:0]fsa_res[0:63];
 	/* FSA
 	FSA#(.NO3(0),.NO5(0),.ID5(0),.NO7(0),.ID7(0))C0(.clk(clk),.rst_n(rst_n),.wsize(wsize),.stride(stride),.wround(wround),.data(),.FSAout(fsa_res[0]),.FSAvalid());
 	FSA#(.NO3(1),.NO5(0),.ID5(1),.NO7(0),.ID7(1))C1(.clk(clk),.rst_n(rst_n),.wsize(wsize),.stride(stride),.wround(wround),.data(),.FSAout(fsa_res[1]),.FSAvalid());
