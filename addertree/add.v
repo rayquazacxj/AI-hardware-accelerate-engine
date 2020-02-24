@@ -552,6 +552,8 @@ module B#(parameter NO7=0)(
 	input rst_n,
 	input stride,
 	input [2:0]wround,
+	input [413:0]data_, //46 * 9 
+	/*
 	input [45:0]i0,
 	input [45:0]i1,
 	input [45:0]i2,
@@ -560,14 +562,17 @@ module B#(parameter NO7=0)(
 	input [45:0]i5,
 	input [45:0]i6,
 	input [45:0]i7,
-	input [45:0]i8,
+	input [45:0]i8,*/
 	output B_valid,
 	output [53:0]Bout
 );
 	parameter FRONT = 23;
+	parameter FRONT_OUT = 27;
 	parameter BACK = 0;
 	parameter D1 = 23;
-	integer id;
+	parameter D2 = 46;
+	parameter D1_OUT = 27;
+	integer id,idx;
 	
 	reg[22:0]B1i[0:8];
 	reg[22:0]B2_0i[0:5];
@@ -576,7 +581,11 @@ module B#(parameter NO7=0)(
 	
 	reg[26:0]B1out,B2_0out,B2_1out,B3out;
 	
-	/* B1 input */
+	always@(posedge clk or negedge rst_n)begin
+		if(!rst_n)data<=0;
+		else data<=data_;
+	end
+	/* B1 input */	
 	always@(posedge clk or negedge rst_n)begin
 		if(!rst_n)begin
 			for(id=0;id<9;id=id+1)begin
@@ -584,8 +593,252 @@ module B#(parameter NO7=0)(
 			end
 		end
 		else begin	
+			if((stride==0 && NO7==0 && wround==3)||(stride==1 && NO7==1 && wround==1))begin
+				for(id=0;id<3;id=id+1)begin
+					B1i[id]<=data[FRONT+id*D2 +: D1];
+				end
+				for(idx=3;idx<9;idx=idx+1)begin
+					B1i[idx]<=data[BACK+id*D2 +: D1];
+				end
+			end
+			else begin
+				for(id=0;id<9;id=id+1)begin
+					B1i[id]<=data[BACK+id*D2 +: D1];
+				end
+			end
+		end			
+		/*
 			case(stride)
-
+				0:begin
+					case(wround)
+						1:begin
+							for(id=0;id<9;id=id+1)begin
+								B1i[id]<=data[BACK+id*D2 +: D1];
+							end
+						end
+						4:begin
+							if(NO7==0)begin
+								for(id=0;id<3;id=id+1)begin
+									B1i[id]<=data[FRONT+id*D2 +: D1];
+								end
+								for(idx=3;idx<9;idx=idx+1)begin
+									B1i[idx]<=data[BACK+id*D2 +: D1];
+								end
+							end
+							else begin
+								for(id=0;id<9;id=id+1)begin
+									B1i[id]<=data[BACK+id*D2 +: D1];
+								end
+							end
+						end
+						default:no!!
+					endcase
+				end
+				1:begin
+					if(wround==0 && NO7==0)begin
+						for(idx=0;idx<9;idx=idx+1)begin
+							B1i[idx]<=data[BACK+id*D2 +: D1];
+						end
+					end
+					else if(wround==1 && NO7==1)begin
+						for(id=0;id<3;id=id+1)begin
+							B1i[id]<=data[FRONT+id*D2 +: D1];
+						end
+						for(idx=3;idx<9;idx=idx+1)begin
+							B1i[idx]<=data[BACK+id*D2 +: D1];
+						end
+					end
+					else no!!
+				end
+			endcase
+		end*/
+	end
+	
+	/* B2_0 input */
+	always@(posedge clk or negedge rst_n)begin
+		if(!rst_n)begin
+			for(id=0;id<6;id=id+1)begin
+				B2_0i[id]<=0;
+			end
+		end
+		else begin	
+			case(stride)
+				0:begin
+					case(wround)
+						1:begin
+							for(id=0;id<6;id=id+1)begin
+								B2_0i[id]<=data[BACK+id*D2 +: D1];
+							end
+						end
+						2:begin
+							case(NO7)
+								0:begin
+									for(id=0;id<3;id=id+1)begin
+										B2_0i[id]<=data[BACK+id*D2 +: D1];
+									end
+									for(idx=3;idx<6;idx=idx+1)begin
+										B2_0i[id]<=data[FRONT+id*D2 +: D1];
+									end
+								end
+								1:begin
+									for(id=0;id<6;id=id+1)begin
+										B2_0i[id]<=data[BACK+id*D2+3*D2 +: D1]; // i3~i8
+									end
+								end
+							endcase
+						end
+						default:no!!
+					endcase
+				end
+				1:begin
+					if(NO7==1 && wround==0)begin
+						for(id=0;id<6;id=id+1)begin
+							B2_0i[id]<=data[BACK+id*D2 +: D1];
+						end
+					end
+					else if(NO7==0 && wround==1)begin
+						for(id=0;id<3;id=id+1)begin
+							B2_0i[id]<=data[BACK+id*D2 +: D1];
+						end
+						for(idx=3;idx<6;idx=idx+1)begin
+							B2_0i[id]<=data[FRONT+id*D2 +: D1];
+						end
+					end
+					else no!!
+				end
+			endcase
+		end
+	end
+	
+	/* B2_1 input */
+	always@(posedge clk or negedge rst_n)begin
+		if(!rst_n)begin
+			for(id=0;id<6;id=id+1)begin
+				B2_1i[id]<=0;
+			end
+		end
+		else begin	
+			if(stride==0 && NO7==1 && wround==1)begin
+				for(id=0;id<3;id=id+1)begin
+					B2_0i[id]<=data[FRONT+id*D2+3*D2 +: D1]; // i3 ~ i5
+				end
+				for(idx=3;idx<6;idx=idx+1)begin
+					B2_0i[id]<=data[BACK+id*D2+6*D2 +: D1];
+				end
+			end
+			else if((stride==0 && NO7==0 && wround==2)||(stride==1 && NO7==0 && wround==1))begin
+				for(id=0;id<6;id=id+1)begin
+					B2_0i[id]<=data[BACK+id*D2+3*D2 +: D1]; // i3~i8
+				end
+			end
+			else no!!
+		end
+	end
+	
+	/* B3 input */
+	always@(posedge clk or negedge rst_n)begin
+		if(!rst_n)begin
+			for(id=0;id<3;id=id+1)begin
+				B3i[id]<=0;
+			end
+		end
+		else begin	
+			if((stride==1 && NO7==1 && wround==0)||(stride==0 && NO7==0 && wround==1))begin
+				for(id=0;id<3;id=id+1)begin
+					B3[id]<=data[FRONT+id*D2+6*D2 +: D1]; // i6 ~ i8
+				end
+			end
+			else if(stride==0 && NO7==1 && wround==3)begin
+				for(id=0;id<3;id=id+1)begin
+					B2_0i[id]<=data[FRONT+id*D2 +: D1]; // i0~i2
+				end
+			end
+			else begin
+				for(id=0;id<3;id=id+1)begin
+					B2_0i[id]<=data[BACK+id*D2 +: D1]; // i0~i2
+				end
+			end
+			else no!!
+		end
+	end			
+							
+//-----------------------------------------------------------------			
+	/* module instantiation */
+	
+	B1 b1(.clk(clk),.rst_n(rst_n),.i0(B1i[0]),.i1(B1i[1]),.i2(B1i[2]),.i3(B1i[3]),.i4(B1i[4]),.i5(B1i[5]),.i6(B1i[6]),.i7(B1i[7]),.i8(B1i[8]),.B1_valid(),.B1out(B1out));
+	B2 b2_0(.clk(clk),.rst_n(rst_n),.i0(B2_0i[0]),.i1(B2_0i[1]),.i2(B2_0i[2]),.i3(B2_0i[3]),.i4(B2_0i[4]),.i5(B2_0i[5]),.B2_valid(),.B2out(B2_0out));
+	B2 b2_1(.clk(clk),.rst_n(rst_n),.i0(B1i[0]),.i1(B2_1i[1]),.i2(B2_1i[2]),.i3(B2_1i[3]),.i4(B2_1i[4]),.i5(B2_1i[5]),.B2_valid(),.B2out(B2_1out));
+	B3 b3(.clk(clk),.rst_n(rst_n),.i0(B3i[0]),.i1(B3i[1]),.i2(B3i[2]),.B3_valid(),.B3out(B3out));
+	
+//------------------------------------------------------------------	
+	/* B output */
+	always@(posedge clk or negedge rst_n)begin
+		if(!rst_n)begin
+			Bout   <=0;
+			B_valid<=0;
+		end
+		else begin	
+			case(stride)
+				0:begin
+					case(wround)
+						0:begin
+							Bout[BACK +: D1_OUT]<= B1out;
+							Bout[FRONT_OUT +: D1_OUT]<= 0;
+						end
+						1:begin
+							if(NO7==0)begin
+								Bout[BACK +: D1_OUT]<= B3out;
+								Bout[FRONT_OUT +: D1_OUT]<= B2_0out;
+							end
+							else begin
+								Bout[BACK +: D1_OUT]<= B2_0out;
+								Bout[FRONT_OUT +: D1_OUT]<= B2_1out;
+							end
+						end
+						2:begin
+							if(NO7==0)begin
+								Bout[BACK +: D1_OUT]<= B2_0out;
+								Bout[FRONT_OUT +: D1_OUT]<= B2_1out;
+							end
+							else begin
+								Bout[BACK +: D1_OUT]<= B3out;
+								Bout[FRONT_OUT +: D1_OUT]<= B2_0out;
+							end
+						end
+						3:begin
+							Bout[BACK +: D1_OUT]<= B3out;
+							Bout[FRONT_OUT +: D1_OUT]<= B1out;
+						end
+					endcase
+				end
+				1:begin
+					case(wround)
+						0:begin
+							if(NO7==0)begin
+								Bout[BACK +: D1_OUT]<= B1out;
+								Bout[FRONT_OUT +: D1_OUT]<= 0;
+							end
+							else begin
+								Bout[BACK +: D1_OUT]<= B2_0out;
+								Bout[FRONT_OUT +: D1_OUT]<= B3out;
+							end
+						end
+						1:begin
+							if(NO7==0)begin
+								Bout[BACK +: D1_OUT]<= B2_0out;
+								Bout[FRONT_OUT +: D1_OUT]<= B2_1out;
+							end
+							else begin
+								Bout[BACK +: D1_OUT]<= B3out;
+								Bout[FRONT_OUT +: D1_OUT]<= B1out;
+							end
+						end
+					endcase
+				end
+			endcase
+		end
+	end
+	
 endmodule
 
 module B1(
@@ -815,7 +1068,8 @@ module ADDER(
 	generate
 		for(id=0;id<2;id=id+1)begin
 			for(idx=0;idx=2;idx=idx+1)begin
-				B #(.NO7(idx))bb(.clk(clk),.rst_n(rst_n),.wround(wround),.stride(stride),.i0(fsa_res[id*32+idx*16]),.i1(fsa_res[id*32+idx*16+1]),.i2(fsa_res[id*32+idx*16+2]),.i3(fsa_res[id*32+idx*16+3]),.i4(fsa_res[id*32+idx*16+4]),.i5(fsa_res[id*32+idx*16+5]),.i6(fsa_res[id*32+idx*16+6]),.i7(fsa_res[id*32+idx*16+7]),.i8(fsa_res[id*32+idx*16+8]),.Bout(),.Bvalid());
+				//B #(.NO7(idx))bb(.clk(clk),.rst_n(rst_n),.wround(wround),.stride(stride),.i0(fsa_res[id*32+idx*16]),.i1(fsa_res[id*32+idx*16+1]),.i2(fsa_res[id*32+idx*16+2]),.i3(fsa_res[id*32+idx*16+3]),.i4(fsa_res[id*32+idx*16+4]),.i5(fsa_res[id*32+idx*16+5]),.i6(fsa_res[id*32+idx*16+6]),.i7(fsa_res[id*32+idx*16+7]),.i8(fsa_res[id*32+idx*16+8]),.Bout(),.Bvalid());
+				B #(.NO7(idx))bb(.clk(clk),.rst_n(rst_n),.wround(wround),.stride(stride),.data_({fsa_res[id*32+idx*16+8],fsa_res[id*32+idx*16+7],fsa_res[id*32+idx*16+6],fsa_res[id*32+idx*16+5],fsa_res[id*32+idx*16+4],fsa_res[id*32+idx*16+3],fsa_res[id*32+idx*16+2],fsa_res[id*32+idx*16+1],fsa_res[id*32+idx*16]}),.Bout(),.Bvalid());
 			end
 		end
 	endgenerate
