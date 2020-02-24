@@ -1,10 +1,10 @@
-module ADD2(
-	input 	clk,
-	input 	rst_n,
-	input i0,
-	input i1,
+module ADD2#(parameter n=16)(
+	input clk,
+	input rst_n,
+	input [n-1:0]i0,
+	input [n-1:0]i1,
 	output ADD2_valid,
-	output ADD2_out
+	output [n:0]ADD2_out
 );
 	reg locali0,locali1;
 	assign ADD2_out = locali0 + locali1;
@@ -22,14 +22,14 @@ module ADD2(
 	end
 endmodule
 
-module ADD3(
+module ADD3#(parameter n=16)(
 	input 	clk,
 	input 	rst_n,
-	input i0,
-	input i1,
-	input i2,
+	input [n-1:0]i0,
+	input [n-1:0]i1,
+	input [n-1:0]i2,
 	output ADD3_valid,
-	output ADD3_out
+	output [n+1:0]ADD3_out
 );
 	reg locali0,locali1,locali2;
 	assign ADD3_out = locali0 + locali1 + locali2;
@@ -59,16 +59,16 @@ module FA(
 	genvar idx;
 	generate
 		for(idx=0;idx<8;idx=idx+1)begin
-			ADD3 A3TO1(.clk(clk),.rst_n(rst_n),.i0(),.i1(),.i2(),.ADD3_valid(),.ADD3_out());
+			ADD3 #(16)A3TO1(.clk(clk),.rst_n(rst_n),.i0(),.i1(),.i2(),.ADD3_valid(),.ADD3_out());
 		end
 		for(idx=0;idx<4;idx=idx+1)begin
-			ADD2 A2TO1(.clk(clk),.rst_n(rst_n),.i0(),.i1(),.ADD2_valid(),.ADD2_out());
+			ADD2 #(18)A2TO1(.clk(clk),.rst_n(rst_n),.i0(),.i1(),.ADD2_valid(),.ADD2_out());
 		end
 		for(idx=0;idx<2;idx=idx+1)begin
-			ADD2 A2TO1(.clk(clk),.rst_n(rst_n),.i0(),.i1(),.ADD2_valid(),.ADD2_out());
+			ADD2 #(19)A2TO1(.clk(clk),.rst_n(rst_n),.i0(),.i1(),.ADD2_valid(),.ADD2_out());
 		end
 		for(idx=0;idx<1;idx=idx+1)begin
-			ADD2 A2TO1(.clk(clk),.rst_n(rst_n),.i0(),.i1(),.ADD2_valid(),.ADD2_out());
+			ADD2 #(20)A2TO1(.clk(clk),.rst_n(rst_n),.i0(),.i1(),.ADD2_valid(),.ADD2_out());
 		end
 	endgenerate
 endmodule
@@ -248,9 +248,9 @@ module A#(parameter NO5=0)(
 	parameter BACK = 0;
 	parameter D1 = 23;
 	
-	reg[22:0]A1i[3:0];
-	reg[22:0]A2_0i[1:0];
-	reg[22:0]A2_1i[1:0];
+	reg[22:0]A1i[0:3];
+	reg[22:0]A2_0i[0:1];
+	reg[22:0]A2_1i[0:1];
 	
 	reg[26:0]A1out,A2_0out,A2_1out;
 	
@@ -438,7 +438,7 @@ module A#(parameter NO5=0)(
 							
 endmodule
 
-module A1#(parameter NO5=0,parameter ID5=0)(
+module A1(
 	input clk,
 	input rst_n,
 	input [22:0]i0,
@@ -446,92 +446,279 @@ module A1#(parameter NO5=0,parameter ID5=0)(
 	input [22:0]i2,
 	input [22:0]i3,
 	output A1valid,
-	output A1out
+	output [26:0]A1out
 );
-
+	wire[24:0]A1out_tmp;
+	reg [23:0]L10,L11;
+	reg [22:0]locali[0:3];
+	always@(posedge clk or negedge rst_n)begin
+		if(!rst_n)begin
+			locali[0]<= 0;
+			locali[1]<= 0;
+			locali[2]<= 0;
+			locali[3]<= 0;
+		end
+		else begin	
+			locali[0]<= i0;
+			locali[1]<= i1;
+			locali[2]<= i2;
+			locali[3]<= i3;
+		end
+	end		
+	ADD2 #(23)L1_0(.clk(clk),.rst_n(rst_n),.i0(locali[0]),.i1(locali[1]),.ADD2_out(L10),.ADD2_valid());
+	ADD2 #(23)L1_1(.clk(clk),.rst_n(rst_n),.i0(locali[2]),.i1(locali[3]),.ADD2_out(L11),.ADD2_valid());
+	ADD2 #(24)L2(.clk(clk),.rst_n(rst_n),.i0(L10),.i1(L11),.ADD2_out(A1out_tmp),.ADD2_valid(A1valid));
+	
+	always@(*)begin
+		A1out = {2'b0,A1out_tmp};
+	end
+	
 endmodule
 
-module A2_0#(parameter NO5=0,parameter ID5=0)(
+module A2_0(
 	input clk,
 	input rst_n,
 	input [22:0]i0,
 	input [22:0]i1,
 	output A2_0valid,
-	output A2_0out
+	output [26:0]A2_0out
 );
-
+	reg [23:0]L1;
+	reg L1_valid;
+	reg [22:0]locali[0:1];
+	always@(posedge clk or negedge rst_n)begin
+		if(!rst_n)begin
+			locali[0]<= 0;
+			locali[1]<= 0;
+		end
+		else begin	
+			locali[0]<= i0;
+			locali[1]<= i1;
+		end
+	end		
+	ADD2 #(23)L1(.clk(clk),.rst_n(rst_n),.i0(locali[0]),.i1(locali[1]),.ADD2_out(L1),.ADD2_valid(L1_valid));
+	
+	always@(posedge clk or negedge rst_n)begin
+		if(!rst_n)begin
+			A2_0out	 <=0;
+			A2_0valid<=0;
+		end
+		else begin	
+			A2_0out	 <= L1;
+			A2_0valid<= {3'b0,L1_valid};
+		end
+	end
 endmodule
 
-module A2_1#(parameter NO5=0,parameter ID5=0)(
+module A2_1(
 	input clk,
 	input rst_n,
 	input [22:0]i0,
 	input [22:0]i1,
 	output A2_1valid,
-	output A2_1out
+	output [26:0]A2_1out
 );
+	reg [23:0]L1;
+	reg L1_valid;
+	reg [22:0]locali[0:1];
+	always@(posedge clk or negedge rst_n)begin
+		if(!rst_n)begin
+			locali[0]<= 0;
+			locali[1]<= 0;
+		end
+		else begin	
+			locali[0]<= i0;
+			locali[1]<= i1;
+		end
+	end		
+	ADD2 #(23)L1(.clk(clk),.rst_n(rst_n),.i0(locali[0]),.i1(locali[1]),.ADD2_out(L1),.ADD2_valid(L1_valid));
+	
+	always@(posedge clk or negedge rst_n)begin
+		if(!rst_n)begin
+			A2_1out	 <=0;
+			A2_1valid<=0;
+		end
+		else begin	
+			A2_1out	 <= L1;
+			A2_1valid<= {3'b0,L1_valid};
+		end
+	end
 
 endmodule
 
-module B#(parameter NO7=0,parameter ID7=0)(
+module B#(parameter NO7=0)(
+	input clk,
+	input rst_n,
 	input stride,
-	input round,
-	input i0,
-	input i1,
-	input i2,
-	input i3,
-	input i4,
-	input i5,
-	input i6,
-	input i7,
-	input i8,
+	input wround,
+	input [45:0]i0,
+	input [45:0]i1,
+	input [45:0]i2,
+	input [45:0]i3,
+	input [45:0]i4,
+	input [45:0]i5,
+	input [45:0]i6,
+	input [45:0]i7,
+	input [45:0]i8,
 	output B_valid,
-	output Bout
+	output [53:0]Bout
 );
+	parameter FRONT = 23;
+	parameter BACK = 0;
+	parameter D1 = 23;
+	integer id;
+	
+	reg[22:0]B1i[0:8];
+	reg[22:0]B2_0i[0:5];
+	reg[22:0]B2_1i[0:5];
+	reg[22:0]B3i[0:2];
+	
+	reg[26:0]B1out,B2_0out,B2_1out,B3out;
+	
+	/* B1 input */
+	always@(posedge clk or negedge rst_n)begin
+		if(!rst_n)begin
+			for(id=0;id<9;id=id+1)begin
+				B1i[id]<=0;
+			end
+		end
+		else begin	
+			case(stride)
+
 endmodule
 
-module B1#(parameter NO7=0,parameter ID7=0)(
-	input stride,
-	input round,
-	input i0,
-	input i1,
-	input i2,
-	input i3,
-	input i4,
-	input i5,
-	input i6,
-	input i7,
-	input i8,
+module B1(
+	input clk,
+	input rst_n,
+	input [22:0]i0,
+	input [22:0]i1,
+	input [22:0]i2,
+	input [22:0]i3,
+	input [22:0]i4,
+	input [22:0]i5,
+	input [22:0]i6,
+	input [22:0]i7,
+	input [22:0]i8,
 	output B1_valid,
-	output B1out
+	output[26:0]B1out
 );
+	integer id
+	reg[24:0]L10,L11,L12;
+	reg [22:0]locali[0:8];
+	
+	always@(posedge clk or negedge rst_n)begin
+		if(!rst_n)begin
+			for(id=0;id<9;id=id+1)begin
+				locali[id]<=0;
+			end
+		end
+		else begin	
+			locali[0]<= i0;
+			locali[1]<= i1;
+			locali[2]<= i2;
+			locali[3]<= i3;
+			locali[4]<= i4;
+			locali[5]<= i5;
+			locali[6]<= i6;
+			locali[7]<= i7;
+			locali[8]<= i8;
+		end
+	end		
+			
+	ADD3#(23)L1_0(.clk(clk),.rst_n(rst_n),.i0(locali[0]),.i1(locali[1]),.i2(locali[2]),.ADD3_out(L10),.ADD3_valid());
+	ADD3#(23)L1_1(.clk(clk),.rst_n(rst_n),.i0(locali[3]),.i1(locali[4]),.i2(locali[5]),.ADD3_out(L11),.ADD3_valid());
+	ADD3#(23)L1_2(.clk(clk),.rst_n(rst_n),.i0(locali[6]),.i1(locali[7]),.i2(locali[8]),.ADD3_out(L12),.ADD3_valid());
+	
+	ADD3#(25)L2(.clk(clk),.rst_n(rst_n),.i0(L10),.i1(L11),.i2(L12),.ADD3_out(B1out),.ADD3_valid(B1_valid));
+
 endmodule
 
-module B2#(parameter NO7=0,parameter ID7=0)(
-	input stride,
-	input round,
-	input i0,
-	input i1,
-	input i2,
-	input i3,
-	input i4,
-	input i5,
-	output B2_valid,
-	output B2out
-);
-endmodule
-
-module B3#(parameter NO7=0,parameter ID7=0)(
+module B2(
 	input clk,
 	input rst_n,
 	input stride,
 	input round,
-	input i0,
-	input i1,
-	input i2,
-	output B3_valid,
-	output B3out
+	input [22:0]i0,
+	input [22:0]i1,
+	input [22:0]i2,
+	input [22:0]i3,
+	input [22:0]i4,
+	input [22:0]i5,
+	output B2_valid,
+	output [26:0]B2out
 );
+	integer id;
+	wire [25:0]B2out_tmp;
+	reg[24:0]L10,L11;
+	reg [22:0]locali[0:5];
+	
+	always@(posedge clk or negedge rst_n)begin
+		if(!rst_n)begin
+			for(id=0;id<6;id=id+1)begin
+				locali[id]<=0;
+			end
+		end
+		else begin	
+			locali[0]<= i0;
+			locali[1]<= i1;
+			locali[2]<= i2;
+			locali[3]<= i3;
+			locali[4]<= i4;
+			locali[5]<= i5;
+		end
+	end		
+			
+	ADD3#(23)L1_0(.clk(clk),.rst_n(rst_n),.i0(locali[0]),.i1(locali[1]),.i2(locali[2]),.ADD3_out(L10),.ADD3_valid());
+	ADD3#(23)L1_1(.clk(clk),.rst_n(rst_n),.i0(locali[3]),.i1(locali[4]),.i2(locali[5]),.ADD3_out(L11),.ADD3_valid());
+	
+	ADD2#(25)L2(.clk(clk),.rst_n(rst_n),.i0(L10),.i1(L11),.ADD3_out(B2out_tmp),.ADD3_valid(B2_valid));
+	
+	always@(*)begin
+		B2out = {1'b0,B2out_tmp};
+	end
+	
+endmodule
+
+module B3(
+	input clk,
+	input rst_n,
+	input [22:0]i0,
+	input [22:0]i1,
+	input [22:0]i2,
+	output B3_valid,
+	output [26:0]B3out
+);
+	wire [25:0]B3out_tmp;
+	wire B3_valid_tmp;
+	reg[24:0]L1;
+	reg [22:0]locali[0:2];
+	
+	always@(posedge clk or negedge rst_n)begin
+		if(!rst_n)begin
+			locali[0]<= 0;
+			locali[1]<= 0;
+			locali[2]<= 0;
+		end
+		else begin	
+			locali[0]<= i0;
+			locali[1]<= i1;
+			locali[2]<= i2;
+		end
+	end	
+	
+	ADD3#(23)L1_0(.clk(clk),.rst_n(rst_n),.i0(locali[0]),.i1(locali[1]),.i2(locali[2]),.ADD3_out(L1),.ADD3_valid(B3_valid_tmp));
+	
+	always@(posedge clk or negedge rst_n)begin
+		if(!rst_n)begin
+			B3out	<= 0;
+			B3_valid<= 0;
+		end
+		else begin	
+			B3out<= {2'b0,L1};
+			B3_valid<= B3_valid_tmp;	
+		end
+	end	
+	
 endmodule
 
 module ADDER(
@@ -627,7 +814,7 @@ module ADDER(
 	generate
 		for(id=0;id<2;id=id+1)begin
 			for(idx=0;idx=2;idx=idx+1)begin
-				B #(.NO7(idx))bb(.clk(clk),.rst_n(rst_n),.wround(wround),.stride(stride),.i0(fsa_res[]),.i1(fsa_res[]),.i2(fsa_res[]),.i3(fsa_res[]),.i4(fsa_res[]),.i5(fsa_res[]),.i6(fsa_res[]),.i7(fsa_res[]),.i8(fsa_res[]),.Bout(),.Bvalid());
+				B #(.NO7(idx))bb(.clk(clk),.rst_n(rst_n),.wround(wround),.stride(stride),.i0(fsa_res[id*32+idx*16]),.i1(fsa_res[id*32+idx*16+1]),.i2(fsa_res[id*32+idx*16+2]),.i3(fsa_res[id*32+idx*16+3]),.i4(fsa_res[id*32+idx*16+4]),.i5(fsa_res[id*32+idx*16+5]),.i6(fsa_res[id*32+idx*16+6]),.i7(fsa_res[id*32+idx*16+7]),.i8(fsa_res[id*32+idx*16+8]),.Bout(),.Bvalid());
 			end
 		end
 	endgenerate
