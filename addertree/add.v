@@ -988,6 +988,9 @@ module ADDER(
 );
 	genvar id,idx;
 	reg [45:0]fsa_res[0:63];
+	reg [53:0]Bout[0:3];
+	reg [53:0]Aout[0:15];
+	
 	/* FSA
 	FSA#(.NO3(0),.NO5(0),.ID5(0),.NO7(0),.ID7(0))C0(.clk(clk),.rst_n(rst_n),.wsize(wsize),.stride(stride),.wround(wround),.data(),.FSAout(fsa_res[0]),.FSAvalid());
 	FSA#(.NO3(1),.NO5(0),.ID5(1),.NO7(0),.ID7(1))C1(.clk(clk),.rst_n(rst_n),.wsize(wsize),.stride(stride),.wround(wround),.data(),.FSAout(fsa_res[1]),.FSAvalid());
@@ -1060,7 +1063,7 @@ module ADDER(
 	generate
 		for(id=0;id<4;id=id+1)begin
 			for(idx=0;idx=4;idx=idx+1)begin
-				A #(.NO5(idx))aa(.clk(clk),.rst_n(rst_n),.wround(wround),.stride(stride),.i0(fsa_res[id*4+idx*4]),.i1(fsa_res[id*4+idx*4+1]),.i2(fsa_res[id*4+idx*4+2]),.i3(fsa_res[id*4+idx*4+3]),.Aout(),.Avalid());
+				A #(.NO5(idx))aa(.clk(clk),.rst_n(rst_n),.wround(wround),.stride(stride),.i0(fsa_res[id*4+idx*4]),.i1(fsa_res[id*4+idx*4+1]),.i2(fsa_res[id*4+idx*4+2]),.i3(fsa_res[id*4+idx*4+3]),.Aout(Aout[id*4+idx]),.Avalid());
 			end
 		end
 	endgenerate
@@ -1069,10 +1072,26 @@ module ADDER(
 		for(id=0;id<2;id=id+1)begin
 			for(idx=0;idx=2;idx=idx+1)begin
 				//B #(.NO7(idx))bb(.clk(clk),.rst_n(rst_n),.wround(wround),.stride(stride),.i0(fsa_res[id*32+idx*16]),.i1(fsa_res[id*32+idx*16+1]),.i2(fsa_res[id*32+idx*16+2]),.i3(fsa_res[id*32+idx*16+3]),.i4(fsa_res[id*32+idx*16+4]),.i5(fsa_res[id*32+idx*16+5]),.i6(fsa_res[id*32+idx*16+6]),.i7(fsa_res[id*32+idx*16+7]),.i8(fsa_res[id*32+idx*16+8]),.Bout(),.Bvalid());
-				B #(.NO7(idx))bb(.clk(clk),.rst_n(rst_n),.wround(wround),.stride(stride),.data_({fsa_res[id*32+idx*16+8],fsa_res[id*32+idx*16+7],fsa_res[id*32+idx*16+6],fsa_res[id*32+idx*16+5],fsa_res[id*32+idx*16+4],fsa_res[id*32+idx*16+3],fsa_res[id*32+idx*16+2],fsa_res[id*32+idx*16+1],fsa_res[id*32+idx*16]}),.Bout(),.Bvalid());
+				B #(.NO7(idx))bb(.clk(clk),.rst_n(rst_n),.wround(wround),.stride(stride),.data_({fsa_res[id*32+idx*16+8],fsa_res[id*32+idx*16+7],fsa_res[id*32+idx*16+6],fsa_res[id*32+idx*16+5],fsa_res[id*32+idx*16+4],fsa_res[id*32+idx*16+3],fsa_res[id*32+idx*16+2],fsa_res[id*32+idx*16+1],fsa_res[id*32+idx*16]}),.Bout(Bout[id*2+idx]),.Bvalid());
 			end
 		end
 	endgenerate
+	
+	always@(posedge clk or negedge rst_n)begin
+		if(!rst_n)begin
+			Psum	  <= 0;
+			Psum_valid<= 0;	
+		end
+		else begin
+			if()Psum_valid<= 1;	
+			case(wsize)
+				0:Psum<={fsa_res[63],fsa_res[62],...,fsa_res[0]};
+				1:Psum<={Aout[15],..,Aout[0]};
+				2:Psum<={Bout[3],...,Bout[0]};
+			endcase
+		end
+	end
+	
 	
 endmodule
 	
