@@ -5,10 +5,15 @@ module ADD2#(parameter N=16)( 						// 1 cycle
 	input [N-1:0]i1,
 	input i_valid, 	
 	output reg ADD2_valid,
-	output [N:0]ADD2_out
+	output reg[N:0]ADD2_out
 );
-	reg locali0,locali1;
-	assign ADD2_out = locali0 + locali1;
+	reg [N-1:0]locali0,locali1;
+	//assign ADD2_out = locali0 + locali1;
+	
+	always@(*)begin
+		ADD2_out = locali0 + locali1;
+	end
+	
 	always@(posedge clk or negedge rst_n)begin
 		if(!rst_n)begin
 			locali0<=0;
@@ -31,10 +36,14 @@ module ADD3#(parameter N=16)(							// 1 cycle
 	input [N-1:0]i2,
 	input i_valid,
 	output reg ADD3_valid,
-	output [N+1:0]ADD3_out
+	output reg[N+1:0]ADD3_out
 );
-	reg locali0,locali1,locali2;
-	assign ADD3_out = locali0 + locali1 + locali2;
+	reg [N-1:0]locali0,locali1,locali2;
+	//assign ADD3_out = locali0 + locali1 + locali2;
+	always@(*)begin
+		ADD3_out = locali0 + locali1 + locali2;
+	end
+	
 	always@(posedge clk or negedge rst_n)begin
 		if(!rst_n)begin
 			locali0<=0;
@@ -102,13 +111,13 @@ module FSA#(parameter NO3=0,parameter NO5=0,parameter ID5=0,parameter NO7=0,para
 	parameter BACK = 0;
 	parameter D1 = 23;
 	
-	wire FAvalid;
+	wire FAvalid1,FAvalid2,FAvalid3;
 	wire [20:0]row1,row2,row3;
 	
 	/* FA ,  4 cycles */
-	FA ROW1(.clk(clk),.rst_n(rst_n),.data(data[383:0]),.data_valid(data_valid),.FAout(row1),.FAvalid(FAvalid));
-	FA ROW2(.clk(clk),.rst_n(rst_n),.data(data[767:384]),.data_valid(data_valid),.FAout(row2),.FAvalid(FAvalid));
-	FA ROW3(.clk(clk),.rst_n(rst_n),.data(data[1151:768]),.data_valid(data_valid),.FAout(row3),.FAvalid(FAvalid));
+	FA ROW1(.clk(clk),.rst_n(rst_n),.data(data[383:0]),.data_valid(data_valid),.FAout(row1),.FAvalid(FAvalid1));
+	FA ROW2(.clk(clk),.rst_n(rst_n),.data(data[767:384]),.data_valid(data_valid),.FAout(row2),.FAvalid(FAvalid2));
+	FA ROW3(.clk(clk),.rst_n(rst_n),.data(data[1151:768]),.data_valid(data_valid),.FAout(row3),.FAvalid(FAvalid3));
 	
 	/* SA ,  1 cycle */
 	always@(posedge clk or negedge rst_n)begin
@@ -117,7 +126,7 @@ module FSA#(parameter NO3=0,parameter NO5=0,parameter ID5=0,parameter NO7=0,para
 			FSAvalid<=0;
 		end
 		else begin
-			FSAvalid<=FAvalid;
+			FSAvalid<= (FAvalid1 && FAvalid2 && FAvalid3);
 			
 			case(wsize)
 				0:begin 		//3 * 3
@@ -1120,6 +1129,9 @@ module ADDER(
 	
 	reg [2:0]wround_cnt1,wround_cnt2,wround_cnt3,wround_cnt4,wround_5;
 	reg stride_cnt1,stride_cnt2,stride_cnt3,stride_cnt4,stride_5;
+	reg [3:0]wsize_cnt1,wsize_cnt2,wsize_cnt3,wsize_cnt4,wsize_cnt5;
+	reg wsize_is5,wsize_is7;
+	
 	wire [45:0]fsa_res[0:63];
 	wire [53:0]Bout[0:3];
 	wire [53:0]Aout[0:15];
@@ -1209,6 +1221,13 @@ module ADDER(
 			stride_cnt3<=0;
 			stride_cnt4<=0;
 			stride_5   <=0;
+			
+			wsize_cnt1<=0;
+			wsize_cnt2<=0;
+			wsize_cnt3<=0;
+			wsize_cnt4<=0;
+			wsize_cnt5<=0;
+			
 		end
 		else begin	
 			wround_cnt1<=wround;
@@ -1221,15 +1240,29 @@ module ADDER(
 			stride_cnt2<=stride_cnt1;
 			stride_cnt3<=stride_cnt2;
 			stride_cnt4<=stride_cnt3;
-			stride_5   <=stride_cnt4;			
+			stride_5   <=stride_cnt4;
+
+			wsize_cnt1<= wsize;
+			wsize_cnt2<= wsize_cnt1;
+			wsize_cnt3<= wsize_cnt2;
+			wsize_cnt4<= wsize_cnt3;
+			wsize_cnt5<= wsize_cnt4;
 		end
 	end	
+	always@(*)begin
+		wsize_is5=0;
+		wsize_is7=0;
+		if(wsize_cnt5 ==1)wsize_is5=1;
+		if(wsize_cnt5 ==2)wsize_is7=1;
+	end
+	
+	
 	
 	/* module A instantiation , stride & wround put off 5 cycles */
 	generate
 		for(id=0;id<4;id=id+1)begin
 			for(idx=0;idx<4;idx=idx+1)begin
-				A #(.NO5(idx))aa(.clk(clk),.rst_n(rst_n),.wround(wround_5),.stride(stride_5),.i0_(fsa_res[id*4+idx*4]),.i1_(fsa_res[id*4+idx*4+1]),.i2_(fsa_res[id*4+idx*4+2]),.i3_(fsa_res[id*4+idx*4+3]),.i_valid(FSAvalid),.Aout(Aout[id*4+idx]),.Avalid(Avalid));
+				A #(.NO5(idx))aa(.clk(clk),.rst_n(rst_n),.wround(wround_5),.stride(stride_5),.i0_(fsa_res[id*4+idx*4]),.i1_(fsa_res[id*4+idx*4+1]),.i2_(fsa_res[id*4+idx*4+2]),.i3_(fsa_res[id*4+idx*4+3]),.i_valid(FSAvalid & wsize_is5),.Aout(Aout[id*4+idx]),.Avalid(Avalid));
 			end
 		end
 	endgenerate
@@ -1238,7 +1271,7 @@ module ADDER(
 	generate
 		for(id=0;id<2;id=id+1)begin
 			for(idx=0;idx<2;idx=idx+1)begin
-				B #(.NO7(idx))bb(.clk(clk),.rst_n(rst_n),.wround(wround_5),.stride(stride_5),.data_({fsa_res[id*32+idx*16+8],fsa_res[id*32+idx*16+7],fsa_res[id*32+idx*16+6],fsa_res[id*32+idx*16+5],fsa_res[id*32+idx*16+4],fsa_res[id*32+idx*16+3],fsa_res[id*32+idx*16+2],fsa_res[id*32+idx*16+1],fsa_res[id*32+idx*16]}),.data_valid(FSAvalid),.Bout(Bout[id*2+idx]),.Bvalid(Bvalid));
+				B #(.NO7(idx))bb(.clk(clk),.rst_n(rst_n),.wround(wround_5),.stride(stride_5),.data_({fsa_res[id*32+idx*16+8],fsa_res[id*32+idx*16+7],fsa_res[id*32+idx*16+6],fsa_res[id*32+idx*16+5],fsa_res[id*32+idx*16+4],fsa_res[id*32+idx*16+3],fsa_res[id*32+idx*16+2],fsa_res[id*32+idx*16+1],fsa_res[id*32+idx*16]}),.data_valid(FSAvalid & wsize_is7),.Bout(Bout[id*2+idx]),.Bvalid(Bvalid));
 			end
 		end
 	endgenerate

@@ -2,7 +2,7 @@
 `define SDFFILE    "./ADDER.sdf"	  
 `define End_CYCLE  10000000
 
-`define PAT        "./add_data_3.dat" 
+`define PAT        "./add_data_33.dat" 
 
 module ADDER_tb;
   
@@ -21,7 +21,7 @@ module ADDER_tb;
 	reg [73727:0] data_mem[0:1];
 	
 
-    reg over;
+    reg over,fin;
     integer err, exp_num, i,cnt,i_data_id,w_data_id;
 	
 	
@@ -70,12 +70,14 @@ module ADDER_tb;
 
 	/* init val & give data */ 
 	initial begin 
-	
+		fin=0;
 		clk=0;
 		rst_n=1;
 		wsize=0;
 		wround=0;
 		stride=0;
+		MUL_results=0;
+		MUL_DATA_valid = 0;
 		
 		@(posedge clk)rst_n=0; 	//wait , when pos clk => active(rst_n=0)
 		#(`CYCLE*2)rst_n=1; 		//wait 2 cyc
@@ -87,72 +89,16 @@ module ADDER_tb;
 		@(negedge clk);
 		MUL_DATA_valid = 0;
 		
-/*
-//------------------------------------3*3 stride 1
-		w_valid=1;
-		repeat(18)begin //3 * 3
-			w_data =w_mem[w_data_id];
-			w_data_id = w_data_id+1;
-			@(negedge clk);
-		end
-		w_valid=0;
-		$display("END in W\n");	
+		@(negedge clk);
+		MUL_DATA_valid = 1;
 		
-		i_valid=1;
-		repeat(2)begin
-			i_data =i_mem[i_data_id];
-			i_data_id = i_data_id + 1;
-			@(negedge clk);
-		end
-		ctrl=1; // start
-		repeat(6)begin
-			i_data =i_mem[i_data_id];
-			i_data_id = i_data_id + 1;
-			@(negedge clk);
-		end
-		$display("END compute  0-7 I ~\n");
+		@(negedge clk);
+		MUL_DATA_valid = 0;
 		
-		i_data_id = 0;
-		repeat(8)begin
-			i_data =i_mem[i_data_id];
-			i_data_id = i_data_id + 1;
-			@(negedge clk);
-		end
-		$display("END compute first group \n");	
-		
-//----------------------------------------------
-	
-		wgroup=1;
-		i_data_id = 0;
-		ctrl=2;// hold
-		repeat(2)begin
-			i_data =i_mem[i_data_id];
-			i_data_id = i_data_id + 1;
-			@(negedge clk);
-		end
-		ctrl=1; // start
-		repeat(6)begin
-			i_data =i_mem[i_data_id];
-			i_data_id = i_data_id + 1;
-			@(negedge clk);
-		end
-		$display("END compute  0-7 I \n");
-		
-		i_data_id = 0;
-		repeat(8)begin
-			i_data =i_mem[i_data_id];
-			i_data_id = i_data_id + 1;
-			@(negedge clk);
-		end
-		$display("END compute second group \n");
-		
-		i_valid=0;
-		
-		ctrl=0; // end 
-		
-		
+		repeat(20)@(negedge clk);
+		fin=1;
 		$display("END RUN\n");	
-*/	
+
 		
 	end
 	
@@ -163,8 +109,9 @@ module ADDER_tb;
 		over=0;
 		
 		$display("GOGO!!\n");
-		#(`CYCLE*3);
-		# (`End_CYCLE/3);
+		//#(`CYCLE*3);
+		wait(fin);
+		//# (`End_CYCLE/10);
 		//wait(finish); // wait until (true)
 		
 		@(posedge clk);
@@ -186,8 +133,8 @@ module ADDER_tb;
 	/* end test */
 	initial begin
 		@(posedge over)
-		
-	    #(`CYCLE/2); $finish;
+		$finish;
+	    //#(`CYCLE/2); $finish;
 	end
 		
 endmodule
