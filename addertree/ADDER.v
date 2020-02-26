@@ -4,7 +4,7 @@ module ADD2#(parameter N=16)( 						// 1 cycle
 	input [N-1:0]i0,
 	input [N-1:0]i1,
 	input i_valid, 	
-	output ADD2_valid,
+	output reg ADD2_valid,
 	output [N:0]ADD2_out
 );
 	reg locali0,locali1;
@@ -30,7 +30,7 @@ module ADD3#(parameter N=16)(							// 1 cycle
 	input [N-1:0]i1,
 	input [N-1:0]i2,
 	input i_valid,
-	output ADD3_valid,
+	output reg ADD3_valid,
 	output [N+1:0]ADD3_out
 );
 	reg locali0,locali1,locali2;
@@ -60,14 +60,14 @@ module FA(											// 4 cycles
 	output 	[20:0]FAout
 );
 	parameter D1=16;
-	parameter D1=32;
+	parameter D2=32;
 	parameter D3=48;
 	genvar idx;
 	
-	reg L1_valid,L2_valid,L3_valid;
-	reg [17:0]L1_res[0:7];
-	reg [18:0]L2_res[0:3];
-	reg [19:0]L3_res[0:1];
+	wire L1_valid,L2_valid,L3_valid;
+	wire [17:0]L1_res[0:7];
+	wire [18:0]L2_res[0:3];
+	wire [19:0]L3_res[0:1];
 	
 	generate
 		for(idx=0;idx<8;idx=idx+1)begin
@@ -91,12 +91,12 @@ module FSA#(parameter NO3=0,parameter NO5=0,parameter ID5=0,parameter NO7=0,para
 	input 	clk,
 	input 	rst_n,
 	input 	stride,
-	input 	wsize,
-	input 	[3:0]wround,
+	input 	[3:0]wsize,
+	input 	[2:0]wround,
 	input  	[1151:0]data,
 	input   data_valid,
-	output 	FSAvalid,
-	output 	[45:0]FSAout
+	output 	reg FSAvalid,
+	output 	reg [45:0]FSAout
 );
 	parameter FRONT = 23;
 	parameter BACK = 0;
@@ -260,13 +260,15 @@ module A#(parameter NO5=0)(
 	input [45:0]i2_,
 	input [45:0]i3_,
 	input i_valid,
-	output Avalid,
-	output [53:0]Aout
+	output reg Avalid,
+	output reg [53:0]Aout
 );
 	parameter FRONT = 23;
 	parameter BACK = 0;
 	parameter D1 = 23;
 	
+	
+	reg [45:0]i0,i1,i2,i3;
 	reg[22:0]A1i[0:3];
 	reg[22:0]A2_0i[0:1];
 	reg[22:0]A2_1i[0:1];
@@ -283,6 +285,7 @@ module A#(parameter NO5=0)(
 			i3<=0;
 			i_valid_tmp <= 0;
 			i_valid_    <= 0;
+		end
 		else begin
 			if(i_valid)begin
 				i0<=i0_;
@@ -315,13 +318,13 @@ module A#(parameter NO5=0)(
 						end
 						1:begin
 							case(NO5)
-								0:begin
+								0,1:begin
 									A1i[0]<=i0[BACK +: D1];
 									A1i[1]<=i1[BACK +: D1];
 									A1i[2]<=i2[FRONT +: D1];
 									A1i[3]<=i3[FRONT +: D1];
 								end
-								1:no!
+								//1:no!
 								2:begin
 									A1i[0]<=i0[FRONT +: D1];
 									A1i[1]<=i1[FRONT +: D1];
@@ -366,7 +369,10 @@ module A#(parameter NO5=0)(
 			case(stride)
 				0:begin
 					case(wround)
-						0:no!!
+						0:begin //0:no!!
+							A2_0i[0]<=0;
+							A2_0i[1]<=0;
+						end
 						1:begin
 							case(NO5)
 								0:begin
@@ -395,7 +401,10 @@ module A#(parameter NO5=0)(
 							A2_0i[0]<=i0[BACK +: D1];
 							A2_0i[1]<=i1[BACK +: D1];
 						end
-						default:no!!
+						default:begin //default:no!!
+							A2_0i[0]<=0;
+							A2_0i[1]<=0;
+						end
 					endcase
 				end
 			endcase
@@ -413,7 +422,10 @@ module A#(parameter NO5=0)(
 				A2_1i[0]<=i2[BACK +: D1];
 				A2_1i[1]<=i3[BACK +: D1];
 			end
-			//else no!!
+			else begin //else no!!
+				A2_1i[0]<=0;
+				A2_1i[1]<=0;
+			end
 		end
 	end
 	
@@ -458,7 +470,7 @@ module A#(parameter NO5=0)(
 									Aout[BACK +: D1] <= A2_0out;
 									Aout[FRONT +: D1]<= A1out;
 								end
-							end
+							endcase
 						end
 					endcase
 				end
@@ -492,8 +504,8 @@ module A1(
 	input [22:0]i2,
 	input [22:0]i3,
 	input i_valid,
-	output A1valid,
-	output [26:0]A1out
+	output reg A1valid,
+	output reg[26:0]A1out
 );
 	//reg [22:0]locali[0:3];
 	//reg i_valid_;
@@ -536,8 +548,8 @@ module A2_0(
 	input [22:0]i0,
 	input [22:0]i1,
 	input i_valid,
-	output A2_0valid,
-	output [26:0]A2_0out
+	output reg A2_0valid,
+	output reg [26:0]A2_0out
 );
 	/*
 	reg [22:0]locali[0:1];
@@ -579,8 +591,8 @@ module A2_1(
 	input [22:0]i0,
 	input [22:0]i1,
 	input i_valid,
-	output A2_1valid,
-	output [26:0]A2_1out
+	output reg A2_1valid,
+	output reg [26:0]A2_1out
 );/*
 	reg [22:0]locali[0:1];
 	reg i_valid_;*/
@@ -624,18 +636,8 @@ module B#(parameter NO7=0)(
 	input [2:0]wround,
 	input [413:0]data_, //46 * 9 
 	input data_valid,
-	/*
-	input [45:0]i0,
-	input [45:0]i1,
-	input [45:0]i2,
-	input [45:0]i3,
-	input [45:0]i4,
-	input [45:0]i5,
-	input [45:0]i6,
-	input [45:0]i7,
-	input [45:0]i8,*/
-	output B_valid,
-	output [53:0]Bout
+	output reg Bvalid,
+	output reg [53:0]Bout
 );
 	parameter FRONT = 23;
 	parameter FRONT_OUT = 27;
@@ -645,6 +647,7 @@ module B#(parameter NO7=0)(
 	parameter D1_OUT = 27;
 	integer id,idx;
 	
+	reg[413:0]data;
 	reg[22:0]B1i[0:8];
 	reg[22:0]B2_0i[0:5];
 	reg[22:0]B2_1i[0:5];
@@ -770,7 +773,8 @@ module B#(parameter NO7=0)(
 								end
 							endcase
 						end
-						default:no!!
+						default:begin //no!
+						end
 					endcase
 				end
 				1:begin
@@ -779,6 +783,15 @@ module B#(parameter NO7=0)(
 							B2_0i[id]<=data[BACK+id*D2 +: D1];
 						end
 					end
+					else begin
+						for(id=0;id<3;id=id+1)begin
+							B2_0i[id]<=data[BACK+id*D2 +: D1];
+						end
+						for(idx=3;idx<6;idx=idx+1)begin
+							B2_0i[id]<=data[FRONT+id*D2 +: D1];
+						end
+					end
+					/*
 					else if(NO7==0 && wround==1)begin
 						for(id=0;id<3;id=id+1)begin
 							B2_0i[id]<=data[BACK+id*D2 +: D1];
@@ -787,7 +800,8 @@ module B#(parameter NO7=0)(
 							B2_0i[id]<=data[FRONT+id*D2 +: D1];
 						end
 					end
-					else no!!
+					else begin //no!
+					end*/
 				end
 			endcase
 		end
@@ -803,18 +817,25 @@ module B#(parameter NO7=0)(
 		else begin	
 			if(stride==0 && NO7==1 && wround==1)begin
 				for(id=0;id<3;id=id+1)begin
-					B2_0i[id]<=data[FRONT+id*D2+3*D2 +: D1]; // i3 ~ i5
+					B2_1i[id]<=data[FRONT+id*D2+3*D2 +: D1]; // i3 ~ i5
 				end
 				for(idx=3;idx<6;idx=idx+1)begin
-					B2_0i[id]<=data[BACK+id*D2+6*D2 +: D1];
+					B2_1i[id]<=data[BACK+id*D2+6*D2 +: D1];
 				end
 			end
+			else begin
+				for(id=0;id<6;id=id+1)begin
+					B2_1i[id]<=data[BACK+id*D2+3*D2 +: D1]; // i3~i8
+				end
+			end
+			/*
 			else if((stride==0 && NO7==0 && wround==2)||(stride==1 && NO7==0 && wround==1))begin
 				for(id=0;id<6;id=id+1)begin
-					B2_0i[id]<=data[BACK+id*D2+3*D2 +: D1]; // i3~i8
+					B2_1i[id]<=data[BACK+id*D2+3*D2 +: D1]; // i3~i8
 				end
 			end
-			else no!!
+			else begin //no!
+			end*/
 		end
 	end
 	
@@ -828,20 +849,19 @@ module B#(parameter NO7=0)(
 		else begin	
 			if((stride==1 && NO7==1 && wround==0)||(stride==0 && NO7==0 && wround==1))begin
 				for(id=0;id<3;id=id+1)begin
-					B3[id]<=data[FRONT+id*D2+6*D2 +: D1]; // i6 ~ i8
+					B3i[id]<=data[FRONT+id*D2+6*D2 +: D1]; // i6 ~ i8
 				end
 			end
 			else if(stride==0 && NO7==1 && wround==3)begin
 				for(id=0;id<3;id=id+1)begin
-					B2_0i[id]<=data[FRONT+id*D2 +: D1]; // i0~i2
+					B3i[id]<=data[FRONT+id*D2 +: D1]; // i0~i2
 				end
 			end
 			else begin
 				for(id=0;id<3;id=id+1)begin
-					B2_0i[id]<=data[BACK+id*D2 +: D1]; // i0~i2
+					B3i[id]<=data[BACK+id*D2 +: D1]; // i0~i2
 				end
 			end
-			else no!!
 		end
 	end			
 							
@@ -858,12 +878,12 @@ module B#(parameter NO7=0)(
 	always@(posedge clk or negedge rst_n)begin
 		if(!rst_n)begin
 			Bout   <=0;
-			B_valid<=0;
+			Bvalid<=0;
 		end
 		else begin	
 		
-			if(B1out_valid || B2_0out_valid || B2_1out_valid ||B3out_valid)B_valid<=1;
-			else B_valid<=0;
+			if(B1out_valid || B2_0out_valid || B2_1out_valid ||B3out_valid)Bvalid<=1;
+			else Bvalid<=0;
 			
 			case(stride)
 				0:begin
@@ -941,8 +961,8 @@ module B1(
 	input [22:0]i7,
 	input [22:0]i8,
 	input i_valid,
-	output B1_valid,
-	output[26:0]B1out
+	output reg B1_valid,
+	output reg [26:0]B1out
 );
 	integer id;
 	/*
@@ -985,8 +1005,6 @@ endmodule
 module B2(
 	input clk,
 	input rst_n,
-	input stride,
-	input round,
 	input [22:0]i0,
 	input [22:0]i1,
 	input [22:0]i2,
@@ -994,8 +1012,8 @@ module B2(
 	input [22:0]i4,
 	input [22:0]i5,
 	input i_valid,
-	output B2_valid,
-	output [26:0]B2out
+	output reg B2_valid,
+	output reg [26:0]B2out
 );
 	integer id;
 	/*
@@ -1028,7 +1046,7 @@ module B2(
 	ADD3#(23)L1_0(.clk(clk),.rst_n(rst_n),.i0(i0),.i1(i1),.i2(i2),.i_valid(i_valid),.ADD3_out(L10),.ADD3_valid(L10_valid));
 	ADD3#(23)L1_1(.clk(clk),.rst_n(rst_n),.i0(i3),.i1(i4),.i2(i5),.i_valid(i_valid),.ADD3_out(L11),.ADD3_valid(L11_valid));
 	
-	ADD2#(25)L2(.clk(clk),.rst_n(rst_n),.i0(L10),.i1(L11),.i_valid(L10_valid & L11_valid),.ADD3_out(B2out_tmp),.ADD3_valid(B2_valid));
+	ADD2#(25)L2(.clk(clk),.rst_n(rst_n),.i0(L10),.i1(L11),.i_valid(L10_valid & L11_valid),.ADD2_out(B2out_tmp),.ADD2_valid(B2_valid));
 	
 	always@(*)begin
 		B2out = {1'b0,B2out_tmp};
@@ -1043,8 +1061,8 @@ module B3(
 	input [22:0]i1,
 	input [22:0]i2,
 	input i_valid,
-	output B3_valid,
-	output [26:0]B3out
+	output reg B3_valid,
+	output reg [26:0]B3out
 );
 /*
 	reg [22:0]locali[0:2];
@@ -1094,8 +1112,8 @@ module ADDER(
 	input [73727:0]MUL_results, //4608*16
 	input MUL_DATA_valid,
 	input [3:0]wsize,
-	output Psum_valid,		
-	output [863:0]Psum			//max 54 * 16
+	output reg Psum_valid,		
+	output reg [863:0]Psum			//max 54 * 16
 );
 	parameter CUBE_D1 = 1152;
 	genvar id,idx;
@@ -1210,8 +1228,8 @@ module ADDER(
 	/* module A instantiation , stride & wround put off 5 cycles */
 	generate
 		for(id=0;id<4;id=id+1)begin
-			for(idx=0;idx=4;idx=idx+1)begin
-				A #(.NO5(idx))aa(.clk(clk),.rst_n(rst_n),.wround(wround_5),.stride(stride_5),.i0(fsa_res[id*4+idx*4]),.i1(fsa_res[id*4+idx*4+1]),.i2(fsa_res[id*4+idx*4+2]),.i3(fsa_res[id*4+idx*4+3]),.i_valid(FSAvalid),.Aout(Aout[id*4+idx]),.Avalid(Avalid));
+			for(idx=0;idx<4;idx=idx+1)begin
+				A #(.NO5(idx))aa(.clk(clk),.rst_n(rst_n),.wround(wround_5),.stride(stride_5),.i0_(fsa_res[id*4+idx*4]),.i1_(fsa_res[id*4+idx*4+1]),.i2_(fsa_res[id*4+idx*4+2]),.i3_(fsa_res[id*4+idx*4+3]),.i_valid(FSAvalid),.Aout(Aout[id*4+idx]),.Avalid(Avalid));
 			end
 		end
 	endgenerate
@@ -1219,8 +1237,8 @@ module ADDER(
 	/* module B instantiation , stride & wround put off 5 cycles */
 	generate
 		for(id=0;id<2;id=id+1)begin
-			for(idx=0;idx=2;idx=idx+1)begin
-				B #(.NO7(idx))bb(.clk(clk),.rst_n(rst_n),.wround(wround_5),.stride(stride_5),.data_({fsa_res[id*32+idx*16+8],fsa_res[id*32+idx*16+7],fsa_res[id*32+idx*16+6],fsa_res[id*32+idx*16+5],fsa_res[id*32+idx*16+4],fsa_res[id*32+idx*16+3],fsa_res[id*32+idx*16+2],fsa_res[id*32+idx*16+1],fsa_res[id*32+idx*16]}),.i_valid(FSAvalid),.Bout(Bout[id*2+idx]),.Bvalid(Bvalid));
+			for(idx=0;idx<2;idx=idx+1)begin
+				B #(.NO7(idx))bb(.clk(clk),.rst_n(rst_n),.wround(wround_5),.stride(stride_5),.data_({fsa_res[id*32+idx*16+8],fsa_res[id*32+idx*16+7],fsa_res[id*32+idx*16+6],fsa_res[id*32+idx*16+5],fsa_res[id*32+idx*16+4],fsa_res[id*32+idx*16+3],fsa_res[id*32+idx*16+2],fsa_res[id*32+idx*16+1],fsa_res[id*32+idx*16]}),.data_valid(FSAvalid),.Bout(Bout[id*2+idx]),.Bvalid(Bvalid));
 			end
 		end
 	endgenerate
@@ -1250,9 +1268,9 @@ module ADDER(
 			endcase
 			*/
 			case(wsize_)
-				0:Psum<={fsa_res[63],fsa_res[62],...,fsa_res[0]};
-				1:Psum<={Aout[15],..,Aout[0]};
-				2:Psum<={Bout[3],...,Bout[0]};
+				0:Psum<={fsa_res[63],fsa_res[62],fsa_res[61],fsa_res[60],fsa_res[59],fsa_res[58],fsa_res[57],fsa_res[56],fsa_res[55],fsa_res[54],fsa_res[53],fsa_res[52],fsa_res[51],fsa_res[50],fsa_res[49],fsa_res[48],fsa_res[47],fsa_res[46],fsa_res[45],fsa_res[44],fsa_res[43],fsa_res[42],fsa_res[41],fsa_res[40],fsa_res[39],fsa_res[38],fsa_res[37],fsa_res[36],fsa_res[35],fsa_res[34],fsa_res[33],fsa_res[32],fsa_res[31],fsa_res[30],fsa_res[29],fsa_res[28],fsa_res[27],fsa_res[26],fsa_res[25],fsa_res[24],fsa_res[23],fsa_res[22],fsa_res[21],fsa_res[20],fsa_res[19],fsa_res[18],fsa_res[17],fsa_res[16],fsa_res[15],fsa_res[14],fsa_res[13],fsa_res[12],fsa_res[11],fsa_res[10],fsa_res[9],fsa_res[8],fsa_res[7],fsa_res[6],fsa_res[5],fsa_res[4],fsa_res[3],fsa_res[2],fsa_res[1],fsa_res[0]};
+				1:Psum<={Aout[15],Aout[14],Aout[13],Aout[12],Aout[11],Aout[10],Aout[9],Aout[8],Aout[7],Aout[6],Aout[5],Aout[4],Aout[3],Aout[2],Aout[1],Aout[0]};
+				2:Psum<={Bout[3],Bout[2],Bout[1],Bout[0]};
 			endcase
 		end
 	end
