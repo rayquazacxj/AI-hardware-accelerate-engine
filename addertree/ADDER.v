@@ -102,8 +102,8 @@ module FSA#(parameter NO3=0,parameter NO5=0,parameter ID5=0,parameter NO7=0,para
 	parameter BACK = 0;
 	parameter D1 = 23;
 	
-	reg FAvalid;
-	reg [20:0]row1,row2,row3;
+	wire FAvalid;
+	wire [20:0]row1,row2,row3;
 	
 	/* FA ,  4 cycles */
 	FA ROW1(.clk(clk),.rst_n(rst_n),.data(data[383:0]),.data_valid(data_valid),.FAout(row1),.FAvalid(FAvalid));
@@ -274,8 +274,8 @@ module A#(parameter NO5=0)(
 	reg[22:0]A2_1i[0:1];
 	reg i_valid_tmp,i_valid_;
 	
-	reg[26:0]A1out,A2_0out,A2_1out;
-	reg A1valid,A2_0valid,A2_1valid;
+	wire[26:0]A1out,A2_0out,A2_1out;
+	wire A1valid,A2_0valid,A2_1valid;
 	
 	always@(posedge clk or negedge rst_n)begin
 		if(!rst_n)begin
@@ -504,15 +504,15 @@ module A1(
 	input [22:0]i2,
 	input [22:0]i3,
 	input i_valid,
-	output reg A1valid,
-	output reg[26:0]A1out
+	output A1valid,
+	output reg [26:0]A1out
 );
 	//reg [22:0]locali[0:3];
 	//reg i_valid_;
 	
 	wire[24:0]A1out_tmp;
-	reg [23:0]L10,L11;
-	reg L10_valid,L11_valid;
+	wire [23:0]L10,L11;
+	wire L10_valid,L11_valid;
 	
 	/*
 	always@(posedge clk or negedge rst_n)begin
@@ -554,8 +554,8 @@ module A2_0(
 	/*
 	reg [22:0]locali[0:1];
 	reg i_valid_;*/
-	reg [23:0]L1_res;
-	reg L1_valid;
+	wire [23:0]L1_res;
+	wire L1_valid;
 	
 	/* may not need this dff
 	always@(posedge clk or negedge rst_n)begin
@@ -597,8 +597,8 @@ module A2_1(
 	reg [22:0]locali[0:1];
 	reg i_valid_;*/
 	
-	reg [23:0]L1_res;
-	reg L1_valid;
+	wire [23:0]L1_res;
+	wire L1_valid;
 	
 	/*
 	always@(posedge clk or negedge rst_n)begin
@@ -654,8 +654,8 @@ module B#(parameter NO7=0)(
 	reg[22:0]B3i[0:2];
 	reg data_valid_tmp,data_valid_;
 	
-	reg[26:0]B1out,B2_0out,B2_1out,B3out;
-	reg B1out_valid,B2_0out_valid,B2_1out_valid,B3out_valid;
+	wire[26:0]B1out,B2_0out,B2_1out,B3out;
+	wire B1out_valid,B2_0out_valid,B2_1out_valid,B3out_valid;
 	
 	always@(posedge clk or negedge rst_n)begin
 		if(!rst_n)begin
@@ -961,16 +961,16 @@ module B1(
 	input [22:0]i7,
 	input [22:0]i8,
 	input i_valid,
-	output reg B1_valid,
-	output reg [26:0]B1out
+	output B1_valid,
+	output [26:0]B1out
 );
 	integer id;
 	/*
 	reg [22:0]locali[0:8];
 	reg i_valid_;*/
 	
-	reg[24:0]L10,L11,L12;
-	reg L10_valid,L11_valid,L12_valid;
+	wire[24:0]L10,L11,L12;
+	wire L10_valid,L11_valid,L12_valid;
 	
 	/*
 	always@(posedge clk or negedge rst_n)begin
@@ -1012,7 +1012,7 @@ module B2(
 	input [22:0]i4,
 	input [22:0]i5,
 	input i_valid,
-	output reg B2_valid,
+	output B2_valid,
 	output reg [26:0]B2out
 );
 	integer id;
@@ -1021,8 +1021,8 @@ module B2(
 	reg i_valid_;*/
 	
 	wire [25:0]B2out_tmp;
-	reg[24:0]L10,L11;
-	reg L10_valid,L11_valid;
+	wire[24:0]L10,L11;
+	wire L10_valid,L11_valid;
 	
 	/*
 	always@(posedge clk or negedge rst_n)begin
@@ -1070,7 +1070,7 @@ module B3(
 	
 	wire [25:0]B3out_tmp;
 	wire B3_valid_tmp;
-	reg[24:0]L1;
+	wire [24:0]L1;
 	
 	/*
 	always@(posedge clk or negedge rst_n)begin
@@ -1089,7 +1089,7 @@ module B3(
 	end	
 	*/
 	
-	ADD3#(23)L1_0(.clk(clk),.rst_n(rst_n),.i0(i),.i1(i1),.i2(i2),.i_valid(i_valid),.ADD3_out(L1),.ADD3_valid(B3_valid_tmp));
+	ADD3#(23)L1_0(.clk(clk),.rst_n(rst_n),.i0(i0),.i1(i1),.i2(i2),.i_valid(i_valid),.ADD3_out(L1),.ADD3_valid(B3_valid_tmp));
 	
 	always@(posedge clk or negedge rst_n)begin
 		if(!rst_n)begin
@@ -1120,10 +1120,10 @@ module ADDER(
 	
 	reg [2:0]wround_cnt1,wround_cnt2,wround_cnt3,wround_cnt4,wround_5;
 	reg stride_cnt1,stride_cnt2,stride_cnt3,stride_cnt4,stride_5;
-	reg [45:0]fsa_res[0:63];
-	reg [53:0]Bout[0:3];
-	reg [53:0]Aout[0:15];
-	reg Avalid,Bvalid;
+	wire [45:0]fsa_res[0:63];
+	wire [53:0]Bout[0:3];
+	wire [53:0]Aout[0:15];
+	wire Avalid,Bvalid;
 	reg [1:0]wsize_;
 	
 	/* FSA */
