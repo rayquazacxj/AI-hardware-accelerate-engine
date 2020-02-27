@@ -95,10 +95,11 @@ module ADDER_tb;
 		
 		@(negedge clk);
 		MUL_DATA_valid = 0;
-		
+		/*
 		@(negedge clk);
 		MUL_results = data_mem5[0]; 	//stride 1
 		MUL_DATA_valid = 1;
+		wsize=1;
 		wround = 0;
 		
 		@(negedge clk);
@@ -106,11 +107,12 @@ module ADDER_tb;
 		
 		@(negedge clk);
 		MUL_DATA_valid = 0;
-		
+		*/
 		/*
 		@(negedge clk);
 		MUL_results = data_mem7[0]; 	//stride 1
 		MUL_DATA_valid = 1;
+		wsize=2;
 		wround = 0;
 		
 		@(negedge clk);
@@ -127,7 +129,7 @@ module ADDER_tb;
 		*/
 		repeat(30)@(negedge clk);
 		fin=1;
-		$display("END RUN\n");	
+		$display("END RUN~\n");	
 
 		
 	end
