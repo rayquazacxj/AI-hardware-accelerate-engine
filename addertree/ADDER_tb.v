@@ -2,7 +2,9 @@
 `define SDFFILE    "./ADDER.sdf"	  
 `define End_CYCLE  10000000
 
-`define PAT        "./add_data_33.dat" 
+`define PAT3        "./add_data_33.dat"
+`define PAT5        "./add_data_5.dat" 
+`define PAT7        "./add_data_7.dat" 
 
 module ADDER_tb;
   
@@ -18,7 +20,10 @@ module ADDER_tb;
 	wire [863:0]Psum;
 	
 
-	reg [73727:0] data_mem[0:1];
+	reg [73727:0] data_mem3[0:1];
+	reg [73727:0] data_mem5[0:1];
+	reg [73727:0] data_mem7[0:1];
+	
 	
 
     reg over,fin;
@@ -50,7 +55,9 @@ module ADDER_tb;
 	
 	/* read file data */
 	initial begin
-		$readmemb(`PAT, data_mem);			
+		$readmemb(`PAT3, data_mem3);
+		$readmemb(`PAT5, data_mem5);
+		$readmemb(`PAT7, data_mem7);
 	end
 	
 	/* set clk */
@@ -83,19 +90,42 @@ module ADDER_tb;
 		#(`CYCLE*2)rst_n=1; 		//wait 2 cyc
 		@(negedge clk);
 		
-		MUL_results = data_mem[0];
+		MUL_results = data_mem3[0];
 		MUL_DATA_valid = 1;
 		
 		@(negedge clk);
 		MUL_DATA_valid = 0;
 		
 		@(negedge clk);
+		MUL_results = data_mem5[0]; 	//stride 1
 		MUL_DATA_valid = 1;
+		wround = 0;
+		
+		@(negedge clk);
+		wround = 1;
 		
 		@(negedge clk);
 		MUL_DATA_valid = 0;
 		
-		repeat(20)@(negedge clk);
+		/*
+		@(negedge clk);
+		MUL_results = data_mem7[0]; 	//stride 1
+		MUL_DATA_valid = 1;
+		wround = 0;
+		
+		@(negedge clk);
+		wround = 1;
+		
+		@(negedge clk);
+		wround = 2;
+		
+		@(negedge clk);
+		wround = 3;
+		
+		@(negedge clk);
+		MUL_DATA_valid = 0;
+		*/
+		repeat(30)@(negedge clk);
 		fin=1;
 		$display("END RUN\n");	
 
@@ -109,10 +139,8 @@ module ADDER_tb;
 		over=0;
 		
 		$display("GOGO!!\n");
-		//#(`CYCLE*3);
+		
 		wait(fin);
-		//# (`End_CYCLE/10);
-		//wait(finish); // wait until (true)
 		
 		@(posedge clk);
 		@(posedge clk);
@@ -145,14 +173,21 @@ module ADDER_mem (Psum_valid, Psum, clk);
 	input	[863:0] Psum;
 	input	clk;
 
-	reg [863:0] ADDER_M ;
+	reg [863:0] ADDER_M[0:2];
 	integer i;
 
 	initial begin
-		ADDER_M = 0;
+		for(i=0;i<3;i=i+1)begin
+			ADDER_M[i] = 0;
+		end
+		i=0;
 	end
 
-	always@(negedge clk) 
-		if (Psum_valid) ADDER_M <= Psum;
-
+	always@(negedge clk)begin 
+		if (Psum_valid)begin
+			ADDER_M[i] <= Psum;
+			i <= i + 1;
+		end
+	end
+	
 endmodule

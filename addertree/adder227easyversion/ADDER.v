@@ -523,23 +523,6 @@ module A1(
 	wire [23:0]L10,L11;
 	wire L10_valid,L11_valid;
 	
-	/*
-	always@(posedge clk or negedge rst_n)begin
-		if(!rst_n)begin
-			locali[0]<= 0;
-			locali[1]<= 0;
-			locali[2]<= 0;
-			locali[3]<= 0;
-			i_valid_ <= 0;
-		end
-		else begin	
-			locali[0]<= i0;
-			locali[1]<= i1;
-			locali[2]<= i2;
-			locali[3]<= i3;
-			i_valid_ <= i_valid;
-		end
-	end	*/	
 	
 	ADD2 #(23)L1_0(.clk(clk),.rst_n(rst_n),.i0(i0),.i1(i1),.i_valid(i_valid),.ADD2_out(L10),.ADD2_valid(L10_valid));
 	ADD2 #(23)L1_1(.clk(clk),.rst_n(rst_n),.i0(i2),.i1(i3),.i_valid(i_valid),.ADD2_out(L11),.ADD2_valid(L11_valid));
@@ -566,20 +549,6 @@ module A2_0(
 	wire [23:0]L1_res;
 	wire L1_valid;
 	
-	/* may not need this dff
-	always@(posedge clk or negedge rst_n)begin
-		if(!rst_n)begin
-			locali[0]<= 0;
-			locali[1]<= 0;
-			i_valid_ <= 0;
-		end
-		else begin	
-			locali[0]<= i0;
-			locali[1]<= i1;
-			i_valid_ <= i_valid;
-		end
-	end	
-	*/	
 	ADD2 #(23)L1(.clk(clk),.rst_n(rst_n),.i0(i0),.i1(i1),.i_valid(i_valid),.ADD2_out(L1_res),.ADD2_valid(L1_valid));
 	
 	always@(posedge clk or negedge rst_n)begin
@@ -609,19 +578,6 @@ module A2_1(
 	wire [23:0]L1_res;
 	wire L1_valid;
 	
-	/*
-	always@(posedge clk or negedge rst_n)begin
-		if(!rst_n)begin
-			locali[0]<= 0;
-			locali[1]<= 0;
-			i_valid_ <= 0;
-		end
-		else begin	
-			locali[0]<= i0;
-			locali[1]<= i1;
-			i_valid_ <= i_valid;
-		end
-	end	*/
 	
 	ADD2 #(23)L1(.clk(clk),.rst_n(rst_n),.i0(i0),.i1(i1),.i_valid(i_valid),.ADD2_out(L1_res),.ADD2_valid(L1_valid));
 	
@@ -702,51 +658,7 @@ module B#(parameter NO7=0)(
 				end
 			end
 		end			
-		/*
-			case(stride)
-				0:begin
-					case(wround)
-						1:begin
-							for(id=0;id<9;id=id+1)begin
-								B1i[id]<=data[BACK+id*D2 +: D1];
-							end
-						end
-						4:begin
-							if(NO7==0)begin
-								for(id=0;id<3;id=id+1)begin
-									B1i[id]<=data[FRONT+id*D2 +: D1];
-								end
-								for(idx=3;idx<9;idx=idx+1)begin
-									B1i[idx]<=data[BACK+id*D2 +: D1];
-								end
-							end
-							else begin
-								for(id=0;id<9;id=id+1)begin
-									B1i[id]<=data[BACK+id*D2 +: D1];
-								end
-							end
-						end
-						default:no!!
-					endcase
-				end
-				1:begin
-					if(wround==0 && NO7==0)begin
-						for(idx=0;idx<9;idx=idx+1)begin
-							B1i[idx]<=data[BACK+id*D2 +: D1];
-						end
-					end
-					else if(wround==1 && NO7==1)begin
-						for(id=0;id<3;id=id+1)begin
-							B1i[id]<=data[FRONT+id*D2 +: D1];
-						end
-						for(idx=3;idx<9;idx=idx+1)begin
-							B1i[idx]<=data[BACK+id*D2 +: D1];
-						end
-					end
-					else no!!
-				end
-			endcase
-		end*/
+		
 	end
 	
 	/* B2_0 input */
@@ -981,27 +893,6 @@ module B1(
 	wire[24:0]L10,L11,L12;
 	wire L10_valid,L11_valid,L12_valid;
 	
-	/*
-	always@(posedge clk or negedge rst_n)begin
-		if(!rst_n)begin
-			for(id=0;id<9;id=id+1)begin
-				locali[id]<=0;
-			end
-			i_valid_<=0;
-		end
-		else begin	
-			locali[0]<= i0;
-			locali[1]<= i1;
-			locali[2]<= i2;
-			locali[3]<= i3;
-			locali[4]<= i4;
-			locali[5]<= i5;
-			locali[6]<= i6;
-			locali[7]<= i7;
-			locali[8]<= i8;
-			i_valid_<=i_valid;
-		end
-	end	*/	
 			
 	ADD3#(23)L1_0(.clk(clk),.rst_n(rst_n),.i0(i0),.i1(i1),.i2(i2),.i_valid(i_valid),.ADD3_out(L10),.ADD3_valid(L10_valid));
 	ADD3#(23)L1_1(.clk(clk),.rst_n(rst_n),.i0(i3),.i1(i4),.i2(i5),.i_valid(i_valid),.ADD3_out(L11),.ADD3_valid(L11_valid));
@@ -1033,24 +924,6 @@ module B2(
 	wire[24:0]L10,L11;
 	wire L10_valid,L11_valid;
 	
-	/*
-	always@(posedge clk or negedge rst_n)begin
-		if(!rst_n)begin
-			for(id=0;id<6;id=id+1)begin
-				locali[id]<=0;
-			end
-			i_valid_<=0;
-		end
-		else begin	
-			locali[0]<= i0;
-			locali[1]<= i1;
-			locali[2]<= i2;
-			locali[3]<= i3;
-			locali[4]<= i4;
-			locali[5]<= i5;
-			i_valid_ <= i_valid;
-		end
-	end	*/	
 			
 	ADD3#(23)L1_0(.clk(clk),.rst_n(rst_n),.i0(i0),.i1(i1),.i2(i2),.i_valid(i_valid),.ADD3_out(L10),.ADD3_valid(L10_valid));
 	ADD3#(23)L1_1(.clk(clk),.rst_n(rst_n),.i0(i3),.i1(i4),.i2(i5),.i_valid(i_valid),.ADD3_out(L11),.ADD3_valid(L11_valid));
@@ -1081,22 +954,6 @@ module B3(
 	wire B3_valid_tmp;
 	wire [24:0]L1;
 	
-	/*
-	always@(posedge clk or negedge rst_n)begin
-		if(!rst_n)begin
-			locali[0]<= 0;
-			locali[1]<= 0;
-			locali[2]<= 0;
-			i_valid_ <= 0;
-		end
-		else begin	
-			locali[0]<= i0;
-			locali[1]<= i1;
-			locali[2]<= i2;
-			i_valid_ <= i_valid;
-		end
-	end	
-	*/
 	
 	ADD3#(23)L1_0(.clk(clk),.rst_n(rst_n),.i0(i0),.i1(i1),.i2(i2),.i_valid(i_valid),.ADD3_out(L1),.ADD3_valid(B3_valid_tmp));
 	
