@@ -279,6 +279,7 @@ module A#(parameter NO5=0)(
 	parameter BACK = 0;
 	parameter FRONT_OUT = 27;
 	parameter D1 = 23;
+	parameter D1_OUT = 27;
 	
 	
 	reg [45:0]i0,i1,i2,i3;
@@ -498,22 +499,22 @@ module A#(parameter NO5=0)(
 				0:begin
 					case(wround_cnt3)
 						0:begin
-							Aout[BACK +: D1] <= A1out;
-							Aout[FRONT_OUT +: D1]<=0;
+							Aout[BACK +: D1_OUT] <= A1out;
+							Aout[FRONT_OUT +: D1_OUT]<=0;
 						end
 						1:begin
 							case(NO5)
 								0:begin
-									Aout[BACK +: D1] <= A1out;
-									Aout[FRONT_OUT +: D1]<= A2_0out;
+									Aout[BACK +: D1_OUT] <= A1out;
+									Aout[FRONT_OUT +: D1_OUT]<= A2_0out;
 								end
 								1:begin
-									Aout[BACK +: D1] <= A2_0out;
-									Aout[FRONT_OUT +: D1]<= A2_1out;
+									Aout[BACK +: D1_OUT] <= A2_0out;
+									Aout[FRONT_OUT +: D1_OUT]<= A2_1out;
 								end
 								default:begin
-									Aout[BACK +: D1] <= A2_0out;
-									Aout[FRONT_OUT +: D1]<= A1out;
+									Aout[BACK +: D1_OUT] <= A2_0out;
+									Aout[FRONT_OUT +: D1_OUT]<= A1out;
 								end
 							endcase
 						end
@@ -522,16 +523,16 @@ module A#(parameter NO5=0)(
 				1:begin		//stride 2
 					case(NO5)
 						2:begin
-							Aout[BACK +: D1] <= A1out;
-							Aout[FRONT_OUT +: D1]<= A2_0out;
+							Aout[BACK +: D1_OUT] <= A1out;
+							Aout[FRONT_OUT +: D1_OUT]<= A2_0out;
 						end
 						3:begin
-							Aout[BACK +: D1] <= A2_0out;
-							Aout[FRONT_OUT +: D1]<= A1out;
+							Aout[BACK +: D1_OUT] <= A2_0out;
+							Aout[FRONT_OUT +: D1_OUT]<= A1out;
 						end
 						default:begin
-							Aout[BACK +: D1] <= A1out;
-							Aout[FRONT_OUT +: D1]<= 0;
+							Aout[BACK +: D1_OUT] <= A1out;
+							Aout[FRONT_OUT +: D1_OUT]<= 0;
 						end
 					endcase
 				end
@@ -699,23 +700,69 @@ module B#(parameter NO7=0)(
 	reg[22:0]B3i[0:2];
 	reg data_valid_tmp,data_valid_;
 	
+	reg [2:0]wround_,wround_cnt1,wround_cnt2,wround_cnt3;
+	reg stride_,stride_cnt1,stride_cnt2,stride_cnt3;
+	
 	wire[26:0]B1out,B2_0out,B2_1out,B3out;
 	wire B1out_valid,B2_0out_valid,B2_1out_valid,B3out_valid;
+	
+	wire [45:0]test0,test1,test2,test3,test4,test5,test6,test7,test8;
+	assign test0 = data[D2*0+:D2];
+	assign test1 = data[D2*1+:D2];
+	assign test2 = data[D2*2+:D2];
+	assign test3 = data[D2*3+:D2];
+	assign test4 = data[D2*4+:D2];
+	assign test5 = data[D2*5+:D2];
+	assign test6 = data[D2*6+:D2];
+	assign test7 = data[D2*7+:D2];
+	assign test8 = data[D2*8+:D2];
 	
 	always@(posedge clk or negedge rst_n)begin
 		if(!rst_n)begin
 			data<=0;
 			data_valid_<=0;
 			data_valid_tmp<=0;
+			
+			wround_<=0;
+			stride_<=0;
 		end
 		else begin
 			if(data_valid)begin
 				data<=data_;
 				data_valid_tmp<=data_valid;
 				data_valid_<=data_valid_tmp;
+				
+				wround_<=wround;
+				stride_<=stride;
 			end
 		end
 	end
+	
+	always@(posedge clk or negedge rst_n)begin
+		if(!rst_n)begin
+			wround_<=0;
+			wround_cnt1<=0;
+			wround_cnt2<=0;
+			wround_cnt3<=0;
+			
+			stride_<=0;
+			stride_cnt1<=0;
+			stride_cnt2<=0;
+			stride_cnt3<=0;
+		end
+		else begin
+			wround_<=wround;
+			wround_cnt1<=wround_;
+			wround_cnt2<=wround_cnt1;
+			wround_cnt3<=wround_cnt2;
+			
+			stride_<=stride;
+			stride_cnt1<=stride_;
+			stride_cnt2<=stride_cnt1;
+			stride_cnt3<=stride_cnt2;
+		end
+	end
+	
 	/* B1 input */	
 	always@(posedge clk or negedge rst_n)begin
 		if(!rst_n)begin
@@ -724,12 +771,12 @@ module B#(parameter NO7=0)(
 			end
 		end
 		else begin	
-			if((stride==0 && NO7==0 && wround==3)||(stride==1 && NO7==1 && wround==1))begin
+			if((stride_==0 && NO7==0 && wround_==3)||(stride_==1 && NO7==1 && wround_==1))begin
 				for(id=0;id<3;id=id+1)begin
 					B1i[id]<=data[FRONT+id*D2 +: D1];
 				end
 				for(idx=3;idx<9;idx=idx+1)begin
-					B1i[idx]<=data[BACK+id*D2 +: D1];
+					B1i[idx]<=data[BACK+idx*D2 +: D1];
 				end
 			end
 			else begin
@@ -793,9 +840,9 @@ module B#(parameter NO7=0)(
 			end
 		end
 		else begin	
-			case(stride)
+			case(stride_)
 				0:begin
-					case(wround)
+					case(wround_)
 						1:begin
 							for(id=0;id<6;id=id+1)begin
 								B2_0i[id]<=data[BACK+id*D2 +: D1];
@@ -808,7 +855,7 @@ module B#(parameter NO7=0)(
 										B2_0i[id]<=data[BACK+id*D2 +: D1];
 									end
 									for(idx=3;idx<6;idx=idx+1)begin
-										B2_0i[id]<=data[FRONT+id*D2 +: D1];
+										B2_0i[idx]<=data[FRONT+idx*D2 +: D1];
 									end
 								end
 								1:begin
@@ -823,7 +870,7 @@ module B#(parameter NO7=0)(
 					endcase
 				end
 				1:begin
-					if(NO7==1 && wround==0)begin
+					if(NO7==1 && wround_==0)begin
 						for(id=0;id<6;id=id+1)begin
 							B2_0i[id]<=data[BACK+id*D2 +: D1];
 						end
@@ -833,7 +880,7 @@ module B#(parameter NO7=0)(
 							B2_0i[id]<=data[BACK+id*D2 +: D1];
 						end
 						for(idx=3;idx<6;idx=idx+1)begin
-							B2_0i[id]<=data[FRONT+id*D2 +: D1];
+							B2_0i[idx]<=data[FRONT+idx*D2 +: D1];
 						end
 					end
 					/*
@@ -860,12 +907,12 @@ module B#(parameter NO7=0)(
 			end
 		end
 		else begin	
-			if(stride==0 && NO7==1 && wround==1)begin
+			if(stride_==0 && NO7==1 && wround_==1)begin
 				for(id=0;id<3;id=id+1)begin
 					B2_1i[id]<=data[FRONT+id*D2+3*D2 +: D1]; // i3 ~ i5
 				end
 				for(idx=3;idx<6;idx=idx+1)begin
-					B2_1i[id]<=data[BACK+id*D2+6*D2 +: D1];
+					B2_1i[idx]<=data[BACK+idx*D2+6*D2 +: D1];
 				end
 			end
 			else begin
@@ -892,12 +939,12 @@ module B#(parameter NO7=0)(
 			end
 		end
 		else begin	
-			if((stride==1 && NO7==1 && wround==0)||(stride==0 && NO7==0 && wround==1))begin
+			if((stride_==1 && NO7==1 && wround_==0)||(stride_==0 && NO7==0 && wround_==1))begin
 				for(id=0;id<3;id=id+1)begin
 					B3i[id]<=data[FRONT+id*D2+6*D2 +: D1]; // i6 ~ i8
 				end
 			end
-			else if(stride==0 && NO7==1 && wround==3)begin
+			else if(stride_==0 && NO7==1 && wround_==3)begin
 				for(id=0;id<3;id=id+1)begin
 					B3i[id]<=data[FRONT+id*D2 +: D1]; // i0~i2
 				end
@@ -915,7 +962,7 @@ module B#(parameter NO7=0)(
 	
 	B1 b1(.clk(clk),.rst_n(rst_n),.i0(B1i[0]),.i1(B1i[1]),.i2(B1i[2]),.i3(B1i[3]),.i4(B1i[4]),.i5(B1i[5]),.i6(B1i[6]),.i7(B1i[7]),.i8(B1i[8]),.i_valid(data_valid_),.B1_valid(B1out_valid),.B1out(B1out));
 	B2 b2_0(.clk(clk),.rst_n(rst_n),.i0(B2_0i[0]),.i1(B2_0i[1]),.i2(B2_0i[2]),.i3(B2_0i[3]),.i4(B2_0i[4]),.i5(B2_0i[5]),.i_valid(data_valid_),.B2_valid(B2_0out_valid),.B2out(B2_0out));
-	B2 b2_1(.clk(clk),.rst_n(rst_n),.i0(B1i[0]),.i1(B2_1i[1]),.i2(B2_1i[2]),.i3(B2_1i[3]),.i4(B2_1i[4]),.i5(B2_1i[5]),.i_valid(data_valid_),.B2_valid(B2_1out_valid),.B2out(B2_1out));
+	B2 b2_1(.clk(clk),.rst_n(rst_n),.i0(B2_1i[0]),.i1(B2_1i[1]),.i2(B2_1i[2]),.i3(B2_1i[3]),.i4(B2_1i[4]),.i5(B2_1i[5]),.i_valid(data_valid_),.B2_valid(B2_1out_valid),.B2out(B2_1out));
 	B3 b3(.clk(clk),.rst_n(rst_n),.i0(B3i[0]),.i1(B3i[1]),.i2(B3i[2]),.i_valid(data_valid_),.B3_valid(B3out_valid),.B3out(B3out));
 	
 //------------------------------------------------------------------	
@@ -930,9 +977,9 @@ module B#(parameter NO7=0)(
 			if(B1out_valid || B2_0out_valid || B2_1out_valid ||B3out_valid)Bvalid<=1;
 			else Bvalid<=0;
 			
-			case(stride)
+			case(stride_cnt3)
 				0:begin
-					case(wround)
+					case(wround_cnt3)
 						0:begin
 							Bout[BACK +: D1_OUT]<= B1out;
 							Bout[FRONT_OUT +: D1_OUT]<= 0;
@@ -964,7 +1011,7 @@ module B#(parameter NO7=0)(
 					endcase
 				end
 				1:begin
-					case(wround)
+					case(wround_cnt3)
 						0:begin
 							if(NO7==0)begin
 								Bout[BACK +: D1_OUT]<= B1out;
