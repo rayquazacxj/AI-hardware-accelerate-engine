@@ -912,7 +912,7 @@ module B#(parameter NO7=0)(
 					B2_1i[id]<=data[FRONT+id*D2+3*D2 +: D1]; // i3 ~ i5
 				end
 				for(idx=3;idx<6;idx=idx+1)begin
-					B2_1i[idx]<=data[BACK+idx*D2+6*D2 +: D1];
+					B2_1i[idx]<=data[BACK+idx*D2+3*D2 +: D1];
 				end
 			end
 			else begin
@@ -941,7 +941,7 @@ module B#(parameter NO7=0)(
 		else begin	
 			if((stride_==1 && NO7==1 && wround_==0)||(stride_==0 && NO7==0 && wround_==1))begin
 				for(id=0;id<3;id=id+1)begin
-					B3i[id]<=data[FRONT+id*D2+6*D2 +: D1]; // i6 ~ i8
+					B3i[id]<=data[BACK+id*D2+6*D2 +: D1]; // i6 ~ i8
 				end
 			end
 			else if(stride_==0 && NO7==1 && wround_==3)begin
@@ -986,8 +986,8 @@ module B#(parameter NO7=0)(
 						end
 						1:begin
 							if(NO7==0)begin
-								Bout[BACK +: D1_OUT]<= B3out;
-								Bout[FRONT_OUT +: D1_OUT]<= B2_0out;
+								Bout[BACK +: D1_OUT]<= B2_0out;
+								Bout[FRONT_OUT +: D1_OUT]<= B3out;
 							end
 							else begin
 								Bout[BACK +: D1_OUT]<= B2_0out;

@@ -130,7 +130,7 @@ module ADDER_tb;
 		
 		repeat(30)@(negedge clk);
 		fin=1;
-		$display("END RUN~\n");	
+		$display("END RUN~~\n");	
 
 		
 	end
