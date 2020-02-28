@@ -732,6 +732,7 @@ module IPF#(
 				0 0    |
 			    ID5_2  | ID5_3 
 				*/
+				
 				1:begin										// 5 * 5
 					if(stride && !wgroup_dff)begin	  		// B C D E F
 						for(idx=0;idx<9;idx=idx+2)begin		// ID5_0  , ID5_2 
