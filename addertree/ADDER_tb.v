@@ -89,13 +89,13 @@ module ADDER_tb;
 		@(posedge clk)rst_n=0; 	//wait , when pos clk => active(rst_n=0)
 		#(`CYCLE*2)rst_n=1; 		//wait 2 cyc
 		@(negedge clk);
-		
+		/*
 		MUL_results = data_mem3[0];
 		MUL_DATA_valid = 1;
 		
 		@(negedge clk);
 		MUL_DATA_valid = 0;
-
+		*/
 		/*
 		@(negedge clk);
 		MUL_results = data_mem5[0]; 	//stride 1
@@ -109,7 +109,7 @@ module ADDER_tb;
 		@(negedge clk);
 		MUL_DATA_valid = 0;
 		*/
-		
+		/*
 		@(negedge clk);
 		MUL_results = data_mem7[0]; 	//stride 1
 		MUL_DATA_valid = 1;
@@ -131,7 +131,40 @@ module ADDER_tb;
 		repeat(30)@(negedge clk);
 		fin=1;
 		$display("END RUN~~\n");	
-
+		*/
+		
+//---------------------------------------------stride 2
+		stride=1;
+		MUL_results = data_mem3[0];
+		MUL_DATA_valid = 1;
+		
+		@(negedge clk);
+		MUL_DATA_valid = 0;
+		
+		@(negedge clk);
+		MUL_results = data_mem5[0]; 	//stride 1
+		MUL_DATA_valid = 1;
+		wsize=1;
+		wround = 0;
+		
+		@(negedge clk);
+		MUL_DATA_valid = 0;
+		
+		@(negedge clk);
+		MUL_results = data_mem7[0]; 	//stride 1
+		MUL_DATA_valid = 1;
+		wsize=2;
+		wround = 0;
+		
+		@(negedge clk);
+		wround = 1;
+		
+		@(negedge clk);
+		MUL_DATA_valid = 0;
+		
+		repeat(30)@(negedge clk);
+		fin=1;
+		$display("END RUN~\n");	
 		
 	end
 	

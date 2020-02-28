@@ -173,11 +173,11 @@ module FSA#(parameter NO3=0,parameter NO5=0,parameter ID5=0,parameter NO7=0,para
 							endcase
 						end
 						1:begin		// stride 2
-							if(NO5==2 && (ID5==3 || ID5==4))begin
+							if(NO5==2 && (ID5==2 || ID5==3))begin
 								FSAout[FRONT +:D1] 	<= row1;
 								FSAout[BACK +:D1]	<= row2 + row3;
 							end
-							else if(NO5==3 && (ID5==1 || ID5==2))begin
+							else if(NO5==3 && (ID5==0 || ID5==1))begin
 								FSAout[FRONT +:D1] 	<= row3;
 								FSAout[BACK +:D1] 	<= row1 + row2;
 							end
