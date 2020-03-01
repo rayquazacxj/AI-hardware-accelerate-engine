@@ -90,6 +90,8 @@ module ADDER_tb;
 		#(`CYCLE*2)rst_n=1; 		//wait 2 cyc
 		@(negedge clk);
 		
+	//-----------------------------------------------------
+	
 		MUL_results = data_mem3[0];
 		MUL_DATA_valid = 1;
 		

@@ -707,17 +707,6 @@ module B#(parameter NO7=0)(
 	wire[26:0]B1out,B2_0out,B2_1out,B3out;
 	wire B1out_valid,B2_0out_valid,B2_1out_valid,B3out_valid;
 	
-	wire [45:0]test0,test1,test2,test3,test4,test5,test6,test7,test8;
-	assign test0 = data[D2*0+:D2];
-	assign test1 = data[D2*1+:D2];
-	assign test2 = data[D2*2+:D2];
-	assign test3 = data[D2*3+:D2];
-	assign test4 = data[D2*4+:D2];
-	assign test5 = data[D2*5+:D2];
-	assign test6 = data[D2*6+:D2];
-	assign test7 = data[D2*7+:D2];
-	assign test8 = data[D2*8+:D2];
-	
 	always@(posedge clk or negedge rst_n)begin
 		if(!rst_n)begin
 			data<=0;
