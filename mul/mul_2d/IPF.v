@@ -540,14 +540,15 @@ module IPF#(
 	CUBE #(.NO3(3),.NO5(0),.ID5(3),.NO7(1),.ID7(3))C51(.wsize(Wsize),.i_dat(icu[3]),.w_dat(wcu[51]),.rst_n(rst_n),.clk(clk),.stride(stride),.round(round),.i_format(i_format),.w_format(w_format),.result(result[7344 +: RES_LEN]));
 	CUBE #(.NO3(4),.NO5(1),.ID5(0),.NO7(1),.ID7(4))C52(.wsize(Wsize),.i_dat(icu[4]),.w_dat(wcu[52]),.rst_n(rst_n),.clk(clk),.stride(stride),.round(round),.i_format(i_format),.w_format(w_format),.result(result[7488 +: RES_LEN]));
 	CUBE #(.NO3(5),.NO5(1),.ID5(1),.NO7(1),.ID7(5))C53(.wsize(Wsize),.i_dat(icu[5]),.w_dat(wcu[53]),.rst_n(rst_n),.clk(clk),.stride(stride),.round(round),.i_format(i_format),.w_format(w_format),.result(result[7632 +: RES_LEN]));
-	CUBE #(.NO3(7),.NO5(1),.ID5(3),.NO7(1),.ID7(7))C55(.wsize(Wsize),.i_dat(icu[7]),.w_dat(wcu[55]),.rst_n(rst_n),.clk(clk),.stride(stride),.round(round),.i_format(i_format),.w_format(w_format),.result(result[7776 +: RES_LEN]));
-	CUBE #(.NO3(0),.NO5(2),.ID5(0),.NO7(1),.ID7(8))C56(.wsize(Wsize),.i_dat(icu[8]),.w_dat(wcu[56]),.rst_n(rst_n),.clk(clk),.stride(stride),.round(round),.i_format(i_format),.w_format(w_format),.result(result[7920 +: RES_LEN]));
-	CUBE #(.NO3(1),.NO5(2),.ID5(1),.NO7(1),.ID7(9))C57(.wsize(Wsize),.i_dat(icu[1]),.w_dat(wcu[57]),.rst_n(rst_n),.clk(clk),.stride(stride),.round(round),.i_format(i_format),.w_format(w_format),.result(result[8064 +: RES_LEN]));
-	CUBE #(.NO3(2),.NO5(2),.ID5(2),.NO7(1),.ID7(9))C58(.wsize(Wsize),.i_dat(icu[0]),.w_dat(wcu[58]),.rst_n(rst_n),.clk(clk),.stride(stride),.round(round),.i_format(i_format),.w_format(w_format),.result(result[8208 +: RES_LEN]));
-	CUBE #(.NO3(3),.NO5(2),.ID5(3),.NO7(1),.ID7(9))C59(.wsize(Wsize),.i_dat(icu[1]),.w_dat(wcu[59]),.rst_n(rst_n),.clk(clk),.stride(stride),.round(round),.i_format(i_format),.w_format(w_format),.result(result[8352 +: RES_LEN]));
-	CUBE #(.NO3(4),.NO5(3),.ID5(0),.NO7(1),.ID7(9))C60(.wsize(Wsize),.i_dat(icu[0]),.w_dat(wcu[60]),.rst_n(rst_n),.clk(clk),.stride(stride),.round(round),.i_format(i_format),.w_format(w_format),.result(result[8496 +: RES_LEN]));
-	CUBE #(.NO3(5),.NO5(3),.ID5(1),.NO7(1),.ID7(9))C61(.wsize(Wsize),.i_dat(icu[1]),.w_dat(wcu[61]),.rst_n(rst_n),.clk(clk),.stride(stride),.round(round),.i_format(i_format),.w_format(w_format),.result(result[8640 +: RES_LEN]));
-	CUBE #(.NO3(6),.NO5(3),.ID5(2),.NO7(1),.ID7(9))C62(.wsize(Wsize),.i_dat(icu[0]),.w_dat(wcu[62]),.rst_n(rst_n),.clk(clk),.stride(stride),.round(round),.i_format(i_format),.w_format(w_format),.result(result[8784 +: RES_LEN]));
+	CUBE #(.NO3(6),.NO5(1),.ID5(2),.NO7(1),.ID7(6))C54(.wsize(Wsize),.i_dat(icu[7]),.w_dat(wcu[55]),.rst_n(rst_n),.clk(clk),.stride(stride),.round(round),.i_format(i_format),.w_format(w_format),.result(result[7776 +: RES_LEN]));
+	CUBE #(.NO3(7),.NO5(1),.ID5(3),.NO7(1),.ID7(7))C55(.wsize(Wsize),.i_dat(icu[7]),.w_dat(wcu[55]),.rst_n(rst_n),.clk(clk),.stride(stride),.round(round),.i_format(i_format),.w_format(w_format),.result(result[7920 +: RES_LEN]));
+	CUBE #(.NO3(0),.NO5(2),.ID5(0),.NO7(1),.ID7(8))C56(.wsize(Wsize),.i_dat(icu[8]),.w_dat(wcu[56]),.rst_n(rst_n),.clk(clk),.stride(stride),.round(round),.i_format(i_format),.w_format(w_format),.result(result[8064 +: RES_LEN]));
+	CUBE #(.NO3(1),.NO5(2),.ID5(1),.NO7(1),.ID7(9))C57(.wsize(Wsize),.i_dat(icu[1]),.w_dat(wcu[57]),.rst_n(rst_n),.clk(clk),.stride(stride),.round(round),.i_format(i_format),.w_format(w_format),.result(result[8208 +: RES_LEN]));
+	CUBE #(.NO3(2),.NO5(2),.ID5(2),.NO7(1),.ID7(9))C58(.wsize(Wsize),.i_dat(icu[0]),.w_dat(wcu[58]),.rst_n(rst_n),.clk(clk),.stride(stride),.round(round),.i_format(i_format),.w_format(w_format),.result(result[8352 +: RES_LEN]));
+	CUBE #(.NO3(3),.NO5(2),.ID5(3),.NO7(1),.ID7(9))C59(.wsize(Wsize),.i_dat(icu[1]),.w_dat(wcu[59]),.rst_n(rst_n),.clk(clk),.stride(stride),.round(round),.i_format(i_format),.w_format(w_format),.result(result[8496 +: RES_LEN]));
+	CUBE #(.NO3(4),.NO5(3),.ID5(0),.NO7(1),.ID7(9))C60(.wsize(Wsize),.i_dat(icu[0]),.w_dat(wcu[60]),.rst_n(rst_n),.clk(clk),.stride(stride),.round(round),.i_format(i_format),.w_format(w_format),.result(result[8640 +: RES_LEN]));
+	CUBE #(.NO3(5),.NO5(3),.ID5(1),.NO7(1),.ID7(9))C61(.wsize(Wsize),.i_dat(icu[1]),.w_dat(wcu[61]),.rst_n(rst_n),.clk(clk),.stride(stride),.round(round),.i_format(i_format),.w_format(w_format),.result(result[8784 +: RES_LEN]));
+	CUBE #(.NO3(6),.NO5(3),.ID5(2),.NO7(1),.ID7(9))C62(.wsize(Wsize),.i_dat(icu[0]),.w_dat(wcu[62]),.rst_n(rst_n),.clk(clk),.stride(stride),.round(round),.i_format(i_format),.w_format(w_format),.result(result[8928 +: RES_LEN]));
 	CUBE #(.NO3(7),.NO5(3),.ID5(3),.NO7(1),.ID7(9))C63(.wsize(Wsize),.i_dat(icu[1]),.w_dat(wcu[63]),.rst_n(rst_n),.clk(clk),.stride(stride),.round(round),.i_format(i_format),.w_format(w_format),.result(result[9072 +: RES_LEN]));
 	
 	/* res_valid : raising after i_data came in 4 cycles */
@@ -806,11 +807,11 @@ module IPF#(
 			rege<=0;
 			regf<=0;
 			regg<=0;
-			regh<=0;
+			regh<=0;/*
 			w	<=0;
 			widcnt<=0;
 			widstart<=0;
-			cnt7_7_2<=0;	
+			cnt7_7_2<=0;*/	
 		end
 		else begin
 			if(RLPadding == RPadding)begin
@@ -884,8 +885,10 @@ module IPF#(
 					end
 				endcase
 			end
+			else begin
+			end
 			
-
+			/*
 			if(w_valid)begin //3 , 5 full	
 				case(widstart)
 					0:w[(widcnt*64) +: 64]<=w_data;
@@ -894,6 +897,43 @@ module IPF#(
 				widcnt<=widcnt+1;	
 			end
 			
+			if(ctrl==FINI)begin								
+				if(Wsize==2)begin	// 7 * 7
+					cnt7_7_2<= ~cnt7_7_2;		
+					if(cnt7_7_2==0 && w_valid)begin
+						w<=w[1599:1568];
+						widstart<=32;
+					end
+					else if(w_valid)begin
+						w<=0;
+						widstart<=0;
+					end
+				end
+				else if(w_valid)begin
+					w<=0;
+					widstart<=0;
+				end
+				widcnt<=0;	
+			end	*/
+		end
+	end
+	
+	always@(posedge clk or negedge rst_n)begin
+		if(!rst_n)begin
+			w	<=0;
+			widcnt<=0;
+			widstart<=0;
+			cnt7_7_2<=0;	
+		end
+		else begin
+			if(w_valid)begin //3 , 5 full	
+				case(widstart)
+					0:w[(widcnt*64) +: 64]<=w_data;
+					32:w[(widcnt*64)+KEEP +:(64+KEEP)]<=w_data;
+				endcase
+				widcnt<=widcnt+1;	
+			end
+				
 			if(ctrl==FINI)begin								
 				if(Wsize==2)begin	// 7 * 7
 					cnt7_7_2<= ~cnt7_7_2;		

@@ -2,11 +2,15 @@
 `define SDFFILE    "./IPF.sdf"	  
 `define End_CYCLE  10000000
 
-`define PAT        "./mul_data_i.dat" 
+//`define PAT        "./mul_data_i.dat"  
 //`define WPA		   "./mul_data_w_7_7.dat"
-`define WPA		   "./mul_data_w.dat"   //3*3_w_data 
-//`define WPA		   "./mul_data_w_5_5.dat"  
+//`define WPA		   "./mul_data_w.dat"   //3*3_w_data 
+//`define WPA		   "./mul_data_w_5_5.dat"
 
+//random
+`define RES		   "./mul_data3_res.dat"
+`define PAT        "./mul_data3_i.dat" 
+`define WPA		   "./mul_data3_w.dat"   
 
 `define N_PAT      256**2
 `define I_Width    8
@@ -17,7 +21,7 @@
 module IPF_tb;
     
     reg clk;
-	reg rst;
+	reg rst_n;
 	reg [1:0]ctrl;			//0: end , 1:start , 2:hold   
 	
 	reg  [63:0] i_data; 		
@@ -38,9 +42,12 @@ module IPF_tb;
 	
 	reg [63:0] i_mem [0:7];
 	reg [63:0] w_mem  [0:24];		//3 *3 18 , 5*5 25
-
+	reg [9215:0]exp_mem[0:5];
+	
+	reg [9215:0]exp_dbg,result_dbg;
+	
     reg over;
-    integer err, exp_num, i,cnt,i_data_id,w_data_id;
+    integer err, exp_num, i,cnt,i_data_id,w_data_id,f;
 	
 	
 /* 接線 */
@@ -50,7 +57,7 @@ module IPF_tb;
     IPF #(.In_Width(`I_Width), .Out_Width(`O_Width), .Addr_Width(`A_Width)) IPF(
 `endif
     	.clk(clk),
-		.rst(rst),  
+		.rst_n(rst_n),  
         .ctrl(ctrl),
 		.i_valid(i_valid),
         .i_data(i_data),
@@ -67,17 +74,22 @@ module IPF_tb;
 		.stride(stride),
 		.wgroup(wgroup),
 		.wround(wround)
-	
-		
-		
 	);
+	
+	result_mem u_result_mem(
+   	    .clk(clk),
+   	    .res_valid(res_valid), 
+   	    .result(result) 
+   	    
+   	    
+   	);
 	
 	/* read file data */
 	initial begin
 		$readmemb(`PAT, i_mem);
 		$readmemb(`WPA , w_mem);
-		//$readmemb(`EXP0 , exp_mem);		
-		
+		$readmemb(`RES , exp_mem);		
+		f = $fopen("output.txt","w");
 	end
 	
 	/* set clk */
@@ -99,7 +111,7 @@ module IPF_tb;
 	initial begin 
 	
 		clk=0;
-		rst=1;
+		rst_n=1;
 		i_valid=0;
 		w_valid=0;
 		ctrl='hz;
@@ -111,14 +123,40 @@ module IPF_tb;
 		i_format=2;
 		w_format=2;
 		
-		@(posedge clk)rst=0; 	//wait , when pos clk => active(rst=0)
-		#(`CYCLE*2)rst=1; 		//wait 2 cyc
+		@(posedge clk)rst_n=0; 	//wait , when pos clk => active(rst_n=0)
+		#(`CYCLE*2)rst_n=1; 		//wait 2 cyc
 		@(negedge clk);
 		
 		i_data_id= 0;
 		w_data_id= 0;
 	
-
+		w_valid=1;
+		repeat(9)begin //3 * 3
+			w_data =w_mem[w_data_id];
+			w_data_id = w_data_id+1;
+			@(negedge clk);
+		end
+		w_valid=0;
+		$display("END in W\n");	
+		
+		i_valid=1;
+		repeat(2)begin
+			i_data =i_mem[i_data_id];
+			i_data_id = i_data_id + 1;
+			@(negedge clk);
+		end
+		ctrl=1; // start
+		repeat(6)begin
+			i_data =i_mem[i_data_id];
+			i_data_id = i_data_id + 1;
+			@(negedge clk);
+		end
+		ctrl=2; // fini
+		
+		$display("END compute  0-7 I ~\n");
+		
+		
+/*
 //------------------------------------3*3 stride 1
 		w_valid=1;
 		repeat(18)begin //3 * 3
@@ -183,7 +221,7 @@ module IPF_tb;
 		
 		
 		$display("END RUN\n");	
-	
+*/	
 		
 /*		
 	//------------------------------------3*3 stride2
@@ -716,12 +754,23 @@ module IPF_tb;
 		
 		$display("GOGO!!\n");
 		#(`CYCLE*3);
-		# (`End_CYCLE/2);
+		//# (`End_CYCLE/2);
 		//wait(finish); // wait until (true)
 		
-		@(posedge clk);
-		@(posedge clk);
-		$display("finish\n");
+		repeat(50)@(posedge clk);
+		
+		for (i=0; i <6 ; i=i+1) begin
+				exp_dbg = exp_mem[i]; result_dbg = u_result_mem.result_M[i];
+				if (exp_mem[i] == u_result_mem.result_M[i]) begin
+					err = err;
+				end else begin 
+					err = err + 1;
+					if (err <= 10) $display("Output pixel %d are wrong! \n %h \n %h", i,exp_mem[i],u_result_mem.result_M[i]);
+					if (err == 11) begin $display("Find the wrong pixel reached a total of more than 10 !, Please check the code .....\n");  end
+				end					
+				exp_num = exp_num + 1;
+		end
+		$display("finish~\n");
 		
 		over=1;
 	end
@@ -739,7 +788,30 @@ module IPF_tb;
 	initial begin
 		@(posedge over)
 		
-	    #(`CYCLE/2); $finish;
+	    repeat(20)@(posedge clk) ; $fclose(f);  $finish;
 	end
 		
+endmodule
+
+module result_mem (res_valid, result, clk);
+
+	input	res_valid;
+	input	[9215:0] result;
+	input	clk;
+
+	reg [9215:0] result_M [0:5];
+	integer i,id;
+
+	initial begin
+		for (i=0; i<=6; i=i+1) result_M[i] = 0;
+		id = 0;
+	end
+
+	always@(negedge clk) 
+		if (res_valid)begin
+			result_M[id] <= result;
+			if(id==5)$fwrite(f,"%b\n",result);
+			id<= id +1;
+		end
+
 endmodule
