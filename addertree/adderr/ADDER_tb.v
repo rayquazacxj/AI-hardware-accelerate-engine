@@ -66,7 +66,7 @@ module ADDER_tb;
 	/* create nWave & time violation detect */
 	initial begin
 		`ifdef SDF //syn
-			$sdf_annotate(`SDFFILE,IPF); //time violation
+			$sdf_annotate(`SDFFILE,ADDER); //time violation
 			$fsdbDumpfile("ADDER_syn.fsdb"); //nWave
 			$fsdbDumpvars("+mda");
 		`else

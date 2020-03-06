@@ -301,8 +301,6 @@ module A#(parameter NO5=0)(
 			i3<=0;
 			i_valid_tmp <= 0;
 			i_valid_    <= 0;
-			wround_<=0;
-			stride_<=0;
 		end
 		else begin
 			i_valid_tmp <= i_valid;
@@ -312,9 +310,6 @@ module A#(parameter NO5=0)(
 				i1<=i1_;
 				i2<=i2_;
 				i3<=i3_;
-				
-				wround_<=wround;
-				stride_<=stride;
 			end
 		end
 	end
@@ -712,18 +707,12 @@ module B#(parameter NO7=0)(
 			data<=0;
 			data_valid_<=0;
 			data_valid_tmp<=0;
-			
-			wround_<=0;
-			stride_<=0;
 		end
 		else begin
 			data_valid_tmp<=data_valid;
 			data_valid_<=data_valid_tmp;
 			if(data_valid)begin
 				data<=data_;
-				
-				wround_<=wround;
-				stride_<=stride;
 			end
 			
 		end
