@@ -12,3 +12,4 @@ write_sdf -version 1.0 -context verilog ADDER.sdf
 write -hierarchy -format verilog -output ADDER_syn.v
 
 uplevel #0 { report_area }
+uplevel #0 { report_timing -path full -delay max -nworst 1 -max_paths 1 -significant_digits 2 -sort_by group }

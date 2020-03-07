@@ -256,6 +256,7 @@ module FSA#(parameter NO3=0,parameter NO5=0,parameter ID5=0,parameter NO7=0,para
 						end
 					endcase
 				end
+				3:FSAout[BACK +:D1]	<= row1 + row2 + row3;
 			endcase
 		end
 	end
@@ -1199,7 +1200,7 @@ module ADDER(
 	reg [2:0]wround_cnt1,wround_cnt2,wround_cnt3,wround_cnt4,wround_5;
 	reg stride_cnt1,stride_cnt2,stride_cnt3,stride_cnt4,stride_5;
 	reg [3:0]wsize_cnt1,wsize_cnt2,wsize_cnt3,wsize_cnt4,wsize_cnt5;
-	reg wsize_is3,wsize_is5,wsize_is7;
+	reg wsize_is3,wsize_is5,wsize_is7,wsize_is1;
 	
 	wire [45:0]fsa_res[0:63];
 	wire [53:0]Bout[0:3];
@@ -1331,6 +1332,7 @@ module ADDER(
 		end
 	end	
 	always@(*)begin
+		wsize_is1=0;
 		wsize_is3=0;
 		wsize_is5=0;
 		wsize_is7=0;
@@ -1338,6 +1340,7 @@ module ADDER(
 		if(wsize_cnt5 ==0)wsize_is3=1;
 		if(wsize_cnt5 ==1)wsize_is5=1;
 		if(wsize_cnt5 ==2)wsize_is7=1;
+		if(wsize_cnt5 ==3)wsize_is1=1;
 	end
 	
 	
@@ -1363,7 +1366,7 @@ module ADDER(
 	
 	/* Psum */
 	always@(*)begin
-		wsize_=0;
+		wsize_=0; //3 * 3 & 1 * 1 (use same Psum)
 		
 		//if(FSAvalid)wsize_=0;		//3 * 3
 		if(Avalid)wsize_=1;
@@ -1376,7 +1379,7 @@ module ADDER(
 			Psum_valid<= 0;	
 		end
 		else begin
-			Psum_valid<= ((wsize_is3 & FSAvalid) || Avalid || Bvalid);
+			Psum_valid<= ((wsize_is3 & FSAvalid) || (wsize_is1 & FSAvalid) || Avalid || Bvalid);
 			
 			case(wsize_)
 				0:Psum<={fsa_res[63],fsa_res[62],fsa_res[61],fsa_res[60],fsa_res[59],fsa_res[58],fsa_res[57],fsa_res[56],fsa_res[55],fsa_res[54],fsa_res[53],fsa_res[52],fsa_res[51],fsa_res[50],fsa_res[49],fsa_res[48],fsa_res[47],fsa_res[46],fsa_res[45],fsa_res[44],fsa_res[43],fsa_res[42],fsa_res[41],fsa_res[40],fsa_res[39],fsa_res[38],fsa_res[37],fsa_res[36],fsa_res[35],fsa_res[34],fsa_res[33],fsa_res[32],fsa_res[31],fsa_res[30],fsa_res[29],fsa_res[28],fsa_res[27],fsa_res[26],fsa_res[25],fsa_res[24],fsa_res[23],fsa_res[22],fsa_res[21],fsa_res[20],fsa_res[19],fsa_res[18],fsa_res[17],fsa_res[16],fsa_res[15],fsa_res[14],fsa_res[13],fsa_res[12],fsa_res[11],fsa_res[10],fsa_res[9],fsa_res[8],fsa_res[7],fsa_res[6],fsa_res[5],fsa_res[4],fsa_res[3],fsa_res[2],fsa_res[1],fsa_res[0]};
