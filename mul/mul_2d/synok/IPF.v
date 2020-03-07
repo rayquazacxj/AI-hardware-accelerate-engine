@@ -456,12 +456,12 @@ module IPF#(
 	
 	parameter RES_LEN = 144;
 	
-	parameter D1 = 8;
-	parameter D2 = 16;
-	parameter D3 = 24;
-	parameter P1 = 8;
-	parameter W1 = 72;
-	parameter KEEP = 32;
+	parameter D1 = 32'd8;
+	parameter D2 = 32'd6;
+	parameter D3 = 32'd24;
+	parameter P1 = 32'd8;
+	parameter W1 = 32'd72;
+	parameter KEEP = 32'd32;
 
 	reg [STATE_Width-1:0] PS, NS;
 	
@@ -487,7 +487,7 @@ module IPF#(
 	reg [4:0]widcnt;			
 	reg [5:0]widstart;
 	reg [79:0]wcu[0:63];
-	reg [9:0]wgroup_start;
+	reg [31:0]wgroup_start;
 	reg [3:0]wgroup_dff;
 	integer idx,idxx,idi;
 	
@@ -637,7 +637,9 @@ module IPF#(
 	/* get wcu */
 	/* version2: wcu is dff*/
 	always@(posedge clk or negedge rst_n)begin
-		if(!rst_n)wgroup_start<=0;
+		if(!rst_n)begin
+			wgroup_start<=0;
+		end
 		else begin	
 			case(wgroup)
 				0:wgroup_start<= 0;  		  //wgroup1
@@ -651,7 +653,7 @@ module IPF#(
 			endcase
 		end
 	end
-/*	
+	/*
 	always@(posedge clk or negedge rst_n)begin
 		if(!rst_n)begin
 			for(idxx=0; idxx<64; idxx=idxx+1)begin 
@@ -663,8 +665,8 @@ module IPF#(
 				wcu[idxx]<=1;
 			end
 		end
-	end
-*/
+	end*/
+
 	always@(posedge clk or negedge rst_n)begin
 		if(!rst_n)begin
 			for(idxx=0; idxx<64; idxx=idxx+1)begin 
@@ -673,15 +675,20 @@ module IPF#(
 		end
 		else begin
 			case(wsize_dff1)
-				0:begin
+				0:begin //2 layer for can syn !!
+					for(idx=0; idx<8; idx=idx+1)begin   						// 8 channels
+						for(idxx= (idx*8) ; idxx< 8+ (idx*8); idxx=idxx+1)begin // NO3_0 ~ NO3_7
+							wcu[idxx]<={8'b0,w[(W1*idx)+wgroup_start +:W1]};
+						end
+					end
 				/*
 					for(idxx= 0 ; idxx< 8; idxx=idxx+1)begin // 1 channel // NO3_0 ~ NO3_7
 						wcu[idxx]<={8'b0,w[wgroup_start +:W1]};
 					end
 					for(idxx= 8 ; idxx< 16; idxx=idxx+1)begin // 1 channel // NO3_0 ~ NO3_7
-						wcu[idxx]<={8'b0,w[W1+wgroup_start +:W1]}; 
+						wcu[idxx]<={8'b0,w[W1+wgroup_start +:W1]}; // W1,wgroup_start =>(change to larger bits) 32bit => can syn!
 					end
-					for(idxx= 16 ; idxx< 24; idxx=idxx+1)begin 
+					for(idxx= 16; idxx< 24; idxx=idxx+1)begin 
 						wcu[idxx]<={8'b0,w[(W1*2)+wgroup_start +:W1]};
 					end
 					for(idxx= 24 ; idxx< 32; idxx=idxx+1)begin 
@@ -697,12 +704,13 @@ module IPF#(
 						wcu[idxx]<={8'b0,w[(W1*6)+wgroup_start +:W1]};
 					end
 					for(idxx= 56 ; idxx< 64; idxx=idxx+1)begin 
-						wcu[idxx]<={8'b0,w[(W1*1)+wgroup_start +:W1]};
+						wcu[idxx]<={8'b0,w[(W1*7)+wgroup_start +:W1]};
 					end	*/									
 				end	
+				
 			//------------------------------
 				1:begin
-				/*
+						//3 layer sys work !!!
 					for(idi=0;idi<4;idi=idi+1)begin  							// 4 channels
 						for(idx=0;idx<4;idx=idx+1)begin							// NO5_0 ~ NO5_3
 							for(idxx=0;idxx<4;idxx=idxx+1)begin					// ID5_0 ~ ID5_3
@@ -715,8 +723,9 @@ module IPF#(
 							end
 						end
 					end
-				*/
+				end
 				//--------------------
+				/*
 				//idi=0
 					for(idxx=0;idxx<4;idxx=idxx+1)begin					// ID5_0 ~ ID5_3
 						case(idxx)
@@ -859,10 +868,11 @@ module IPF#(
 							3:wcu[60+idxx]<={8'b0,24'b0,8'b0,w[(P1*23)+wgroup_start+3*(P1*25) +:D2],8'b0,w[(P1*18)+wgroup_start+3*(P1*25) +:D2]};
 						endcase
 					end
-				end
+				end*/
 			//-----------------------
+			
 				2:begin
-					/*
+					
 					for(idi=0;idi<2;idi=idi+1)begin								// 2 channels
 						for(idx=0;idx<2;idx=idx+1)begin							// NO7_0 , NO7_1
 							for(idxx=0;idxx<16;idxx=idxx+1)begin				// ID7_0 ~ ID7_8 (ID7_8(1 data))--|
@@ -881,8 +891,10 @@ module IPF#(
 							end
 						end
 					end	
-					*/
+				end
+					
 				//------------------
+				/*
 				//idi=0
 					//idx=0
 					for(idxx=0;idxx<16;idxx=idxx+1)begin				// ID7_0 ~ ID7_8 (ID7_8(1 data))									 
@@ -942,7 +954,7 @@ module IPF#(
 						endcase
 					end
 				//--------------		
-				end
+				end*/
 			endcase
 		end
 	end
