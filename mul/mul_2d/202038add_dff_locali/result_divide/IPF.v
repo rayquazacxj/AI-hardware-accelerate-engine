@@ -45,10 +45,13 @@ module CUBE#(
 	
 	reg [71:0]locali; 	
 	reg [71:0]localw;
+	reg [143:0]mul_result;
 	
 	reg [191:0]i,i_dff1,i_dff2,i_dff3,i_dff4,i_dff5;	
 	reg [79:0]w;
 	reg [3:0]i_format_dff,w_format_dff;
+	reg [4:0]format;
+	reg shift_direction;
 	
 	reg stride_dff;
 	reg [1:0]wsize_dff;
@@ -83,7 +86,6 @@ module CUBE#(
 			casez({wsize_dff,stride_dff,round_dff,NO3,ID5,NO5,ID7,NO7})
 			//----------3
 				18'b00_z_zzz_000_zz_zz_zzzz_z:locali <= {i[D3+NO3*8 : NO3*8] ,i[SB +D3+NO3*8 :SB +NO3*8] ,i[SA +D3+NO3*8 : SA +NO3*8] };
-				/*
 				18'b00_z_zzz_110_zz_zz_zzzz_z:locali <= {i[D1:0],i[D2+NO3*8 :NO3*8],i[SB +D1:SB +0],i[SB +D2+NO3*8 : SB +NO3*8],i[SA +D1:SA +0],i[SA +D2+NO3*8 : SA +NO3*8]};
 				18'b00_z_zzz_111_zz_zz_zzzz_z:locali <= {i[D2:0],i[D1+NO3*8 :NO3*8],i[SB +D2:SB +0],i[SB +D1+NO3*8 : SB +NO3*8],i[SA +D2:SA +0],i[SA +D1+NO3*8 : SA +NO3*8]};
 			//-----------5s0r0
@@ -204,7 +206,7 @@ module CUBE#(
 				18'b10_1_001_zzz_zz_zz_0111_1:locali <= {{DATA2{1'b0}},i[D1+P4:P4],{DATA2{1'b0}},i[SB +D1+P4:SB +P4],{DATA2{1'b0}},i[SA +D1+P4:SA +P4]};
 				18'b10_1_001_zzz_zz_zz_1000_0:locali <= {{DATA7{1'b0}},{DATA1{1'b0}},i[SA +D1+P2:SA +P2]};
 				18'b10_1_001_zzz_zz_zz_1000_1:locali <= {{DATA7{1'b0}},{DATA1{1'b0}},i[SA +D1+P4:SA +P4]};
-				18'b10_1_001_zzz_zz_zz_1001_z:locali <= 72'b0;*/
+				18'b10_1_001_zzz_zz_zz_1001_z:locali <= 72'b0;
 				default:locali <=0;
 			endcase
 		end
@@ -534,19 +536,45 @@ module CUBE#(
 	end
 	
 	/* multiple */
+	
+	always@(posedge clk or negedge rst_n)begin  
+		if(!rst_n)begin
+			format<=0;
+			shift_direction<=0;
+		end
+		else begin
+			format<= i_format_dff + w_format_dff - ADD_FORMAT ;
+			
+			if(i_format_dff + w_format_dff > ADD_FORMAT)shift_direction<=1;
+			else shift_direction<=0;
+		end
+	end
+	
+	always@(posedge clk or negedge rst_n)begin  
+		if(!rst_n)begin
+			mul_result<=0;
+		end
+		else begin
+			for(j=0;j<9;j=j+1)begin
+				mul_result[16*j +: 16] <= (localw[8*j +: 8] * locali[8*j +: 8]) ;
+			end
+		end
+	end
+	
+//--------------
 	always@(posedge clk or negedge rst_n)begin  
 		if(!rst_n)begin
 			result<=0;
 		end
 		else begin
-			if(i_format_dff+w_format_dff > ADD_FORMAT)begin
+			if(shift_direction)begin
 				for(j=0;j<9;j=j+1)begin
-					result[16*j +: 16] <= (localw[8*j +: 8] * locali[8*j +: 8]) >> (i_format_dff+w_format_dff-ADD_FORMAT);
+					result[16*j +: 16] <= mul_result[16*j +: 16] >> format;
 				end
 			end
 			else begin
 				for(j=0;j<9;j=j+1)begin
-					result[16*j +: 16] <= (localw[8*j +: 8] * locali[8*j +: 8]) << (ADD_FORMAT-i_format_dff-w_format_dff);
+					result[16*j +: 16] <= mul_result[16*j +: 16] << format;
 				end
 			end
 		end
@@ -609,7 +637,7 @@ module IPF#(
 
 	reg [STATE_Width-1:0] PS, NS;
 	
-	reg res_valid_tmp,res_valid_tmp1,res_valid_tmp2;
+	reg res_valid_tmp,res_valid_tmp1,res_valid_tmp2,res_valid_tmp3;
 	
 	reg [3:0]i_format_tmp,i_format_tmp1,w_format_tmp,w_format_tmp1;
 	
@@ -713,6 +741,7 @@ module IPF#(
 			res_valid_tmp<=0;
 			res_valid_tmp1<=0;
 			res_valid_tmp2<=0;
+			res_valid_tmp3<=0;
 		end
 		else begin
 			case(PS)
@@ -721,7 +750,8 @@ module IPF#(
 			endcase
 			res_valid_tmp1 <= res_valid_tmp;
 			res_valid_tmp2 <= res_valid_tmp1;
-			res_valid <= res_valid_tmp2;
+			res_valid_tmp3 <= res_valid_tmp2;
+			res_valid <= res_valid_tmp3;
 		end
 	end
 	
