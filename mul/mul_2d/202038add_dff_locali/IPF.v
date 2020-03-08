@@ -1,9 +1,9 @@
 module CUBE#(
-	parameter NO3 = 0,
-	parameter NO5 = 0,
-	parameter ID5 = 0,
-	parameter NO7 = 0,
-	parameter ID7 = 0
+	parameter NO3 = 3'd0,
+	parameter NO5 = 2'd0,
+	parameter ID5 = 2'd0,
+	parameter NO7 = 1'd0,
+	parameter ID7 = 4'd0
 	
 )(
 	input clk,
@@ -46,7 +46,7 @@ module CUBE#(
 	reg [71:0]locali; 	
 	reg [71:0]localw;
 	
-	reg [191:0]i;	
+	reg [191:0]i,i_dff1,i_dff2,i_dff3,i_dff4,i_dff5;	
 	reg [79:0]w;
 	reg [3:0]i_format_dff,w_format_dff;
 	
@@ -75,8 +75,141 @@ module CUBE#(
 		end
 	end
 	
-			
-	/* mapping i_dat to locali */	
+	always@(posedge clk or negedge rst_n)begin
+		if(!rst_n)begin
+			locali<=0;
+		end
+		else begin
+			casez({wsize_dff,stride_dff,round_dff,NO3,ID5,NO5,ID7,NO7})
+			//----------3
+				18'b00_z_zzz_000_zz_zz_zzzz_z:locali <= {i[D3+NO3*8 : NO3*8] ,i[SB +D3+NO3*8 :SB +NO3*8] ,i[SA +D3+NO3*8 : SA +NO3*8] };
+				18'b00_z_zzz_110_zz_zz_zzzz_z:locali <= {i[D1:0],i[D2+NO3*8 :NO3*8],i[SB +D1:SB +0],i[SB +D2+NO3*8 : SB +NO3*8],i[SA +D1:SA +0],i[SA +D2+NO3*8 : SA +NO3*8]};
+				18'b00_z_zzz_111_zz_zz_zzzz_z:locali <= {i[D2:0],i[D1+NO3*8 :NO3*8],i[SB +D2:SB +0],i[SB +D1+NO3*8 : SB +NO3*8],i[SA +D2:SA +0],i[SA +D1+NO3*8 : SA +NO3*8]};
+			//-----------5s0r0
+				18'b01_0_000_zzz_00_zz_zzzz_z:locali <= {i[D3+NO5*8:NO5*8],i[SB +D3+NO5*8:SB +NO5*8],i[SA +D3+NO5*8:SA +NO5*8]};
+				18'b01_0_000_zzz_01_zz_zzzz_z:locali <= {{DATA3{1'b0}},i[SB +D3+NO5*8:SB +NO5*8],i[SA +D3+NO5*8:SA +NO5*8]};
+				18'b01_0_000_zzz_10_zz_zzzz_z:locali <= {{DATA1{1'b0}},i[D2+P3+NO5*8: P3+NO5*8],{DATA1{1'b0}},i[SB +D2+P3+NO5*8:SB +P3+NO5*8],{DATA1{1'b0}},i[SA +D2+P3+NO5*8:SA +P3+NO5*8]};
+				18'b01_0_000_zzz_11_zz_zzzz_z:locali <= {{DATA3{1'b0}},{DATA1{1'b0}},i[SB +D2+P3+NO5*8:SB +P3+NO5*8],{DATA1{1'b0}},i[SA +D2+P3+NO5*8:SA +P3+NO5*8]};
+			//-----------5s0r1
+				18'b01_0_001_zzz_00_10_zzzz_z:locali <= {i[D1:0],i[D2+(NO5+4)*8:(NO5+4)*8],i[SB +D1:SB],i[SB +D2+(NO5+4)*8:SB +(NO5+4)*8],i[SA +D1:SA],i[SA +D2+(NO5+4)*8:SA +(NO5+4)*8]};
+				18'b01_0_001_zzz_00_11_zzzz_z:locali <= {i[D2:0],i[D1+(NO5+4)*8:(NO5+4)*8],i[SB +D2:SB],i[SB +D1+(NO5+4)*8:SB +(NO5+4)*8],i[SA +D2:SA],i[SA +D1+(NO5+4)*8:SA +(NO5+4)*8]};
+				18'b01_0_001_zzz_00_zz_zzzz_z:locali <= {i[D3+(NO5+4)*8:(NO5+4)*8],i[SB +D3+(NO5+4)*8:SB +(NO5+4)*8],i[SA +D3+(NO5+4)*8:SA +(NO5+4)*8]};
+				18'b01_0_001_zzz_01_10_zzzz_z:locali <= {{DATA3{1'b0}},i[SB +D1:SB],i[SB +D2+(NO5+4)*8:SB +(NO5+4)*8],i[SA +D1:SA],i[SA +D2+(NO5+4)*8:SA +(NO5+4)*8]};
+				18'b01_0_001_zzz_01_11_zzzz_z:locali <= {{DATA3{1'b0}},i[SB +D2:SB],i[SB +D1+(NO5+4)*8:SB +(NO5+4)*8],i[SA +D2:SA],i[SA +D1+(NO5+4)*8:SA +(NO5+4)*8]};
+				18'b01_0_001_zzz_01_zz_zzzz_z:locali <= {{DATA3{1'b0}},i[SB +D3+(NO5+4)*8:SB +(NO5+4)*8],i[SA +D3+(NO5+4)*8:SA +(NO5+4)*8]};
+				18'b01_0_001_zzz_10_00_zzzz_z:locali <= {{DATA1{1'b0}},i[D1:0],i[D1+(NO5+7)*8:(NO5+7)*8],{DATA1{1'b0}},i[SB +D1:SB],i[SB +D1+(NO5+7)*8:SB +(NO5+7)*8],{DATA1{1'b0}},i[SA +D1:SA],i[SA +D1+(NO5+7)*8:SA +(NO5+7)*8]};
+				18'b01_0_001_zzz_10_zz_zzzz_z:locali <= {{DATA1{1'b0}},i[D2+(NO5-1)*8:(NO5-1)*8],i[D2+(NO5-1)*8:(NO5-1)*8],{DATA1{1'b0}},i[SB +D2+(NO5-1)*8:SB +(NO5-1)*8],{DATA1{1'b0}},i[SA +D2+(NO5-1)*8:SA +(NO5-1)*8]};
+				18'b01_0_001_zzz_11_00_zzzz_z:locali <= {{DATA3{1'b0}},{DATA1{1'b0}},i[SB +D1:SB],i[SB +D1+(NO5+7)*8:SB +(NO5+7)*8],{DATA1{1'b0}},i[SA +D1:SA],i[SA +D1+(NO5+7)*8:SA +(NO5+7)*8]}; //NO5_0
+				18'b01_0_001_zzz_11_zz_zzzz_z:locali <= {{DATA3{1'b0}},{DATA1{1'b0}},i[SB +D2+(NO5-1)*8:SB +(NO5-1)*8],{DATA1{1'b0}},i[SA +D2+(NO5-1)*8:SA +(NO5-1)*8]};
+			//------------5s1
+				18'b01_1_zzz_zzz_00_11_zzzz_z:locali <= {i[D1:0],i[D2+(NO5+3)*8:(NO5+3)*8],i[SB +D1:SB],i[SB +D2+(NO5+3)*8:SB +(NO5+3)*8],i[SA +D1:SA],i[SA +D2+(NO5+3)*8:SA +(NO5+3)*8]};
+				18'b01_1_zzz_zzz_00_zz_zzzz_z:locali <= {i[D3+(NO5*2)*8:(NO5*2)*8],i[SB +D3+(NO5*2)*8:SB +(NO5*2)*8],i[SA +D3+(NO5*2)*8:SA +(NO5*2)*8]};
+				18'b01_1_zzz_zzz_01_11_zzzz_z:locali <= {{DATA3{1'b0}},i[SB +D1:SB],i[SB +D2+(NO5+3)*8:SB +(NO5+3)*8],i[SA +D1:SA],i[SA +D2+(NO5+3)*8:SA +(NO5+3)*8]};
+				18'b01_1_zzz_zzz_01_zz_zzzz_z:locali <= {{DATA3{1'b0}},i[SB +D3+(NO5*2)*8:SB +(NO5*2)*8],i[SA +D3+(NO5*2)*8:SA +(NO5*2)*8]};
+				18'b01_1_zzz_zzz_10_00_zzzz_z:locali <= {{DATA1{1'b0}},i[D2+P3:P3],{DATA1{1'b0}},i[SB +D2+P3:SB +P3],{DATA1{1'b0}},i[SA +D2+P3:SA +P3]};
+				18'b01_1_zzz_zzz_10_01_zzzz_z:locali <= {{DATA1{1'b0}},i[D2+P5:P5],{DATA1{1'b0}},i[SB +D5+P5:SB +P5],{DATA1{1'b0}},i[SA +D2+P5:SA +P5]};
+				18'b01_1_zzz_zzz_10_10_zzzz_z:locali <= {{DATA1{1'b0}},i[D1:0],i[D1+P7:P7],{DATA1{1'b0}},i[SB +D1:SB],i[SB +D1+P7:SB +P7],{DATA1{1'b0}},i[SA +D1:SA],i[SA +D1+P7:SA +P7]};
+				18'b01_1_zzz_zzz_10_11_zzzz_z:locali <= {{DATA1{1'b0}},i[D2+P1:P1],{DATA1{1'b0}},i[SB +D5+P1:SB +P1],{DATA1{1'b0}},i[SA +D2+P1:SA +P1]};
+				18'b01_1_zzz_zzz_11_00_zzzz_z:locali <= {{DATA3{1'b0}},{DATA1{1'b0}},i[SB +D2+P3:SB +P3],{DATA1{1'b0}},i[SA +D2+P3:SA +P3]};
+				18'b01_1_zzz_zzz_11_01_zzzz_z:locali <= {{DATA3{1'b0}},{DATA1{1'b0}},i[SB +D2+P5:SB +P5],{DATA1{1'b0}},i[SA +D2+P5:SA +P5]};
+				18'b01_1_zzz_zzz_11_10_zzzz_z:locali <= {{DATA3{1'b0}},{DATA1{1'b0}},i[SB +D1:SB],i[SB +D1+P7:SB +P7],{DATA1{1'b0}},i[SA +D1:SA],i[SA +D1+P7:SA +P7]};
+				18'b01_1_zzz_zzz_11_11_zzzz_z:locali <= {{DATA3{1'b0}},{DATA1{1'b0}},i[SB +D2+P1:SB +P1],{DATA1{1'b0}},i[SA +D2+P1:SA +P1]};
+			//-----------7s0r0
+				18'b10_0_000_zzz_zz_zz_0000_z:locali <= {i[D3+NO7*8:NO7*8],i[SB +D3+NO7*8:SB +NO7*8],i[SA +D3+NO7*8:SA +NO7*8]};
+				18'b10_0_000_zzz_zz_zz_0001_z:locali <= {i[D3+NO7*8:NO7*8],i[SB +D3+NO7*8:SB +NO7*8],i[SA +D3+NO7*8:SA +NO7*8]};
+				18'b10_0_000_zzz_zz_zz_0010_z:locali <= {{DATA6{1'b0}},i[SA +D3+NO7*8:SA +NO7*8]};
+				18'b10_0_000_zzz_zz_zz_0011_z:locali <= {i[D3+(NO7+3)*8:(NO7+3)*8],i[SB +D3+(NO7+3)*8:SB +(NO7+3)*8],i[SA +D3+(NO7+3)*8:SA +(NO7+3)*8]};
+				18'b10_0_000_zzz_zz_zz_0100_z:locali <= {i[D3+(NO7+3)*8:(NO7+3)*8],i[SB +D3+(NO7+3)*8:SB +(NO7+3)*8],i[SA +D3+(NO7+3)*8:SA +(NO7+3)*8]};
+				18'b10_0_000_zzz_zz_zz_0101_z:locali <= {{DATA6{1'b0}},i[SA +D3+(NO7+3)*8:SA +(NO7+3)*8]};
+				18'b10_0_000_zzz_zz_zz_0110_z:locali <= {{DATA2{1'b0}},i[D1+(NO7+6)*8:(NO7+6)*8],{DATA2{1'b0}},i[SB +D1+(NO7+6)*8:SB +(NO7+6)*8],{DATA2{1'b0}},i[SA +D1+(NO7+6)*8:SA +(NO7+6)*8]};
+				18'b10_0_000_zzz_zz_zz_0111_z:locali <= {{DATA2{1'b0}},i[D1+(NO7+6)*8:(NO7+6)*8],{DATA2{1'b0}},i[SB +D1+(NO7+6)*8:SB +(NO7+6)*8],{DATA2{1'b0}},i[SA +D1+(NO7+6)*8:SA +(NO7+6)*8]};
+				18'b10_0_000_zzz_zz_zz_1000_z:locali <= {{DATA7{1'b0}},{DATA1{1'b0}},i[SA +D1+(NO7+6)*8:SA +(NO7+6)*8]};
+				18'b10_0_000_zzz_zz_zz_1001_z:locali <= 72'b0;
+			//----------7s0r1
+				18'b10_0_001_zzz_zz_zz_0000_z:locali <= {i[D3+(NO7+2)*8:(NO7+2)*8],i[SB +D3+(NO7+2)*8:SB +(NO7+2)*8],i[SA +D3+(NO7+2)*8:SA +(NO7+2)*8]};
+				18'b10_0_001_zzz_zz_zz_0001_z:locali <= {i[D3+(NO7+2)*8:(NO7+2)*8],i[SB +D3+(NO7+2)*8:SB +(NO7+2)*8],i[SA +D3+(NO7+2)*8:SA +(NO7+2)*8]};
+				18'b10_0_001_zzz_zz_zz_0010_z:locali <= {{DATA6{1'b0}},i[SA +D3+(NO7+2)*8:SA +(NO7+2)*8]};
+				18'b10_0_001_zzz_zz_zz_0011_0:locali <= {i[D3+(NO7+5)*8:(NO7+5)*8],i[SB +D3+(NO7+5)*8:SB +(NO7+5)*8],i[SA +D3+(NO7+5)*8:SA +(NO7+5)*8]};
+				18'b10_0_001_zzz_zz_zz_0011_1:locali <= {i[D1:0],i[D2+(NO7+5)*8:(NO7+5)*8],i[SB +D1:SB],i[SB +D2+(NO7+5)*8:SB +(NO7+5)*8],i[SA +D1:SA ],i[SA +D2+(NO7+5)*8:SA +(NO7+5)*8]};
+				18'b10_0_001_zzz_zz_zz_0100_0:locali <= {i[D3+(NO7+5)*8:(NO7+5)*8],i[SB +D3+(NO7+5)*8:SB +(NO7+5)*8],i[SA +D3+(NO7+5)*8:SA +(NO7+5)*8]};
+				18'b10_0_001_zzz_zz_zz_0100_1:locali <= {i[D1:0],i[D2+(NO7+5)*8:(NO7+5)*8],i[SB +D1:SB],i[SB +D2+(NO7+5)*8:SB +(NO7+5)*8],i[SA +D1:SA ],i[SA +D2+(NO7+5)*8:SA +(NO7+5)*8]};
+				18'b10_0_001_zzz_zz_zz_0101_0:locali <= {{DATA6{1'b0}},i[SA +D3+(NO7+5)*8:SA +(NO7+5)*8]};
+				18'b10_0_001_zzz_zz_zz_0101_1:locali <= {{DATA6{1'b0}},i[SA +D1+NO7*8:SA +NO7*8],i[SA +D2:SA]};
+				18'b10_0_000_zzz_zz_zz_0110_z:locali <= {{DATA2{1'b0}},i[D1+NO7*8:NO7*8],{DATA2{1'b0}},i[SB +D1+NO7*8:SB +NO7*8],{DATA2{1'b0}},i[SA +D1+NO7*8:SA +NO7*8]};
+				18'b10_0_000_zzz_zz_zz_0111_z:locali <= {{DATA2{1'b0}},i[D1+NO7*8:NO7*8],{DATA2{1'b0}},i[SB +D1+NO7*8:SB +NO7*8],{DATA2{1'b0}},i[SA +D1+NO7*8:SA +NO7*8]};
+				18'b10_0_000_zzz_zz_zz_1000_z:locali <= {{DATA7{1'b0}},{D1{1'b0}},i[SA +D1+NO7*8:SA +NO7*8]};
+				18'b10_0_000_zzz_zz_zz_1001_z:locali <= 72'b0;
+			//-----------7s0r2
+				18'b10_0_010_zzz_zz_zz_0000_z:locali <= {i[D3+(NO7+4)*8:(NO7+4)*8],i[SB +D3+(NO7+4)*8:SB +(NO7+4)*8],i[SA +D3+(NO7+4)*8:SA +(NO7+4)*8]};
+				18'b10_0_010_zzz_zz_zz_0001_z:locali <= {i[D3+(NO7+4)*8:(NO7+4)*8],i[SB +D3+(NO7+4)*8:SB +(NO7+4)*8],i[SA +D3+(NO7+4)*8:SA +(NO7+4)*8]};
+				18'b10_0_010_zzz_zz_zz_0010_z:locali <= {{DATA6{1'b0}},i[SA +D3+(NO7+4)*8:SA +(NO7+4)*8]};
+				18'b10_0_010_zzz_zz_zz_0011_0:locali <= {i[D2:0],i[D1+(NO7+7)*8:(NO7+7)*8],i[SB +D2+NO7*8:SB +NO7*8],i[SB +D1+(NO7+7)*8:SB +(NO7+7)*8],i[SA +D2+NO7*8:SA +NO7*8],i[SA +D1+(NO7+7)*8:SA +(NO7+7)*8]};
+				18'b10_0_010_zzz_zz_zz_0011_1:locali <= {i[D3+(NO7-1)*8:(NO7-1)*8],i[SB +D3+(NO7-1)*8:SB +(NO7-1)*8],i[SA +D3+(NO7-1)*8:SA +(NO7-1)*8]};
+				18'b10_0_010_zzz_zz_zz_0100_0:locali <= {i[D2:0],i[D1+(NO7+7)*8:(NO7+7)*8],i[SB +D2+NO7*8:SB +NO7*8],i[SB +D1+(NO7+7)*8:SB +(NO7+7)*8],i[SA +D2+NO7*8:SA +NO7*8],i[SA +D1+(NO7+7)*8:SA +(NO7+7)*8]};
+				18'b10_0_010_zzz_zz_zz_0100_1:locali <= {i[D3+(NO7-1)*8:(NO7-1)*8],i[SB +D3+(NO7-1)*8:SB +(NO7-1)*8],i[SA +D3+(NO7-1)*8:SA +(NO7-1)*8]};
+				18'b10_0_010_zzz_zz_zz_0101_0:locali <= {{DATA6{1'b0}},i[SA +D2+NO7*8:SA +NO7*8],i[SA +D1+(NO7+7)*8:SA +(NO7+7)*8]};
+				18'b10_0_010_zzz_zz_zz_0101_1:locali <= {{DATA6{1'b0}},i[SA +D3+(NO7-1)*8:SA +(NO7-1)*8]};
+				18'b10_0_010_zzz_zz_zz_0110_z:locali <= {{DATA2{1'b0}},i[D1+(NO7+2)*8:(NO7+2)*8],{DATA2{1'b0}},i[SB +D1+(NO7+2)*8:SB +(NO7+2)*8],{DATA2{1'b0}},i[SA +D1+(NO7+2)*8:SA +(NO7+2)*8]};
+				18'b10_0_010_zzz_zz_zz_0111_z:locali <= {{DATA2{1'b0}},i[D1+(NO7+2)*8:(NO7+2)*8],{DATA2{1'b0}},i[SB +D1+(NO7+2)*8:SB +(NO7+2)*8],{DATA2{1'b0}},i[SA +D1+(NO7+2)*8:SA +(NO7+2)*8]};
+				18'b10_0_010_zzz_zz_zz_1000_z:locali <= {{DATA7{1'b0}},{DATA1{1'b0}},i[SA +D1+(NO7+2)*8:SA +(NO7+2)*8]};
+				18'b10_0_010_zzz_zz_zz_1001_z:locali <= 72'b0;
+			//--------------7s0r3
+				18'b10_0_011_zzz_zz_zz_0000_0:locali <= {i[D1:0],i[D2+P6:P6],i[SB +D1:SB],i[SB +D2+P6:SB +P6],i[SA +D1:SA],i[SA +D2+P6:SA +P6]};
+				18'b10_0_011_zzz_zz_zz_0000_1:locali <= {i[D2:0],i[D1+P7:P7],i[SB +D2:SB],i[SB +D1+P7:SB +P7],i[SA +D2:SA],i[SA +D1+P7:SA +P7]};
+				18'b10_0_011_zzz_zz_zz_0001_0:locali <= {i[D1:0],i[D2+P6:P6],i[SB +D1:SB],i[SB +D2+P6:SB +P6],i[SA +D1:SA],i[SA +D2+P6:SA +P6]};
+				18'b10_0_011_zzz_zz_zz_0001_1:locali <= {i[D2:0],i[D1+P7:P7],i[SB +D2:SB],i[SB +D1+P7:SB +P7],i[SA +D2:SA],i[SA +D1+P7:SA +P7]};
+				18'b10_0_011_zzz_zz_zz_0010_0:locali <= {{DATA6{1'b0}},i[SA +D1:SA],i[SA +D2+P6:SA +P6]};
+				18'b10_0_011_zzz_zz_zz_0010_1:locali <= {{DATA6{1'b0}},i[SA +D2:SA],i[SA +D1+P7:SA +P7]};
+				18'b10_0_011_zzz_zz_zz_0011_z:locali <= {i[D3+(NO7+1)*8:(NO7+1)*8],i[SB +D3+(NO7+1)*8:SB +(NO7+1)*8],i[SA +D3+(NO7+1)*8:SA +(NO7+1)*8]};
+				18'b10_0_011_zzz_zz_zz_0100_z:locali <= {i[D3+(NO7+1)*8:(NO7+1)*8],i[SB +D3+(NO7+1)*8:SB +(NO7+1)*8],i[SA +D3+(NO7+1)*8:SA +(NO7+1)*8]};
+				18'b10_0_011_zzz_zz_zz_0101_z:locali <= {{DATA6{1'b0}},i[SA +D3+(NO7+1)*8:SA +(NO7+1)*8]};
+				18'b10_0_011_zzz_zz_zz_0110_z:locali <= {{DATA2{1'b0}},i[D1+(NO7+4)*8:(NO7+4)*8],{DATA2{1'b0}},i[SB +D1+(NO7+4)*8:SB +(NO7+4)*8],{DATA2{1'b0}},i[SA +D1+(NO7+4)*8:SA +(NO7+4)*8]};
+				18'b10_0_011_zzz_zz_zz_0111_z:locali <= {{DATA2{1'b0}},i[D1+(NO7+4)*8:(NO7+4)*8],{DATA2{1'b0}},i[SB +D1+(NO7+4)*8:SB +(NO7+4)*8],{DATA2{1'b0}},i[SA +D1+(NO7+4)*8:SA +(NO7+4)*8]};
+				18'b10_0_011_zzz_zz_zz_1000_z:locali <= {{DATA7{1'b0}},{DATA1{1'b0}},i[SA +D1+(NO7+4)*8:SA +(NO7+4)*8]};
+				18'b10_0_011_zzz_zz_zz_1001_z:locali <= 72'b0;
+			//--------------7s1r0
+				18'b10_1_000_zzz_zz_zz_0000_z:locali <= {i[D3+(NO7*2)*8:(NO7*2)*8],i[SB +D3+(NO7*2)*8:SB +(NO7*2)*8],i[SA +D3+(NO7*2)*8:SA +(NO7*2)*8]};
+				18'b10_1_000_zzz_zz_zz_0001_z:locali <= {i[D3+(NO7*2)*8:(NO7*2)*8],i[SB +D3+(NO7*2)*8:SB +(NO7*2)*8],i[SA +D3+(NO7*2)*8:SA +(NO7*2)*8]};
+				18'b10_1_000_zzz_zz_zz_0010_z:locali <= {{DATA6{1'b0}},i[SA +D3+(NO7*2)*8:SA +(NO7*2)*8]};
+				18'b10_1_000_zzz_zz_zz_0011_0:locali <= {i[D3+P3:P3],i[SB +D3+P3:SB +P3],i[SA +D3+P3:SA +P3]};
+				18'b10_1_000_zzz_zz_zz_0011_1:locali <= {i[D3+P5:P5],i[SB +D3+P5:SB +P5],i[SA +D3+P5:SA +P5]};
+				18'b10_1_000_zzz_zz_zz_0100_0:locali <= {i[D3+P3:P3],i[SB +D3+P3:SB +P3],i[SA +D3+P3:SA +P3]};
+				18'b10_1_000_zzz_zz_zz_0100_1:locali <= {i[D3+P5:P5],i[SB +D3+P5:SB +P5],i[SA +D3+P5:SA +P5]};
+				18'b10_1_000_zzz_zz_zz_0101_0:locali <= {{DATA6{1'b0}},i[SA +D3+P3:SA +P3]};
+				18'b10_1_000_zzz_zz_zz_0101_1:locali <= {{DATA6{1'b0}},i[SA +D3+P5:SA +P5]};
+				18'b10_1_000_zzz_zz_zz_0110_0:locali <= {{DATA2{1'b0}},i[D1+P6:P6],{DATA2{1'b0}},i[SB +D1+P6:SB +P6],{DATA2{1'b0}},i[SA +D1+P6:SA +P6]};
+				18'b10_1_000_zzz_zz_zz_0110_1:locali <= {{DATA2{1'b0}},i[D1:0],{DATA2{1'b0}},i[SB +D1:SB],{DATA2{1'b0}},i[SA +D1:SA]};
+				18'b10_1_000_zzz_zz_zz_0111_0:locali <= {{DATA2{1'b0}},i[D1+P6:P6],{DATA2{1'b0}},i[SB +D1+P6:SB +P6],{DATA2{1'b0}},i[SA +D1+P6:SA +P6]};
+				18'b10_1_000_zzz_zz_zz_0111_1:locali <= {{DATA2{1'b0}},i[D1:0],{DATA2{1'b0}},i[SB +D1:SB],{DATA2{1'b0}},i[SA +D1:SA]};
+				18'b10_1_000_zzz_zz_zz_1000_0:locali <= {{DATA7{1'b0}},{DATA1{1'b0}},i[SA +D1+P6:SA +P6]};
+				18'b10_1_000_zzz_zz_zz_1000_1:locali <= {{DATA7{1'b0}},{DATA1{1'b0}},i[SA +D1:SA]};
+				18'b10_1_000_zzz_zz_zz_1001_z:locali <= 72'b0;
+			//------------7s1r1
+				18'b10_1_001_zzz_zz_zz_0000_0:locali <= {i[D3+P4:P4],i[SB +D3+P4:SB +P4],i[SA +D3+P4:SA +P4]};
+				18'b10_1_001_zzz_zz_zz_0000_1:locali <= {i[D1:0],i[D2+P6:P6],i[SB +D1:SB],i[SB +D2+P6:SB +P6],i[SA +D1:SA],i[SA +D2+P6:SA +P6]};
+				18'b10_1_001_zzz_zz_zz_0001_0:locali <= {i[D3+P4:P4],i[SB +D3+P4:SB +P4],i[SA +D3+P4:SA +P4]};
+				18'b10_1_001_zzz_zz_zz_0001_1:locali <= {i[D1:0],i[D2+P6:P6],i[SB +D1:SB],i[SB +D2+P6:SB +P6],i[SA +D1:SA],i[SA +D2+P6:SA +P6]};
+				18'b10_1_001_zzz_zz_zz_0010_0:locali <= {{DATA6{1'b0}},i[SA +D3+P4:SA +P4]};
+				18'b10_1_001_zzz_zz_zz_0010_1:locali <= {{DATA6{1'b0}},i[SA +D1:SA],i[SA +D2+P6:SA +P6]};
+				18'b10_1_001_zzz_zz_zz_0011_0:locali <= {i[D2:0],i[D1+P7:P7],i[SB +D2:SB],i[SB +D1+P7:SB +P7],i[SA +D2:SA],i[SA +D1+P7:SA +P7]};
+				18'b10_1_001_zzz_zz_zz_0011_1:locali <= {i[D3+P1:P1],i[SB +D3+P1:SB +P1],i[SA +D3+P1:SA +P1]};
+				18'b10_1_001_zzz_zz_zz_0100_0:locali <= {i[D2:0],i[D1+P7:P7],i[SB +D2:SB],i[SB +D1+P7:SB +P7],i[SA +D2:SA],i[SA +D1+P7:SA +P7]};
+				18'b10_1_001_zzz_zz_zz_0100_1:locali <= {i[D3+P1:P1],i[SB +D3+P1:SB +P1],i[SA +D3+P1:SA +P1]};
+				18'b10_1_001_zzz_zz_zz_0101_0:locali <= {{DATA6{1'b0}},i[SA +D2:SA],i[SA +D1+P7:SA +P7]};
+				18'b10_1_001_zzz_zz_zz_0101_1:locali <= {{DATA6{1'b0}},i[SA +D3+P1:SA +P1]};
+				18'b10_1_001_zzz_zz_zz_0110_0:locali <= {{DATA2{1'b0}},i[D1+P2:P2],{DATA2{1'b0}},i[SB +D1+P2:SB +P2],{DATA2{1'b0}},i[SA +D1+P2:SA +P2]};
+				18'b10_1_001_zzz_zz_zz_0110_1:locali <= {{DATA2{1'b0}},i[D1+P4:P4],{DATA2{1'b0}},i[SB +D1+P4:SB +P4],{DATA2{1'b0}},i[SA +D1+P4:SA +P4]};
+				18'b10_1_001_zzz_zz_zz_0111_0:locali <= {{DATA2{1'b0}},i[D1+P2:P2],{DATA2{1'b0}},i[SB +D1+P2:SB +P2],{DATA2{1'b0}},i[SA +D1+P2:SA +P2]};
+				18'b10_1_001_zzz_zz_zz_0111_1:locali <= {{DATA2{1'b0}},i[D1+P4:P4],{DATA2{1'b0}},i[SB +D1+P4:SB +P4],{DATA2{1'b0}},i[SA +D1+P4:SA +P4]};
+				18'b10_1_001_zzz_zz_zz_1000_0:locali <= {{DATA7{1'b0}},{DATA1{1'b0}},i[SA +D1+P2:SA +P2]};
+				18'b10_1_001_zzz_zz_zz_1000_1:locali <= {{DATA7{1'b0}},{DATA1{1'b0}},i[SA +D1+P4:SA +P4]};
+				18'b10_1_001_zzz_zz_zz_1001_z:locali <= 72'b0;
+				default:locali <=0;
+			endcase
+		end
+	end
+	
+	/* mapping i_dat to locali */	/*
 	always@(*)begin
 		case(wsize_dff)		
 			0:begin		//3 * 3
@@ -210,7 +343,7 @@ module CUBE#(
 									8:locali={{DATA7{1'b0}},{D1{1'b0}},i[SA +D1+NO7*8:SA +NO7*8]};
 									9:locali=72'b0;
 								endcase
-							end
+							end*/
 							2:begin		//4~7+0~2 , 5~7+0~3
 								case(ID7)		//NO7 : 0 , 1
 									0:locali={i[D3+(NO7+4)*8:(NO7+4)*8],i[SB +D3+(NO7+4)*8:SB +(NO7+4)*8],i[SA +D3+(NO7+4)*8:SA +(NO7+4)*8]};
@@ -382,11 +515,21 @@ module CUBE#(
 			end
 		endcase
 	end		
-
-	/* mapping w to localw */
+*/
+	/* mapping w to localw *//*
 	always@(*)begin
 		if(wsize_dff==2 && ID7 == 8)localw = {64'b0,w[79:72]}; 
 		else localw = w[71:0];
+	end
+	*/
+	always@(posedge clk or negedge rst_n)begin
+		if(!rst_n)begin
+			localw<=0;
+		end
+		else begin
+			if(wsize_dff==2 && ID7 == 8)localw <= {64'b0,w[79:72]}; 
+			else localw <= w[71:0];
+		end
 	end
 	
 	/* multiple */
@@ -465,7 +608,7 @@ module IPF#(
 
 	reg [STATE_Width-1:0] PS, NS;
 	
-	reg res_valid_tmp,res_valid_tmp1;
+	reg res_valid_tmp,res_valid_tmp1,res_valid_tmp2;
 	
 	reg [3:0]i_format_tmp,i_format_tmp1,w_format_tmp,w_format_tmp1;
 	
@@ -568,6 +711,7 @@ module IPF#(
 			res_valid<=0;
 			res_valid_tmp<=0;
 			res_valid_tmp1<=0;
+			res_valid_tmp2<=0;
 		end
 		else begin
 			case(PS)
@@ -575,7 +719,8 @@ module IPF#(
 				COMPUTE: res_valid_tmp<=1;
 			endcase
 			res_valid_tmp1 <= res_valid_tmp;
-			res_valid <= res_valid_tmp1;
+			res_valid_tmp2 <= res_valid_tmp1;
+			res_valid <= res_valid_tmp2;
 		end
 	end
 	
@@ -680,32 +825,7 @@ module IPF#(
 						for(idxx= (idx*8) ; idxx< 8+ (idx*8); idxx=idxx+1)begin // NO3_0 ~ NO3_7
 							wcu[idxx]<={8'b0,w[(W1*idx)+wgroup_start +:W1]};
 						end
-					end
-				/*
-					for(idxx= 0 ; idxx< 8; idxx=idxx+1)begin // 1 channel // NO3_0 ~ NO3_7
-						wcu[idxx]<={8'b0,w[wgroup_start +:W1]};
-					end
-					for(idxx= 8 ; idxx< 16; idxx=idxx+1)begin // 1 channel // NO3_0 ~ NO3_7
-						wcu[idxx]<={8'b0,w[W1+wgroup_start +:W1]}; // W1,wgroup_start =>(change to larger bits) 32bit => can syn!
-					end
-					for(idxx= 16; idxx< 24; idxx=idxx+1)begin 
-						wcu[idxx]<={8'b0,w[(W1*2)+wgroup_start +:W1]};
-					end
-					for(idxx= 24 ; idxx< 32; idxx=idxx+1)begin 
-						wcu[idxx]<={8'b0,w[(W1*3)+wgroup_start +:W1]};
-					end
-					for(idxx= 32 ; idxx< 40; idxx=idxx+1)begin 
-						wcu[idxx]<={8'b0,w[(W1*4)+wgroup_start +:W1]};
-					end
-					for(idxx= 40 ; idxx< 48; idxx=idxx+1)begin 
-						wcu[idxx]<={8'b0,w[(W1*5)+wgroup_start +:W1]};
-					end
-					for(idxx= 48 ; idxx< 56; idxx=idxx+1)begin 
-						wcu[idxx]<={8'b0,w[(W1*6)+wgroup_start +:W1]};
-					end
-					for(idxx= 56 ; idxx< 64; idxx=idxx+1)begin 
-						wcu[idxx]<={8'b0,w[(W1*7)+wgroup_start +:W1]};
-					end	*/									
+					end								
 				end	
 				
 			//------------------------------
@@ -723,152 +843,7 @@ module IPF#(
 							end
 						end
 					end
-				end
-				//--------------------
-				/*
-				//idi=0
-					for(idxx=0;idxx<4;idxx=idxx+1)begin					// ID5_0 ~ ID5_3
-						case(idxx)
-							0:wcu[idxx]<={8'b0,w[(P1*10)+wgroup_start +:D3],w[(P1*5)+wgroup_start +:D3],w[wgroup_start +:D3]};
-							1:wcu[idxx]<={8'b0,24'b0,w[(P1*20)+wgroup_start +:D3],w[(P1*15)+wgroup_start +:D3]};
-							2:wcu[idxx]<={8'b0,8'b0,w[(P1*13)+wgroup_start +:D2],8'b0,w[(P1*8)+wgroup_start +:D2],8'b0,w[(P1*3)+wgroup_start+:D2]};
-							3:wcu[idxx]<={8'b0,24'b0,8'b0,w[(P1*23)+wgroup_start +:D2],8'b0,w[(P1*18)+wgroup_start +:D2]};
-						endcase
-					end
-					for(idxx=0;idxx<4;idxx=idxx+1)begin					// ID5_0 ~ ID5_3
-						case(idxx)
-							0:wcu[4+idxx]<={8'b0,w[(P1*10)+wgroup_start +:D3],w[(P1*5)+wgroup_start +:D3],w[wgroup_start +:D3]};
-							1:wcu[4+idxx]<={8'b0,24'b0,w[(P1*20)+wgroup_start +:D3],w[(P1*15)+wgroup_start +:D3]};
-							2:wcu[4+idxx]<={8'b0,8'b0,w[(P1*13)+wgroup_start +:D2],8'b0,w[(P1*8)+wgroup_start +:D2],8'b0,w[(P1*3)+wgroup_start +:D2]};
-							3:wcu[4+idxx]<={8'b0,24'b0,8'b0,w[(P1*23)+wgroup_start +:D2],8'b0,w[(P1*18)+wgroup_start +:D2]};
-						endcase
-					end
-					for(idxx=0;idxx<4;idxx=idxx+1)begin					// ID5_0 ~ ID5_3
-						case(idxx)
-							0:wcu[8+idxx]<={8'b0,w[(P1*10)+wgroup_start +:D3],w[(P1*5)+wgroup_start +:D3],w[wgroup_start +:D3]};
-							1:wcu[8+idxx]<={8'b0,24'b0,w[(P1*20)+wgroup_start +:D3],w[(P1*15)+wgroup_start +:D3]};
-							2:wcu[8+idxx]<={8'b0,8'b0,w[(P1*13)+wgroup_start +:D2],8'b0,w[(P1*8)+wgroup_start +:D2],8'b0,w[(P1*3)+wgroup_start +:D2]};
-							3:wcu[8+idxx]<={8'b0,24'b0,8'b0,w[(P1*23)+wgroup_start +:D2],8'b0,w[(P1*18)+wgroup_start +:D2]};
-						endcase
-					end
-					for(idxx=0;idxx<4;idxx=idxx+1)begin					// ID5_0 ~ ID5_3
-						case(idxx)
-							0:wcu[12+idxx]<={8'b0,w[(P1*10)+wgroup_start +:D3],w[(P1*5)+wgroup_start +:D3],w[wgroup_start +:D3]};
-							1:wcu[12+idxx]<={8'b0,24'b0,w[(P1*20)+wgroup_start +:D3],w[(P1*15)+wgroup_start +:D3]};
-							2:wcu[12+idxx]<={8'b0,8'b0,w[(P1*13)+wgroup_start +:D2],8'b0,w[(P1*8)+wgroup_start +:D2],8'b0,w[(P1*3)+wgroup_start +:D2]};
-							3:wcu[12+idxx]<={8'b0,24'b0,8'b0,w[(P1*23)+wgroup_start +:D2],8'b0,w[(P1*18)+wgroup_start +:D2]};
-						endcase
-					end
-				//---------------
-				//idi=1
-					//idx=0
-					for(idxx=0;idxx<4;idxx=idxx+1)begin					// ID5_0 ~ ID5_3
-						case(idxx)
-							0:wcu[16+idxx]<={8'b0,w[(P1*10)+wgroup_start+(P1*25) +:D3],w[(P1*5)+wgroup_start+(P1*25) +:D3],w[wgroup_start+(P1*25) +:D3]};
-							1:wcu[16+idxx]<={8'b0,24'b0,w[(P1*20)+wgroup_start+(P1*25) +:D3],w[(P1*15)+wgroup_start+(P1*25) +:D3]};
-							2:wcu[16+idxx]<={8'b0,8'b0,w[(P1*13)+wgroup_start+(P1*25) +:D2],8'b0,w[(P1*8)+wgroup_start+(P1*25) +:D2],8'b0,w[(P1*3)+wgroup_start+(P1*25) +:D2]};
-							3:wcu[16+idxx]<={8'b0,24'b0,8'b0,w[(P1*23)+wgroup_start+(P1*25) +:D2],8'b0,w[(P1*18)+wgroup_start+(P1*25) +:D2]};
-						endcase
-					end
-					//idx=1
-					for(idxx=0;idxx<4;idxx=idxx+1)begin					// ID5_0 ~ ID5_3
-						case(idxx)
-							0:wcu[20+idxx]<={8'b0,w[(P1*10)+wgroup_start+(P1*25) +:D3],w[(P1*5)+wgroup_start+(P1*25) +:D3],w[wgroup_start+(P1*25) +:D3]};
-							1:wcu[20+idxx]<={8'b0,24'b0,w[(P1*20)+wgroup_start+(P1*25) +:D3],w[(P1*15)+wgroup_start+(P1*25) +:D3]};
-							2:wcu[20+idxx]<={8'b0,8'b0,w[(P1*13)+wgroup_start+(P1*25) +:D2],8'b0,w[(P1*8)+wgroup_start+(P1*25) +:D2],8'b0,w[(P1*3)+wgroup_start+(P1*25) +:D2]};
-							3:wcu[20+idxx]<={8'b0,24'b0,8'b0,w[(P1*23)+wgroup_start+(P1*25) +:D2],8'b0,w[(P1*18)+wgroup_start+(P1*25) +:D2]};
-						endcase
-					end
-					for(idxx=0;idxx<4;idxx=idxx+1)begin					// ID5_0 ~ ID5_3
-						case(idxx)
-							0:wcu[24+idxx]<={8'b0,w[(P1*10)+wgroup_start+(P1*25) +:D3],w[(P1*5)+wgroup_start+(P1*25) +:D3],w[wgroup_start+(P1*25) +:D3]};
-							1:wcu[24+idxx]<={8'b0,24'b0,w[(P1*20)+wgroup_start+(P1*25) +:D3],w[(P1*15)+wgroup_start+(P1*25) +:D3]};
-							2:wcu[24+idxx]<={8'b0,8'b0,w[(P1*13)+wgroup_start+(P1*25) +:D2],8'b0,w[(P1*8)+wgroup_start+(P1*25) +:D2],8'b0,w[(P1*3)+wgroup_start+(P1*25) +:D2]};
-							3:wcu[24+idxx]<={8'b0,24'b0,8'b0,w[(P1*23)+wgroup_start+(P1*25) +:D2],8'b0,w[(P1*18)+wgroup_start+(P1*25) +:D2]};
-						endcase
-					end
-					for(idxx=0;idxx<4;idxx=idxx+1)begin					// ID5_0 ~ ID5_3
-						case(idxx)
-							0:wcu[28+idxx]<={8'b0,w[(P1*10)+wgroup_start+(P1*25) +:D3],w[(P1*5)+wgroup_start+(P1*25) +:D3],w[wgroup_start+(P1*25) +:D3]};
-							1:wcu[28+idxx]<={8'b0,24'b0,w[(P1*20)+wgroup_start+(P1*25) +:D3],w[(P1*15)+wgroup_start+(P1*25) +:D3]};
-							2:wcu[28+idxx]<={8'b0,8'b0,w[(P1*13)+wgroup_start+(P1*25) +:D2],8'b0,w[(P1*8)+wgroup_start+(P1*25) +:D2],8'b0,w[(P1*3)+wgroup_start+(P1*25) +:D2]};
-							3:wcu[28+idxx]<={8'b0,24'b0,8'b0,w[(P1*23)+wgroup_start+(P1*25) +:D2],8'b0,w[(P1*18)+wgroup_start+(P1*25) +:D2]};
-						endcase
-					end
-				//----------------
-				//idi=2
-					//idx=0
-					for(idxx=0;idxx<4;idxx=idxx+1)begin					// ID5_0 ~ ID5_3
-						case(idxx)
-							0:wcu[32+idxx]<={8'b0,w[(P1*10)+wgroup_start+2*(P1*25) +:D3],w[(P1*5)+wgroup_start+2*(P1*25) +:D3],w[wgroup_start+2*(P1*25) +:D3]};
-							1:wcu[32+idxx]<={8'b0,24'b0,w[(P1*20)+wgroup_start+2*(P1*25) +:D3],w[(P1*15)+wgroup_start+2*(P1*25) +:D3]};
-							2:wcu[32+idxx]<={8'b0,8'b0,w[(P1*13)+wgroup_start+2*(P1*25) +:D2],8'b0,w[(P1*8)+wgroup_start+2*(P1*25) +:D2],8'b0,w[(P1*3)+wgroup_start+2*(P1*25) +:D2]};
-							3:wcu[32+idxx]<={8'b0,24'b0,8'b0,w[(P1*23)+wgroup_start+2*(P1*25) +:D2],8'b0,w[(P1*18)+wgroup_start+2*(P1*25) +:D2]};
-						endcase
-					end
-					//idx=1
-					for(idxx=0;idxx<4;idxx=idxx+1)begin					// ID5_0 ~ ID5_3
-						case(idxx)
-							0:wcu[36+idxx]<={8'b0,w[(P1*10)+wgroup_start+2*(P1*25) +:D3],w[(P1*5)+wgroup_start+2*(P1*25) +:D3],w[wgroup_start+2*(P1*25) +:D3]};
-							1:wcu[36+idxx]<={8'b0,24'b0,w[(P1*20)+wgroup_start+2*(P1*25) +:D3],w[(P1*15)+wgroup_start+2*(P1*25) +:D3]};
-							2:wcu[36+idxx]<={8'b0,8'b0,w[(P1*13)+wgroup_start+2*(P1*25) +:D2],8'b0,w[(P1*8)+wgroup_start+2*(P1*25) +:D2],8'b0,w[(P1*3)+wgroup_start+2*(P1*25) +:D2]};
-							3:wcu[36+idxx]<={8'b0,24'b0,8'b0,w[(P1*23)+wgroup_start+2*(P1*25) +:D2],8'b0,w[(P1*18)+wgroup_start+2*(P1*25) +:D2]};
-						endcase
-					end
-					//idx=2
-					for(idxx=0;idxx<4;idxx=idxx+1)begin					// ID5_0 ~ ID5_3
-						case(idxx)
-							0:wcu[40+idxx]<={8'b0,w[(P1*10)+wgroup_start+2*(P1*25) +:D3],w[(P1*5)+wgroup_start+2*(P1*25) +:D3],w[wgroup_start+2*(P1*25) +:D3]};
-							1:wcu[40+idxx]<={8'b0,24'b0,w[(P1*20)+wgroup_start+2*(P1*25) +:D3],w[(P1*15)+wgroup_start+2*(P1*25) +:D3]};
-							2:wcu[40+idxx]<={8'b0,8'b0,w[(P1*13)+wgroup_start+2*(P1*25) +:D2],8'b0,w[(P1*8)+wgroup_start+2*(P1*25) +:D2],8'b0,w[(P1*3)+wgroup_start+2*(P1*25) +:D2]};
-							3:wcu[40+idxx]<={8'b0,24'b0,8'b0,w[(P1*23)+wgroup_start+2*(P1*25) +:D2],8'b0,w[(P1*18)+wgroup_start+2*(P1*25) +:D2]};
-						endcase
-					end
-					//idx=3
-					for(idxx=0;idxx<4;idxx=idxx+1)begin					// ID5_0 ~ ID5_3
-						case(idxx)
-							0:wcu[44+idxx]<={8'b0,w[(P1*10)+wgroup_start+2*(P1*25) +:D3],w[(P1*5)+wgroup_start+2*(P1*25) +:D3],w[wgroup_start+2*(P1*25) +:D3]};
-							1:wcu[44+idxx]<={8'b0,24'b0,w[(P1*20)+wgroup_start+2*(P1*25) +:D3],w[(P1*15)+wgroup_start+2*(P1*25) +:D3]};
-							2:wcu[44+idxx]<={8'b0,8'b0,w[(P1*13)+wgroup_start+2*(P1*25) +:D2],8'b0,w[(P1*8)+wgroup_start+2*(P1*25) +:D2],8'b0,w[(P1*3)+wgroup_start+2*(P1*25) +:D2]};
-							3:wcu[44+idxx]<={8'b0,24'b0,8'b0,w[(P1*23)+wgroup_start+2*(P1*25) +:D2],8'b0,w[(P1*18)+wgroup_start+2*(P1*25) +:D2]};
-						endcase
-					end
-				//--------------
-				//idi=3
-					//idx=0
-					for(idxx=0;idxx<4;idxx=idxx+1)begin					// ID5_0 ~ ID5_3
-						case(idxx)
-							0:wcu[48+idxx]<={8'b0,w[(P1*10)+wgroup_start+3*(P1*25) +:D3],w[(P1*5)+wgroup_start+3*(P1*25) +:D3],w[wgroup_start+3*(P1*25) +:D3]};
-							1:wcu[48+idxx]<={8'b0,24'b0,w[(P1*20)+wgroup_start+3*(P1*25) +:D3],w[(P1*15)+wgroup_start+3*(P1*25) +:D3]};
-							2:wcu[48+idxx]<={8'b0,8'b0,w[(P1*13)+wgroup_start+3*(P1*25) +:D2],8'b0,w[(P1*8)+wgroup_start+3*(P1*25) +:D2],8'b0,w[(P1*3)+wgroup_start+3*(P1*25) +:D2]};
-							3:wcu[48+idxx]<={8'b0,24'b0,8'b0,w[(P1*23)+wgroup_start+3*(P1*25) +:D2],8'b0,w[(P1*18)+wgroup_start+3*(P1*25) +:D2]};
-						endcase
-					end
-					for(idxx=0;idxx<4;idxx=idxx+1)begin					// ID5_0 ~ ID5_3
-						case(idxx)
-							0:wcu[52+idxx]<={8'b0,w[(P1*10)+wgroup_start+3*(P1*25) +:D3],w[(P1*5)+wgroup_start+3*(P1*25) +:D3],w[wgroup_start+3*(P1*25) +:D3]};
-							1:wcu[52+idxx]<={8'b0,24'b0,w[(P1*20)+wgroup_start+3*(P1*25) +:D3],w[(P1*15)+wgroup_start+3*(P1*25) +:D3]};
-							2:wcu[52+idxx]<={8'b0,8'b0,w[(P1*13)+wgroup_start+3*(P1*25) +:D2],8'b0,w[(P1*8)+wgroup_start+3*(P1*25) +:D2],8'b0,w[(P1*3)+wgroup_start+3*(P1*25) +:D2]};
-							3:wcu[52+idxx]<={8'b0,24'b0,8'b0,w[(P1*23)+wgroup_start+3*(P1*25) +:D2],8'b0,w[(P1*18)+wgroup_start+3*(P1*25) +:D2]};
-						endcase
-					end
-					for(idxx=0;idxx<4;idxx=idxx+1)begin					// ID5_0 ~ ID5_3
-						case(idxx)
-							0:wcu[56+idxx]<={8'b0,w[(P1*10)+wgroup_start+3*(P1*25) +:D3],w[(P1*5)+wgroup_start+3*(P1*25) +:D3],w[wgroup_start+3*(P1*25) +:D3]};
-							1:wcu[56+idxx]<={8'b0,24'b0,w[(P1*20)+wgroup_start+3*(P1*25) +:D3],w[(P1*15)+wgroup_start+3*(P1*25) +:D3]};
-							2:wcu[56+idxx]<={8'b0,8'b0,w[(P1*13)+wgroup_start+3*(P1*25) +:D2],8'b0,w[(P1*8)+wgroup_start+3*(P1*25) +:D2],8'b0,w[(P1*3)+wgroup_start+3*(P1*25) +:D2]};
-							3:wcu[56+idxx]<={8'b0,24'b0,8'b0,w[(P1*23)+wgroup_start+3*(P1*25) +:D2],8'b0,w[(P1*18)+wgroup_start+3*(P1*25) +:D2]};
-						endcase
-					end
-					for(idxx=0;idxx<4;idxx=idxx+1)begin					// ID5_0 ~ ID5_3
-						case(idxx)
-							0:wcu[60+idxx]<={8'b0,w[(P1*10)+wgroup_start+3*(P1*25) +:D3],w[(P1*5)+wgroup_start+3*(P1*25) +:D3],w[wgroup_start+3*(P1*25) +:D3]};
-							1:wcu[60+idxx]<={8'b0,24'b0,w[(P1*20)+wgroup_start+3*(P1*25) +:D3],w[(P1*15)+wgroup_start+3*(P1*25) +:D3]};
-							2:wcu[60+idxx]<={8'b0,8'b0,w[(P1*13)+wgroup_start+3*(P1*25) +:D2],8'b0,w[(P1*8)+wgroup_start+3*(P1*25) +:D2],8'b0,w[(P1*3)+wgroup_start+3*(P1*25) +:D2]};
-							3:wcu[60+idxx]<={8'b0,24'b0,8'b0,w[(P1*23)+wgroup_start+3*(P1*25) +:D2],8'b0,w[(P1*18)+wgroup_start+3*(P1*25) +:D2]};
-						endcase
-					end
-				end*/
+				end		
 			//-----------------------
 			
 				2:begin
@@ -894,67 +869,6 @@ module IPF#(
 				end
 					
 				//------------------
-				/*
-				//idi=0
-					//idx=0
-					for(idxx=0;idxx<16;idxx=idxx+1)begin				// ID7_0 ~ ID7_8 (ID7_8(1 data))									 
-						case(idxx)                    
-							0:wcu[idxx]<={w[(P1*48)+wgroup_start +:D1],w[(P1*14)+wgroup_start +:D3],w[(P1*7)+wgroup_start +:D3],w[wgroup_start +:D3]};
-							1:wcu[idxx]<={8'b0,w[(P1*35)+wgroup_start +:D3],w[(P1*28)+wgroup_start +:D3],w[(P1*21)+wgroup_start +:D3]};
-							2:wcu[idxx]<={8'b0,48'b0,w[(P1*42)+wgroup_start +:D3]};
-							3:wcu[idxx]<={8'b0,w[(P1*17)+wgroup_start +:D3],w[(P1*10)+wgroup_start +:D3],w[(P1*3)+wgroup_start +:D3]};
-							4:wcu[idxx]<={8'b0,w[(P1*38)+wgroup_start +:D3],w[(P1*31)+wgroup_start +:D3],w[(P1*24)+wgroup_start +:D3]};
-							5:wcu[idxx]<={8'b0,48'b0,w[(P1*45)+wgroup_start +:D3]};
-							6:wcu[idxx]<={8'b0,16'b0,w[(P1*20)+wgroup_start +:D1],16'b0,w[(P1*13)+wgroup_start +:D1],16'b0,w[(P1*6)+wgroup_start +:D1]};
-							7:wcu[idxx]<={8'b0,16'b0,w[(P1*41)+wgroup_start +:D1],16'b0,w[(P1*34)+wgroup_start +:D1],16'b0,w[(P1*27)+wgroup_start +:D1]};
-							default:wcu[idxx]<=0; // ID7_9 fills 0
-						endcase
-					end
-					//idx=1
-					for(idxx=0;idxx<16;idxx=idxx+1)begin				// ID7_0 ~ ID7_8 (ID7_8(1 data))									 
-						case(idxx)                    
-							0:wcu[16+idxx]<={w[(P1*48)+wgroup_start +:D1],w[(P1*14)+wgroup_start +:D3],w[(P1*7)+wgroup_start +:D3],w[wgroup_start +:D3]};
-							1:wcu[16+idxx]<={8'b0,w[(P1*35)+wgroup_start +:D3],w[(P1*28)+wgroup_start +:D3],w[(P1*21)+wgroup_start +:D3]};
-							2:wcu[16+idxx]<={8'b0,48'b0,w[(P1*42)+wgroup_start +:D3]};
-							3:wcu[16+idxx]<={8'b0,w[(P1*17)+wgroup_start +:D3],w[(P1*10)+wgroup_start +:D3],w[(P1*3)+wgroup_start +:D3]};
-							4:wcu[16+idxx]<={8'b0,w[(P1*38)+wgroup_start +:D3],w[(P1*31)+wgroup_start +:D3],w[(P1*24)+wgroup_start +:D3]};
-							5:wcu[16+idxx]<={8'b0,48'b0,w[(P1*45)+wgroup_start +:D3]};
-							6:wcu[16+idxx]<={8'b0,16'b0,w[(P1*20)+wgroup_start +:D1],16'b0,w[(P1*13)+wgroup_start +:D1],16'b0,w[(P1*6)+wgroup_start +:D1]};
-							7:wcu[16+idxx]<={8'b0,16'b0,w[(P1*41)+wgroup_start +:D1],16'b0,w[(P1*34)+wgroup_start +:D1],16'b0,w[(P1*27)+wgroup_start +:D1]};
-							default:wcu[16+idxx]<=0; // ID7_9 fills 0
-						endcase
-					end
-				//idi=1
-					//idx=0
-					for(idxx=0;idxx<16;idxx=idxx+1)begin				// ID7_0 ~ ID7_8 (ID7_8(1 data))					  
-						case(idxx)                    
-							0:wcu[32+idxx]<={w[(P1*48)+wgroup_start+(P1*49) +:D1],w[(P1*14)+wgroup_start+(P1*49) +:D3],w[(P1*7)+wgroup_start+(P1*49) +:D3],w[wgroup_start+(P1*49) +:D3]};
-							1:wcu[32+idxx]<={8'b0,w[(P1*35)+wgroup_start+(P1*49) +:D3],w[(P1*28)+wgroup_start+(P1*49) +:D3],w[(P1*21)+wgroup_start+(P1*49) +:D3]};
-							2:wcu[32+idxx]<={8'b0,48'b0,w[(P1*42)+wgroup_start+(P1*49) +:D3]};
-							3:wcu[32+idxx]<={8'b0,w[(P1*17)+wgroup_start+(P1*49) +:D3],w[(P1*10)+wgroup_start+(P1*49) +:D3],w[(P1*3)+wgroup_start+(P1*49) +:D3]};
-							4:wcu[32+idxx]<={8'b0,w[(P1*38)+wgroup_start+(P1*49) +:D3],w[(P1*31)+wgroup_start+(P1*49) +:D3],w[(P1*24)+wgroup_start+(P1*49) +:D3]};
-							5:wcu[32+idxx]<={8'b0,48'b0,w[(P1*45)+wgroup_start+(P1*49) +:D3]};
-							6:wcu[32+idxx]<={8'b0,16'b0,w[(P1*20)+wgroup_start+(P1*49) +:D1],16'b0,w[(P1*13)+wgroup_start+(P1*49) +:D1],16'b0,w[(P1*6)+wgroup_start+(P1*49) +:D1]};
-							7:wcu[32+idxx]<={8'b0,16'b0,w[(P1*41)+wgroup_start+(P1*49) +:D1],16'b0,w[(P1*34)+wgroup_start+(P1*49) +:D1],16'b0,w[(P1*27)+wgroup_start+(P1*49) +:D1]};
-							default:wcu[32+idxx]<=0; // ID7_9 fills 0
-						endcase
-					end
-					//idx=1
-					for(idxx=0;idxx<16;idxx=idxx+1)begin				// ID7_0 ~ ID7_8 (ID7_8(1 data))					  
-						case(idxx)                    
-							0:wcu[48+idxx]<={w[(P1*48)+wgroup_start+(P1*49) +:D1],w[(P1*14)+wgroup_start+(P1*49) +:D3],w[(P1*7)+wgroup_start+(P1*49) +:D3],w[wgroup_start+(P1*49) +:D3]};
-							1:wcu[48+idxx]<={8'b0,w[(P1*35)+wgroup_start+(P1*49) +:D3],w[(P1*28)+wgroup_start+(P1*49) +:D3],w[(P1*21)+wgroup_start+(P1*49) +:D3]};
-							2:wcu[48+idxx]<={8'b0,48'b0,w[(P1*42)+wgroup_start+(P1*49) +:D3]};
-							3:wcu[48+idxx]<={8'b0,w[(P1*17)+wgroup_start+(P1*49) +:D3],w[(P1*10)+wgroup_start+(P1*49) +:D3],w[(P1*3)+wgroup_start+(P1*49) +:D3]};
-							4:wcu[48+idxx]<={8'b0,w[(P1*38)+wgroup_start+(P1*49) +:D3],w[(P1*31)+wgroup_start+(P1*49) +:D3],w[(P1*24)+wgroup_start+(P1*49) +:D3]};
-							5:wcu[48+idxx]<={8'b0,48'b0,w[(P1*45)+wgroup_start+(P1*49) +:D3]};
-							6:wcu[48+idxx]<={8'b0,16'b0,w[(P1*20)+wgroup_start+(P1*49) +:D1],16'b0,w[(P1*13)+wgroup_start+(P1*49) +:D1],16'b0,w[(P1*6)+wgroup_start+(P1*49) +:D1]};
-							7:wcu[48+idxx]<={8'b0,16'b0,w[(P1*41)+wgroup_start+(P1*49) +:D1],16'b0,w[(P1*34)+wgroup_start+(P1*49) +:D1],16'b0,w[(P1*27)+wgroup_start+(P1*49) +:D1]};
-							default:wcu[48+idxx]<=0; // ID7_9 fills 0
-						endcase
-					end
-				//--------------		
-				end*/
 			endcase
 		end
 	end
