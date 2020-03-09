@@ -77,23 +77,38 @@ module CUBE#(
 			wsize_dff<=wsize;
 		end
 	end
+	
 	always@(posedge clk or negedge rst_n)begin
 		if(!rst_n)begin
 			locali<=0;
 		end
 		else begin
-			casez({wsize_dff,round_dff,stride_dff})
-				/*6'b00_000_0:locali<={i[D3+NO3*8 : NO3*8] ,i[SB +D3+NO3*8 :SB +NO3*8] ,i[SA +D3+NO3*8 : SA +NO3*8] };
-				6'b00_000_1:locali <= {i[D1:0],i[D2+NO3*8 :NO3*8],i[SB +D1:SB +0],i[SB +D2+NO3*8 : SB +NO3*8],i[SA +D1:SA +0],i[SA +D2+NO3*8 : SA +NO3*8]};
+			casez({wsize_dff,stride_dff,round_dff,NO3,ID5,NO5,ID7,NO7})
+				/*
+				//multest
+				18'b00_z_zzz_110_zz_zz_zzzz_z:locali <= {64'd0,i[147:140]};
+				18'b00_z_zzz_111_zz_zz_zzzz_z:locali <= {64'd0,i[7:0]};
+				18'b00_z_zzz_000_zz_zz_zzzz_z:locali <= {i[157:150],i[31:0],i[63:32]};
+				18'b10_0_000_zzz_zz_zz_0000_z:locali <= {i[63:0],8'd0};
+				18'b10_0_000_zzz_zz_zz_0001_z:locali <= {i[157:150],64'd0};
 				*/
-				6'b01_000_0:locali <= {i[157:150],64'd0};
-				6'b01_001_0:locali <= {64'd0,i[147:140]};
-				6'b10_000_0:locali <= {64'd0,i[7:0]};
+				
+				//multestt
+				18'b00_z_zzz_110_zz_zz_zzzz_z:locali <= {i[D1:0],i[D2+NO3*8 :NO3*8],i[SB +D1:SB +0],i[SB +D2+NO3*8 : SB +NO3*8],i[SA +D1:SA +0],i[SA +D2+NO3*8 : SA +NO3*8]};
+				18'b00_z_zzz_111_zz_zz_zzzz_z:locali <= {i[D2:0],i[D1+NO3*8 :NO3*8],i[SB +D2:SB +0],i[SB +D1+NO3*8 : SB +NO3*8],i[SA +D2:SA +0],i[SA +D1+NO3*8 : SA +NO3*8]};
+				18'b00_z_zzz_zzz_zz_zz_zzzz_z:locali <= {i[D3+NO3*8 : NO3*8] ,i[SB +D3+NO3*8 :SB +NO3*8] ,i[SA +D3+NO3*8 : SA +NO3*8] };	
+				18'b01_0_000_zzz_00_zz_zzzz_z:locali <= {i[D3+NO5*8:NO5*8],i[SB +D3+NO5*8:SB +NO5*8],i[SA +D3+NO5*8:SA +NO5*8]};
+				18'b01_0_000_zzz_01_zz_zzzz_z:locali <= {{DATA3{1'b0}},i[SB +D3+NO5*8:SB +NO5*8],i[SA +D3+NO5*8:SA +NO5*8]};
+				18'b01_0_000_zzz_10_zz_zzzz_z:locali <= {{DATA1{1'b0}},i[D2+P3+NO5*8: P3+NO5*8],{DATA1{1'b0}},i[SB +D2+P3+NO5*8:SB +P3+NO5*8],{DATA1{1'b0}},i[SA +D2+P3+NO5*8:SA +P3+NO5*8]};
+				18'b10_0_001_zzz_zz_zz_0000_z:locali <= {i[D3+(NO7+2)*8:(NO7+2)*8],i[SB +D3+(NO7+2)*8:SB +(NO7+2)*8],i[SA +D3+(NO7+2)*8:SA +(NO7+2)*8]};
+				18'b10_0_001_zzz_zz_zz_0001_z:locali <= {i[D3+(NO7+2)*8:(NO7+2)*8],i[SB +D3+(NO7+2)*8:SB +(NO7+2)*8],i[SA +D3+(NO7+2)*8:SA +(NO7+2)*8]};
+				18'b10_0_001_zzz_zz_zz_0010_z:locali <= {{DATA6{1'b0}},i[SA +D3+(NO7+2)*8:SA +(NO7+2)*8]};
 				
 				default:locali <= 0;
 			endcase
 		end
 	end
+	
 	/*
 	always@(posedge clk or negedge rst_n)begin
 		if(!rst_n)begin
@@ -102,9 +117,9 @@ module CUBE#(
 		else begin
 			casez({wsize_dff,stride_dff,round_dff,NO3,ID5,NO5,ID7,NO7})
 			//----------3
-				18'b00_z_zzz_000_zz_zz_zzzz_z:locali <= {i[D3+NO3*8 : NO3*8] ,i[SB +D3+NO3*8 :SB +NO3*8] ,i[SA +D3+NO3*8 : SA +NO3*8] };
 				18'b00_z_zzz_110_zz_zz_zzzz_z:locali <= {i[D1:0],i[D2+NO3*8 :NO3*8],i[SB +D1:SB +0],i[SB +D2+NO3*8 : SB +NO3*8],i[SA +D1:SA +0],i[SA +D2+NO3*8 : SA +NO3*8]};
 				18'b00_z_zzz_111_zz_zz_zzzz_z:locali <= {i[D2:0],i[D1+NO3*8 :NO3*8],i[SB +D2:SB +0],i[SB +D1+NO3*8 : SB +NO3*8],i[SA +D2:SA +0],i[SA +D1+NO3*8 : SA +NO3*8]};
+				18'b00_z_zzz_zzz_zz_zz_zzzz_z:locali <= {i[D3+NO3*8 : NO3*8] ,i[SB +D3+NO3*8 :SB +NO3*8] ,i[SA +D3+NO3*8 : SA +NO3*8] };	
 			//-----------5s0r0
 				18'b01_0_000_zzz_00_zz_zzzz_z:locali <= {i[D3+NO5*8:NO5*8],i[SB +D3+NO5*8:SB +NO5*8],i[SA +D3+NO5*8:SA +NO5*8]};
 				18'b01_0_000_zzz_01_zz_zzzz_z:locali <= {{DATA3{1'b0}},i[SB +D3+NO5*8:SB +NO5*8],i[SA +D3+NO5*8:SA +NO5*8]};

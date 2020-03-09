@@ -1,3 +1,10 @@
-mul: constant
-multest: 後  少
-multestt: 前 多
+mul: constant   6bits =>1.26
+multest:   少 6bits =>1.78
+multestt:  多 6bits =>1.75
+18 bits=>1.28
+
+
+3/10
+mul: 18bit normalcase
+multest: 18 bits constant
+multestt: 18bits lesscase

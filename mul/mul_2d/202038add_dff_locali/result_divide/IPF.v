@@ -84,10 +84,10 @@ module CUBE#(
 		end
 		else begin
 			casez({wsize_dff,stride_dff,round_dff,NO3,ID5,NO5,ID7,NO7})
-			//----------3
-				18'b00_z_zzz_000_zz_zz_zzzz_z:locali <= {i[D3+NO3*8 : NO3*8] ,i[SB +D3+NO3*8 :SB +NO3*8] ,i[SA +D3+NO3*8 : SA +NO3*8] };
+			//----------3			
 				18'b00_z_zzz_110_zz_zz_zzzz_z:locali <= {i[D1:0],i[D2+NO3*8 :NO3*8],i[SB +D1:SB +0],i[SB +D2+NO3*8 : SB +NO3*8],i[SA +D1:SA +0],i[SA +D2+NO3*8 : SA +NO3*8]};
 				18'b00_z_zzz_111_zz_zz_zzzz_z:locali <= {i[D2:0],i[D1+NO3*8 :NO3*8],i[SB +D2:SB +0],i[SB +D1+NO3*8 : SB +NO3*8],i[SA +D2:SA +0],i[SA +D1+NO3*8 : SA +NO3*8]};
+				18'b00_z_zzz_000_zz_zz_zzzz_z:locali <= {i[D3+NO3*8 : NO3*8] ,i[SB +D3+NO3*8 :SB +NO3*8] ,i[SA +D3+NO3*8 : SA +NO3*8] };
 			//-----------5s0r0
 				18'b01_0_000_zzz_00_zz_zzzz_z:locali <= {i[D3+NO5*8:NO5*8],i[SB +D3+NO5*8:SB +NO5*8],i[SA +D3+NO5*8:SA +NO5*8]};
 				18'b01_0_000_zzz_01_zz_zzzz_z:locali <= {{DATA3{1'b0}},i[SB +D3+NO5*8:SB +NO5*8],i[SA +D3+NO5*8:SA +NO5*8]};
