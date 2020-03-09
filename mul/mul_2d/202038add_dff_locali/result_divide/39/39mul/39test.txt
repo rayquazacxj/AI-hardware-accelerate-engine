@@ -1,0 +1,3 @@
+mul: constant
+multest: 後  少
+multestt: 前 多
