@@ -43,6 +43,7 @@ module CUBE#(
 	
 	integer j;
 	
+	reg [143:0]result1,result2;
 	reg [71:0]locali; 	
 	reg [71:0]localw;
 	reg [143:0]mul_result;
@@ -582,6 +583,7 @@ module CUBE#(
 	end
 	
 //--------------
+	/*
 	always@(posedge clk  or negedge rst_n)begin  
 		if(!rst_n)begin
 			result<=0;
@@ -599,6 +601,32 @@ module CUBE#(
 			end
 		end
 		
+	end
+	*/
+	always@(posedge clk  or negedge rst_n)begin  
+		if(!rst_n)begin
+			result1<=0;
+			result2<=0;
+		end
+		else begin
+			for(j=0;j<9;j=j+1)begin
+				result1[16*j +: 16] <= mul_result[16*j +: 16] >> format;
+			end
+		
+			for(j=0;j<9;j=j+1)begin
+				result2[16*j +: 16] <= mul_result[16*j +: 16] << format;
+			end
+		end
+	end
+	
+	always@(posedge clk  or negedge rst_n)begin  
+		if(!rst_n)begin
+			result<=0;
+		end
+		else begin
+			if(shift_direction) result<=result1; 
+			else  result<=result2;
+		end
 	end
 	
 		/*
@@ -958,7 +986,7 @@ module IPF#(
 	end
 	
 	/*get icu*/
-	always@(posedge clk_2  or negedge rst_n)begin 
+	always@(posedge clk  or negedge rst_n)begin 
 		if(!rst_n)begin
 			for(idx=0;idx<9;idx=idx+1)begin
 				icu[idx]<=0;
