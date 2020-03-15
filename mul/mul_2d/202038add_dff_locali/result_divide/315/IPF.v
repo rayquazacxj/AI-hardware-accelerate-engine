@@ -656,7 +656,7 @@ module IPF#(
 	reg [191:0]icu[0:8];
 	reg [2:0]round_dff1,round_dff2;
 	reg stride_dff1,stride_dff2;
-	reg [1:0]wsize_dff1,wsize_dff2;
+	reg [1:0]wsize_dff1,wsize_dff2,wsize_dff1_A,wsize_dff1_B;
 	reg clk_2A,clk_2B;
 	
 	wire [1599:0]w;	 
@@ -666,7 +666,7 @@ module IPF#(
 	reg [79:0]wcu_A[0:63];
 	reg [79:0]wcu_B[0:63];
 	
-	reg [31:0]wgroup_start;
+	reg [31:0]wgroup_start_A,wgroup_start_B;
 	reg [31:0]wgroup_dff;
 	integer idx,idxx,idi;
 	wire cnt7_7_2;	// 7 * 7 weight 2 round full 
@@ -818,6 +818,7 @@ module IPF#(
 	end
 	/* get wcu */
 	/* version2: wcu is dff*/
+	/*
 	always@(posedge clk or negedge rst_n)begin
 		if(!rst_n)begin
 			wgroup_start<=0;
@@ -834,32 +835,43 @@ module IPF#(
 				end
 			endcase
 		end
-	end
-	/*
-	always@(posedge clk or negedge rst_n)begin
-		if(!rst_n)begin
-			for(idxx=0; idxx<64; idxx=idxx+1)begin 
-				wcu[idxx]<=0;
-			end
-		end
-		else begin
-			for(idxx=0; idxx<64; idxx=idxx+1)begin 
-				wcu[idxx]<=1;
-			end
-		end
 	end*/
-	/*
-	always@(posedge clk or negedge rst_n)begin
+	always@(posedge clk_2A or negedge rst_n)begin
 		if(!rst_n)begin
-			clk_2<=0;
-			clk_2_cnt<=0;
+			wgroup_start_A<=0;
 		end
-		else begin
-			clk_2<=~clk_2;	
-			clk_2_cnt<=clk_2_cnt+1;
+		else begin	
+			case(wgroup)
+				0:wgroup_start_A<= 0;  		  //wgroup1
+				1:begin					 	  //wgroup2
+					case(Wsize)
+						0:wgroup_start_A<= 576; //9*P1*8
+						1:wgroup_start_A<= 800; //25*P1*4
+						2:wgroup_start_A<= 784; //49*P1*2
+					endcase
+				end
+			endcase
 		end
 	end
-	*/
+	
+	always@(posedge clk_2B or negedge rst_n)begin
+		if(!rst_n)begin
+			wgroup_start_B<=0;
+		end
+		else begin	
+			case(wgroup)
+				0:wgroup_start_B<= 0;  		  //wgroup1
+				1:begin					 	  //wgroup2
+					case(Wsize)
+						0:wgroup_start_B<= 576; //9*P1*8
+						1:wgroup_start_B<= 800; //25*P1*4
+						2:wgroup_start_B<= 784; //49*P1*2
+					endcase
+				end
+			endcase
+		end
+	end
+	
 	always@(negedge clk or negedge rst_n)begin
 		if(!rst_n)begin
 			clk_2B<=1;
@@ -880,21 +892,30 @@ module IPF#(
 	
 	always@(posedge clk_2A or negedge rst_n)begin
 		if(!rst_n)begin
+			wsize_dff1_A<=0;
+		end
+		else begin
+			wsize_dff1_A<=Wsize;
+		end
+	end
+	
+	always@(posedge clk_2A or negedge rst_n)begin
+		if(!rst_n)begin
 			for(idxx=0; idxx<64; idxx=idxx+1)begin 
 				wcu_A[idxx]<=0;
 			end
 		end
 		else begin
-			case(wsize_dff1)
-			/*
+			case(wsize_dff1_A)
+			
 				0:begin //2 layer for can syn !!
 					for(idx=0; idx<8; idx=idx+1)begin   						// 8 channels
 						for(idxx= (idx*8) ; idxx< 8+ (idx*8); idxx=idxx+1)begin // NO3_0 ~ NO3_7
-							wcu_A[idxx]<={8'b0,w[(W1*idx)+wgroup_start +:W1]};
+							wcu_A[idxx]<={8'b0,w[(W1*idx)+wgroup_start_A +:W1]};
 						end
 					end								
 				end	
-				*/
+				/*
 				0:begin
 					for(idxx= 0 ; idxx< 8; idxx=idxx+1)begin // NO3_0 ~ NO3_7
 						wcu_A[idxx]<={8'b0,w[wgroup_start +:W1]};
@@ -920,7 +941,7 @@ module IPF#(
 					for(idxx= 56 ; idxx< 64; idxx=idxx+1)begin // NO3_0 ~ NO3_7
 						wcu_A[idxx]<={8'b0,w[(W1*7)+wgroup_start +:W1]};
 					end
-				end	
+				end	*/
 			//------------------------------
 				1:begin
 						//3 layer sys work !!!
@@ -928,10 +949,10 @@ module IPF#(
 						for(idx=0;idx<4;idx=idx+1)begin							// NO5_0 ~ NO5_3
 							for(idxx=0;idxx<4;idxx=idxx+1)begin					// ID5_0 ~ ID5_3
 								case(idxx)
-									0:wcu_A[16*idi+4*idx+idxx]<={8'b0,w[(P1*10)+wgroup_start+idi*(P1*25) +:D3],w[(P1*5)+wgroup_start+idi*(P1*25) +:D3],w[wgroup_start+idi*(P1*25) +:D3]};
-									1:wcu_A[16*idi+4*idx+idxx]<={8'b0,24'b0,w[(P1*20)+wgroup_start+idi*(P1*25) +:D3],w[(P1*15)+wgroup_start+idi*(P1*25) +:D3]};
-									2:wcu_A[16*idi+4*idx+idxx]<={8'b0,8'b0,w[(P1*13)+wgroup_start+idi*(P1*25) +:D2],8'b0,w[(P1*8)+wgroup_start+idi*(P1*25) +:D2],8'b0,w[(P1*3)+wgroup_start+idi*(P1*25) +:D2]};
-									3:wcu_A[16*idi+4*idx+idxx]<={8'b0,24'b0,8'b0,w[(P1*23)+wgroup_start+idi*(P1*25) +:D2],8'b0,w[(P1*18)+wgroup_start+idi*(P1*25) +:D2]};
+									0:wcu_A[16*idi+4*idx+idxx]<={8'b0,w[(P1*10)+wgroup_start_A+idi*(P1*25) +:D3],w[(P1*5)+wgroup_start_A+idi*(P1*25) +:D3],w[wgroup_start_A+idi*(P1*25) +:D3]};
+									1:wcu_A[16*idi+4*idx+idxx]<={8'b0,24'b0,w[(P1*20)+wgroup_start_A+idi*(P1*25) +:D3],w[(P1*15)+wgroup_start_A+idi*(P1*25) +:D3]};
+									2:wcu_A[16*idi+4*idx+idxx]<={8'b0,8'b0,w[(P1*13)+wgroup_start_A+idi*(P1*25) +:D2],8'b0,w[(P1*8)+wgroup_start_A+idi*(P1*25) +:D2],8'b0,w[(P1*3)+wgroup_start_A+idi*(P1*25) +:D2]};
+									3:wcu_A[16*idi+4*idx+idxx]<={8'b0,24'b0,8'b0,w[(P1*23)+wgroup_start_A+idi*(P1*25) +:D2],8'b0,w[(P1*18)+wgroup_start_A+idi*(P1*25) +:D2]};
 								endcase
 							end
 						end
@@ -946,14 +967,14 @@ module IPF#(
 							for(idxx=0;idxx<16;idxx=idxx+1)begin				// ID7_0 ~ ID7_8 (ID7_8(1 data))--|
 															  //   |----------------------------------------------|
 								case(idxx)                    //   V
-									0:wcu_A[idi*32+idx*16+idxx]<={w[(P1*48)+wgroup_start+idi*(P1*49) +:D1],w[(P1*14)+wgroup_start+idi*(P1*49) +:D3],w[(P1*7)+wgroup_start+idi*(P1*49) +:D3],w[wgroup_start+idi*(P1*49) +:D3]};
-									1:wcu_A[idi*32+idx*16+idxx]<={8'b0,w[(P1*35)+wgroup_start+idi*(P1*49) +:D3],w[(P1*28)+wgroup_start+idi*(P1*49) +:D3],w[(P1*21)+wgroup_start+idi*(P1*49) +:D3]};
-									2:wcu_A[idi*32+idx*16+idxx]<={8'b0,48'b0,w[(P1*42)+wgroup_start+idi*(P1*49) +:D3]};
-									3:wcu_A[idi*32+idx*16+idxx]<={8'b0,w[(P1*17)+wgroup_start+idi*(P1*49) +:D3],w[(P1*10)+wgroup_start+idi*(P1*49) +:D3],w[(P1*3)+wgroup_start+idi*(P1*49) +:D3]};
-									4:wcu_A[idi*32+idx*16+idxx]<={8'b0,w[(P1*38)+wgroup_start+idi*(P1*49) +:D3],w[(P1*31)+wgroup_start+idi*(P1*49) +:D3],w[(P1*24)+wgroup_start+idi*(P1*49) +:D3]};
-									5:wcu_A[idi*32+idx*16+idxx]<={8'b0,48'b0,w[(P1*45)+wgroup_start+idi*(P1*49) +:D3]};
-									6:wcu_A[idi*32+idx*16+idxx]<={8'b0,16'b0,w[(P1*20)+wgroup_start+idi*(P1*49) +:D1],16'b0,w[(P1*13)+wgroup_start+idi*(P1*49) +:D1],16'b0,w[(P1*6)+wgroup_start+idi*(P1*49) +:D1]};
-									7:wcu_A[idi*32+idx*16+idxx]<={8'b0,16'b0,w[(P1*41)+wgroup_start+idi*(P1*49) +:D1],16'b0,w[(P1*34)+wgroup_start+idi*(P1*49) +:D1],16'b0,w[(P1*27)+wgroup_start+idi*(P1*49) +:D1]};
+									0:wcu_A[idi*32+idx*16+idxx]<={w[(P1*48)+wgroup_start_A+idi*(P1*49) +:D1],w[(P1*14)+wgroup_start_A+idi*(P1*49) +:D3],w[(P1*7)+wgroup_start_A+idi*(P1*49) +:D3],w[wgroup_start_A+idi*(P1*49) +:D3]};
+									1:wcu_A[idi*32+idx*16+idxx]<={8'b0,w[(P1*35)+wgroup_start_A+idi*(P1*49) +:D3],w[(P1*28)+wgroup_start_A+idi*(P1*49) +:D3],w[(P1*21)+wgroup_start_A+idi*(P1*49) +:D3]};
+									2:wcu_A[idi*32+idx*16+idxx]<={8'b0,48'b0,w[(P1*42)+wgroup_start_A+idi*(P1*49) +:D3]};
+									3:wcu_A[idi*32+idx*16+idxx]<={8'b0,w[(P1*17)+wgroup_start_A+idi*(P1*49) +:D3],w[(P1*10)+wgroup_start_A+idi*(P1*49) +:D3],w[(P1*3)+wgroup_start_A+idi*(P1*49) +:D3]};
+									4:wcu_A[idi*32+idx*16+idxx]<={8'b0,w[(P1*38)+wgroup_start_A+idi*(P1*49) +:D3],w[(P1*31)+wgroup_start_A+idi*(P1*49) +:D3],w[(P1*24)+wgroup_start_A+idi*(P1*49) +:D3]};
+									5:wcu_A[idi*32+idx*16+idxx]<={8'b0,48'b0,w[(P1*45)+wgroup_start_A+idi*(P1*49) +:D3]};
+									6:wcu_A[idi*32+idx*16+idxx]<={8'b0,16'b0,w[(P1*20)+wgroup_start_A+idi*(P1*49) +:D1],16'b0,w[(P1*13)+wgroup_start_A+idi*(P1*49) +:D1],16'b0,w[(P1*6)+wgroup_start_A+idi*(P1*49) +:D1]};
+									7:wcu_A[idi*32+idx*16+idxx]<={8'b0,16'b0,w[(P1*41)+wgroup_start_A+idi*(P1*49) +:D1],16'b0,w[(P1*34)+wgroup_start_A+idi*(P1*49) +:D1],16'b0,w[(P1*27)+wgroup_start_A+idi*(P1*49) +:D1]};
 									default:wcu_A[idi*32+idx*16+idxx]<=0; // ID7_9 fills 0
 								endcase
 							end
@@ -966,6 +987,16 @@ module IPF#(
 		end
 	end
 	
+	
+	always@(posedge clk_2B or negedge rst_n)begin
+		if(!rst_n)begin
+			wsize_dff1_B<=0;
+		end
+		else begin
+			wsize_dff1_B<=Wsize;
+		end
+	end
+	
 	always@(posedge clk_2B or negedge rst_n)begin
 		if(!rst_n)begin
 			for(idxx=0; idxx<64; idxx=idxx+1)begin 
@@ -973,14 +1004,14 @@ module IPF#(
 			end
 		end
 		else begin
-			case(wsize_dff1)/*
+			case(wsize_dff1_B)
 				0:begin //2 layer for can syn !!
 					for(idx=0; idx<8; idx=idx+1)begin   						// 8 channels
 						for(idxx= (idx*8) ; idxx< 8+ (idx*8); idxx=idxx+1)begin // NO3_0 ~ NO3_7
-							wcu_B[idxx]<={8'b0,w[(W1*idx)+wgroup_start +:W1]};
+							wcu_B[idxx]<={8'b0,w[(W1*idx)+wgroup_start_B +:W1]};
 						end
 					end								
-				end	*/
+				end	/*
 				0:begin
 					for(idxx= 0 ; idxx< 8; idxx=idxx+1)begin // NO3_0 ~ NO3_7
 						wcu_B[idxx]<={8'b0,w[wgroup_start +:W1]};
@@ -1007,7 +1038,7 @@ module IPF#(
 						wcu_B[idxx]<={8'b0,w[(W1*7)+wgroup_start +:W1]};
 					end
 				end
-				
+				*/
 			//------------------------------
 				1:begin
 						//3 layer sys work !!!
@@ -1015,10 +1046,10 @@ module IPF#(
 						for(idx=0;idx<4;idx=idx+1)begin							// NO5_0 ~ NO5_3
 							for(idxx=0;idxx<4;idxx=idxx+1)begin					// ID5_0 ~ ID5_3
 								case(idxx)
-									0:wcu_B[16*idi+4*idx+idxx]<={8'b0,w[(P1*10)+wgroup_start+idi*(P1*25) +:D3],w[(P1*5)+wgroup_start+idi*(P1*25) +:D3],w[wgroup_start+idi*(P1*25) +:D3]};
-									1:wcu_B[16*idi+4*idx+idxx]<={8'b0,24'b0,w[(P1*20)+wgroup_start+idi*(P1*25) +:D3],w[(P1*15)+wgroup_start+idi*(P1*25) +:D3]};
-									2:wcu_B[16*idi+4*idx+idxx]<={8'b0,8'b0,w[(P1*13)+wgroup_start+idi*(P1*25) +:D2],8'b0,w[(P1*8)+wgroup_start+idi*(P1*25) +:D2],8'b0,w[(P1*3)+wgroup_start+idi*(P1*25) +:D2]};
-									3:wcu_B[16*idi+4*idx+idxx]<={8'b0,24'b0,8'b0,w[(P1*23)+wgroup_start+idi*(P1*25) +:D2],8'b0,w[(P1*18)+wgroup_start+idi*(P1*25) +:D2]};
+									0:wcu_B[16*idi+4*idx+idxx]<={8'b0,w[(P1*10)+wgroup_start_B+idi*(P1*25) +:D3],w[(P1*5)+wgroup_start_B+idi*(P1*25) +:D3],w[wgroup_start_B+idi*(P1*25) +:D3]};
+									1:wcu_B[16*idi+4*idx+idxx]<={8'b0,24'b0,w[(P1*20)+wgroup_start_B+idi*(P1*25) +:D3],w[(P1*15)+wgroup_start_B+idi*(P1*25) +:D3]};
+									2:wcu_B[16*idi+4*idx+idxx]<={8'b0,8'b0,w[(P1*13)+wgroup_start_B+idi*(P1*25) +:D2],8'b0,w[(P1*8)+wgroup_start_B+idi*(P1*25) +:D2],8'b0,w[(P1*3)+wgroup_start_B+idi*(P1*25) +:D2]};
+									3:wcu_B[16*idi+4*idx+idxx]<={8'b0,24'b0,8'b0,w[(P1*23)+wgroup_start_B+idi*(P1*25) +:D2],8'b0,w[(P1*18)+wgroup_start_B+idi*(P1*25) +:D2]};
 								endcase
 							end
 						end
@@ -1033,14 +1064,14 @@ module IPF#(
 							for(idxx=0;idxx<16;idxx=idxx+1)begin				// ID7_0 ~ ID7_8 (ID7_8(1 data))--|
 															  //   |----------------------------------------------|
 								case(idxx)                    //   V
-									0:wcu_B[idi*32+idx*16+idxx]<={w[(P1*48)+wgroup_start+idi*(P1*49) +:D1],w[(P1*14)+wgroup_start+idi*(P1*49) +:D3],w[(P1*7)+wgroup_start+idi*(P1*49) +:D3],w[wgroup_start+idi*(P1*49) +:D3]};
-									1:wcu_B[idi*32+idx*16+idxx]<={8'b0,w[(P1*35)+wgroup_start+idi*(P1*49) +:D3],w[(P1*28)+wgroup_start+idi*(P1*49) +:D3],w[(P1*21)+wgroup_start+idi*(P1*49) +:D3]};
-									2:wcu_B[idi*32+idx*16+idxx]<={8'b0,48'b0,w[(P1*42)+wgroup_start+idi*(P1*49) +:D3]};
-									3:wcu_B[idi*32+idx*16+idxx]<={8'b0,w[(P1*17)+wgroup_start+idi*(P1*49) +:D3],w[(P1*10)+wgroup_start+idi*(P1*49) +:D3],w[(P1*3)+wgroup_start+idi*(P1*49) +:D3]};
-									4:wcu_B[idi*32+idx*16+idxx]<={8'b0,w[(P1*38)+wgroup_start+idi*(P1*49) +:D3],w[(P1*31)+wgroup_start+idi*(P1*49) +:D3],w[(P1*24)+wgroup_start+idi*(P1*49) +:D3]};
-									5:wcu_B[idi*32+idx*16+idxx]<={8'b0,48'b0,w[(P1*45)+wgroup_start+idi*(P1*49) +:D3]};
-									6:wcu_B[idi*32+idx*16+idxx]<={8'b0,16'b0,w[(P1*20)+wgroup_start+idi*(P1*49) +:D1],16'b0,w[(P1*13)+wgroup_start+idi*(P1*49) +:D1],16'b0,w[(P1*6)+wgroup_start+idi*(P1*49) +:D1]};
-									7:wcu_B[idi*32+idx*16+idxx]<={8'b0,16'b0,w[(P1*41)+wgroup_start+idi*(P1*49) +:D1],16'b0,w[(P1*34)+wgroup_start+idi*(P1*49) +:D1],16'b0,w[(P1*27)+wgroup_start+idi*(P1*49) +:D1]};
+									0:wcu_B[idi*32+idx*16+idxx]<={w[(P1*48)+wgroup_start_B+idi*(P1*49) +:D1],w[(P1*14)+wgroup_start_B+idi*(P1*49) +:D3],w[(P1*7)+wgroup_start_B+idi*(P1*49) +:D3],w[wgroup_start_B+idi*(P1*49) +:D3]};
+									1:wcu_B[idi*32+idx*16+idxx]<={8'b0,w[(P1*35)+wgroup_start_B+idi*(P1*49) +:D3],w[(P1*28)+wgroup_start_B+idi*(P1*49) +:D3],w[(P1*21)+wgroup_start_B+idi*(P1*49) +:D3]};
+									2:wcu_B[idi*32+idx*16+idxx]<={8'b0,48'b0,w[(P1*42)+wgroup_start_B+idi*(P1*49) +:D3]};
+									3:wcu_B[idi*32+idx*16+idxx]<={8'b0,w[(P1*17)+wgroup_start_B+idi*(P1*49) +:D3],w[(P1*10)+wgroup_start_B+idi*(P1*49) +:D3],w[(P1*3)+wgroup_start_B+idi*(P1*49) +:D3]};
+									4:wcu_B[idi*32+idx*16+idxx]<={8'b0,w[(P1*38)+wgroup_start_B+idi*(P1*49) +:D3],w[(P1*31)+wgroup_start_B+idi*(P1*49) +:D3],w[(P1*24)+wgroup_start_B+idi*(P1*49) +:D3]};
+									5:wcu_B[idi*32+idx*16+idxx]<={8'b0,48'b0,w[(P1*45)+wgroup_start_B+idi*(P1*49) +:D3]};
+									6:wcu_B[idi*32+idx*16+idxx]<={8'b0,16'b0,w[(P1*20)+wgroup_start_B+idi*(P1*49) +:D1],16'b0,w[(P1*13)+wgroup_start_B+idi*(P1*49) +:D1],16'b0,w[(P1*6)+wgroup_start_B+idi*(P1*49) +:D1]};
+									7:wcu_B[idi*32+idx*16+idxx]<={8'b0,16'b0,w[(P1*41)+wgroup_start_B+idi*(P1*49) +:D1],16'b0,w[(P1*34)+wgroup_start_B+idi*(P1*49) +:D1],16'b0,w[(P1*27)+wgroup_start_B+idi*(P1*49) +:D1]};
 									default:wcu_B[idi*32+idx*16+idxx]<=0; // ID7_9 fills 0
 								endcase
 							end
@@ -1074,44 +1105,7 @@ module IPF#(
 	end
 	
 	W_DATA wdata(.clk(clk),.rst_n(rst_n),.ctrl(ctrl),.PS(PS),.Wsize(Wsize),.w_valid(w_valid),.w_data(w_data),.w(w),.cnt7_7_2(cnt7_7_2));
-	/*
-	always@(posedge clk or negedge rst_n)begin
-		if(!rst_n)begin
-			//w	<=0;
-			//widcnt<=0;
-			widstart<=0;
-			cnt7_7_2<=0;	
-		end
-		else begin
-			if(ctrl==FINI && PS==COMPUTE)begin								
-				if(Wsize==2)begin	// 7 * 7
-					cnt7_7_2<= ~cnt7_7_2;		
-					if(cnt7_7_2==0 && w_valid)begin
-						//w<=w[1599:1568];
-						widstart<=32;
-					end
-					else if(w_valid)begin
-						//w<=0;
-						widstart<=0;
-					end
-				end
-				else if(w_valid)begin
-					//w<=0;
-					widstart<=0;
-				end
-				//widcnt<=0;	
-			end	
-			
-			
-			if(w_valid)begin //3 , 5 full	
-				case(widstart)
-					0:w[(widcnt*64) +: 64]<=w_data;
-					32:w[(widcnt*64)+KEEP +:(64+KEEP)]<=w_data;
-				endcase
-				widcnt<=widcnt+1;	
-			end	
-		end
-	end*/
+	
 	
 	/* get round,stride,wsize dff */
 	
@@ -1292,23 +1286,6 @@ module IPF#(
 			
 		end
 	end
-	/*
-	always@(posedge clk or negedge rst_n)begin
-		if(!rst_n)begin
-			widcnt<=0;
-		end
-		else begin
-			if(ctrl==FINI && PS==COMPUTE)begin								
-				widcnt<=0;	
-			end	
-			else if(w_valid)begin //3 , 5 full	
-				widcnt<=widcnt+1;	
-			end
-			else begin
-			end
-		end
-	end
-	*/		
 	
 	
 endmodule	
