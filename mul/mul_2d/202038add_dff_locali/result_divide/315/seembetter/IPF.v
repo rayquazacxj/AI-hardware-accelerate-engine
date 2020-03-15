@@ -1,36 +1,3 @@
-module CUBE_MUL(
-	input clk_2,
-	input rst_n,
-	input [71:0]locali, 	
-	input [71:0]localw,
-	output reg[143:0]mul_result
-);
-	reg [71:0]i,w;
-	integer j;
-	always@(posedge clk_2  or negedge rst_n)begin  
-		if(!rst_n)begin
-			i<=0;
-			w<=0;
-		end
-		else begin
-			i<=locali;
-			w<=localw;
-		end
-	end
-	always@(posedge clk_2  or negedge rst_n)begin  
-		if(!rst_n)begin
-			mul_result<=0;
-		end
-		else begin
-			for(j=0;j<9;j=j+1)begin
-				mul_result[16*j +: 16] <= w[8*j +: 8] * i[8*j +: 8] ;
-			end
-		end
-	end
-	
-endmodule
-	
-
 module CUBE#(
 	parameter NO3 = 3'd0,
 	parameter NO5 = 2'd0,
@@ -79,7 +46,7 @@ module CUBE#(
 	reg [143:0]result_A,result_B;
 	reg [71:0]locali_A,locali_B; 	
 	reg [71:0]localw_A,localw_B;
-	wire [143:0]mul_result_A,mul_result_B;
+	reg [143:0]mul_result_A,mul_result_B;
 	reg clk_2A,clk_2B;
 	
 	reg [191:0]i_A,i_B;	
@@ -479,10 +446,6 @@ module CUBE#(
 		end
 	end
 	
-	CUBE_MUL aa(.clk_2(clk_2A),.rst_n(rst_n),.locali(locali_A),.localw(localw_A),.mul_result(mul_result_A));
-	CUBE_MUL bb(.clk_2(clk_2B),.rst_n(rst_n),.locali(locali_B),.localw(localw_B),.mul_result(mul_result_B));
-	
-	/*
 	always@(posedge clk_2A  or negedge rst_n)begin  
 		if(!rst_n)begin
 			mul_result_A<=0;
@@ -504,7 +467,7 @@ module CUBE#(
 			end
 		end
 	end
-	*/
+	
 
 	always@(posedge clk_2A  or negedge rst_n)begin  
 		if(!rst_n)begin
