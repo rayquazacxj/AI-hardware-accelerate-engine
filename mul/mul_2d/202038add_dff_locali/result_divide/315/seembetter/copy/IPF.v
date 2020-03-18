@@ -61,6 +61,7 @@ module CUBE#(
 	
 	reg[143:0]result_neg;
 	
+	
 	always@(posedge clk_2A or negedge rst_n)begin
 		if(!rst_n)begin
 			i_A<=0;
@@ -641,7 +642,7 @@ module IPF#(
 
 	reg [STATE_Width-1:0] PS, NS;
 	
-	reg res_valid_tmp,res_valid_tmp1,res_valid_tmp2,res_valid_tmp3;
+	reg res_valid_tmp,res_valid_tmp1,res_valid_tmp2,res_valid_tmp3,res_valid_tmp4,res_valid_tmp5,res_valid_tmp6,res_valid_tmp7,res_valid_tmp8,res_valid_tmp9,res_valid_tmp10,res_valid_tmp11;
 	
 	reg [3:0]i_format_tmp,i_format_tmp1,w_format_tmp,w_format_tmp1;
 	
@@ -654,6 +655,7 @@ module IPF#(
 	reg [63:0]regg;
 	reg [63:0]regh;
 	reg [191:0]icu[0:8];
+	reg [191:0]icuu[0:8];
 	reg [2:0]round_dff1,round_dff2;
 	reg stride_dff1,stride_dff2;
 	reg [1:0]wsize_dff1,wsize_dff2,wsize_dff1_A,wsize_dff1_B;
@@ -740,14 +742,22 @@ module IPF#(
 	CUBE #(.NO3(6),.NO5(3),.ID5(2),.NO7(1),.ID7(9))C62(.wsize(wsize_dff2),.i_dat(icu[0]),.w_dat(wcu[62]),.rst_n(rst_n),.clk(clk),.stride(stride_dff2),.round(round_dff2),.i_format(i_format),.w_format(w_format),.result(result[8928 +: RES_LEN]));
 	CUBE #(.NO3(7),.NO5(3),.ID5(3),.NO7(1),.ID7(9))C63(.wsize(wsize_dff2),.i_dat(icu[1]),.w_dat(wcu[63]),.rst_n(rst_n),.clk(clk),.stride(stride_dff2),.round(round_dff2),.i_format(i_format),.w_format(w_format),.result(result[9072 +: RES_LEN]));
 	
-	/* res_valid : raising after i_data came in 4 cycles */
+	/* res_valid : raising after i_data came in 4->12 cycles */
 	always@(posedge clk or negedge rst_n)begin
 		if(!rst_n)begin
 			res_valid<=0;
 			res_valid_tmp<=0;
 			res_valid_tmp1<=0;
 			res_valid_tmp2<=0;
-			res_valid_tmp3<=0;
+			res_valid_tmp3<=0;/*
+			res_valid_tmp4<=0;
+			res_valid_tmp5<=0;
+			res_valid_tmp6<=0;
+			res_valid_tmp7<=0;
+			res_valid_tmp8<=0;
+			res_valid_tmp9<=0;
+			res_valid_tmp10<=0;*/
+			
 		end
 		else begin
 			case(PS)
@@ -757,7 +767,14 @@ module IPF#(
 			res_valid_tmp1 <= res_valid_tmp;
 			res_valid_tmp2 <= res_valid_tmp1;
 			res_valid_tmp3 <= res_valid_tmp2;
-			res_valid <= res_valid_tmp3;
+			res_valid <= res_valid_tmp3;/*
+			res_valid_tmp5 <= res_valid_tmp4;
+			res_valid_tmp6 <= res_valid_tmp5;
+			res_valid_tmp7 <= res_valid_tmp6;
+			res_valid_tmp8 <= res_valid_tmp7;
+			res_valid_tmp9 <= res_valid_tmp8;
+			res_valid_tmp10 <= res_valid_tmp9;
+			res_valid <= res_valid_tmp10;*/
 		end
 	end
 	
@@ -1074,12 +1091,24 @@ module IPF#(
 			stride_dff2<=stride_dff1;
 		end
 	end
+	always@(posedge clk  or negedge rst_n)begin 
+		if(!rst_n)begin
+			for(idx=0;idx<9;idx=idx+1)begin
+				icu[idx]<=0;
+			end
+		end
+		else begin
+			for(idx=0;idx<9;idx=idx+1)begin
+				icu[idx]<=icuu[idx];
+			end
+		end
+	end
 	
 	/*get icu*/
 	always@(posedge clk  or negedge rst_n)begin 
 		if(!rst_n)begin
 			for(idx=0;idx<9;idx=idx+1)begin
-				icu[idx]<=0;
+				icuu[idx]<=0;
 			end
 		end
 		else begin	
@@ -1087,12 +1116,12 @@ module IPF#(
 				0:begin										// 3 * 3
 					if(stride_dff1 && !wgroup_dff)begin			// B C D
 						for(idx=0;idx<9;idx=idx+1)begin
-							icu[idx]<={regb,regc,regd};
+							icuu[idx]<={regb,regc,regd};
 						end
 					end
 					else begin								// A B C
 						for(idx=0;idx<9;idx=idx+1)begin
-							icu[idx]<={rega,regb,regc};
+							icuu[idx]<={rega,regb,regc};
 						end
 					end
 				end
@@ -1100,42 +1129,42 @@ module IPF#(
 				1:begin										// 5 * 5
 					if(stride_dff1 && !wgroup_dff)begin	  		// B C D E F
 						for(idx=0;idx<9;idx=idx+2)begin		// ID5_0  , ID5_2 
-							icu[idx]<={regb,regc,regd};
+							icuu[idx]<={regb,regc,regd};
 						end
 						for(idx=1;idx<9;idx=idx+2)begin	// ID5_1  , ID5_3 
-							icu[idx]<={rege,regf,64'b0};
+							icuu[idx]<={rege,regf,64'b0};
 						end
 					end
 					else begin					 			// A B C D E
 						for(idx=0;idx<9;idx=idx+2)begin		// ID5_0  , ID5_2 
-							icu[idx]<={rega,regb,regc};
+							icuu[idx]<={rega,regb,regc};
 						end
 						for(idx=1;idx<9;idx=idx+2)begin		// ID5_1  , ID5_3 
-							icu[idx]<={regd,rege,64'b0};
+							icuu[idx]<={regd,rege,64'b0};
 						end
 					end	
 				end
 				2:begin
 					if(stride_dff1 && !wgroup_dff)begin			// B C D E F G H 
 						for(idx=0;idx<9;idx=idx+3)begin 	// ID7_0  , ID7_3  , ID7_6
-							icu[idx]<={regb,regc,regd};
+							icuu[idx]<={regb,regc,regd};
 						end
 						for(idx=1;idx<9;idx=idx+3)begin		// ID7_1  , ID7_4  , ID7_7
-							icu[idx]<={rege,regf,regg};
+							icuu[idx]<={rege,regf,regg};
 						end
 						for(idx=2;idx<9;idx=idx+3)begin		// ID7_2  , ID7_5  , ID7_8
-							icu[idx]<={regh,128'b0};
+							icuu[idx]<={regh,128'b0};
 						end
 					end
 					else begin   				  			// A B C D E F G
 						for(idx=0;idx<9;idx=idx+3)begin		// ID7_0  , ID7_3  , ID7_6
-							icu[idx]<={rega,regb,regc};
+							icuu[idx]<={rega,regb,regc};
 						end
 						for(idx=1;idx<9;idx=idx+3)begin		// ID7_1  , ID7_4  , ID7_7
-							icu[idx]<={regd,rege,regf};
+							icuu[idx]<={regd,rege,regf};
 						end
 						for(idx=2;idx<9;idx=idx+3)begin		// ID7_2  , ID7_5  , ID7_8
-							icu[idx]<={regg,128'b0};
+							icuu[idx]<={regg,128'b0};
 						end
 					end	
 				end
