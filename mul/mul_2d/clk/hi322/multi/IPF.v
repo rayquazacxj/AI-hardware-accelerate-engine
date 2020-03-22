@@ -1102,7 +1102,7 @@ module CUBE#(
 		end
 		else begin
 			for(j=0;j<9;j=j+1)begin
-				mul_result[16*j +: 16] <= localw_dff2[8*j +: 8] * locali[8*j +:8];//localw_dff4[8*j +: 8] * locali[8*j +:4];//{localw_dff4[8*j +: 8] * locali[8*j +7 +:1],7'd0} +{localw_dff4[8*j +: 8] * locali[8*j +6 +:1],6'd0} +{localw_dff4[8*j +: 8] * locali[8*j +5 +:1],5'd0} +{localw_dff4[8*j +: 8] * locali[8*j +4 +:1],4'd0} + {localw_dff4[8*j +: 8] * locali[8*j +3 +:1],3'd0} + {localw_dff4[8*j +: 8] * locali[8*j +2 +:1],2'd0} + {localw_dff4[8*j +: 8] * locali[8*j +1 +: 1],1'd0} +  {localw_dff4[8*j +: 8] * locali[8*j  +:1]} ;//localw_dff4[8*j +: 8] * locali[8*j +: 8] ;
+				mul_result[16*j +: 16] <= locali[8*j +:8] * localw_dff2[8*j +: 1];//localw_dff4[8*j +: 8] * locali[8*j +:4];//{localw_dff4[8*j +: 8] * locali[8*j +7 +:1],7'd0} +{localw_dff4[8*j +: 8] * locali[8*j +6 +:1],6'd0} +{localw_dff4[8*j +: 8] * locali[8*j +5 +:1],5'd0} +{localw_dff4[8*j +: 8] * locali[8*j +4 +:1],4'd0} + {localw_dff4[8*j +: 8] * locali[8*j +3 +:1],3'd0} + {localw_dff4[8*j +: 8] * locali[8*j +2 +:1],2'd0} + {localw_dff4[8*j +: 8] * locali[8*j +1 +: 1],1'd0} +  {localw_dff4[8*j +: 8] * locali[8*j  +:1]} ;//localw_dff4[8*j +: 8] * locali[8*j +: 8] ;
 			end
 		end
 	end

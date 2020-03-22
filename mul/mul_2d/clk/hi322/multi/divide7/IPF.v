@@ -43,34 +43,34 @@ module CUBE#(
 	integer j;
 	
 	reg [71:0]locali;
-	reg [71:0]locali_3,locali_3_dff1,locali_3_dff2,locali_3_dff3,locali_3_dff4;
+	reg [71:0]locali_3,locali_3_dff1,locali_3_dff2,locali_3_dff3,locali_3_dff4,locali_3_dff5;
 	
 	reg [71:0]locali_5_s0r0,locali_5_s0r0_dff;
 	reg [71:0]locali_5_s0r1_id0,locali_5_s0r1_id1,locali_5_s0r1_id2,locali_5_s0r1_id3,locali_5_s0r1;
 	reg [71:0]locali_5_s0;
 	reg [71:0]locali_5_s1_id0,locali_5_s1_id1,locali_5_s1_id2,locali_5_s1_id3,locali_5_s1,locali_5_s1_dff;
- 	reg [71:0]locali_5;
+ 	reg [71:0]locali_5,locali_5_dff1;
 	
-	reg [71:0]locali_7_s0r0,locali_7_s0r0_dff;
-	reg [71:0]locali_7_s0r1,locali_7_s0r1_id01,locali_7_s0r1_id2,locali_7_s0r1_id34,locali_7_s0r1_id5,locali_7_s0r1_id67,locali_7_s0r1_id8;
-	reg [71:0]locali_7_s0r2,locali_7_s0r2_id01,locali_7_s0r2_id2,locali_7_s0r2_id34,locali_7_s0r2_id5,locali_7_s0r2_id67,locali_7_s0r2_id8;
-	reg [71:0]locali_7_s0r3,locali_7_s0r3_id01,locali_7_s0r3_id2,locali_7_s0r3_id34,locali_7_s0r3_id5,locali_7_s0r3_id67,locali_7_s0r3_id8;
-	reg [71:0]locali_7_s1r0,locali_7_s1r0_id01,locali_7_s1r0_id2,locali_7_s1r0_id34,locali_7_s1r0_id5,locali_7_s1r0_id67,locali_7_s1r0_id8;
-	reg [71:0]locali_7_s1r1,locali_7_s1r1_id01,locali_7_s1r1_id2,locali_7_s1r1_id34,locali_7_s1r1_id5,locali_7_s1r1_id67,locali_7_s1r1_id8;
+	reg [71:0]locali_7_s0r0,locali_7_s0r0_c1,locali_7_s0r0_c2,locali_7_s0r0_dff1;
+	reg [71:0]locali_7_s0r1,locali_7_s0r1_c1,locali_7_s0r1_c2,locali_7_s0r1_id01,locali_7_s0r1_id2,locali_7_s0r1_id34,locali_7_s0r1_id5,locali_7_s0r1_id67,locali_7_s0r1_id8;
+	reg [71:0]locali_7_s0r2,locali_7_s0r2_c1,locali_7_s0r2_c2,locali_7_s0r2_id01,locali_7_s0r2_id2,locali_7_s0r2_id34,locali_7_s0r2_id5,locali_7_s0r2_id67,locali_7_s0r2_id8;
+	reg [71:0]locali_7_s0r3,locali_7_s0r3_c1,locali_7_s0r3_c2,locali_7_s0r3_id01,locali_7_s0r3_id2,locali_7_s0r3_id34,locali_7_s0r3_id5,locali_7_s0r3_id67,locali_7_s0r3_id8;
+	reg [71:0]locali_7_s1r0,locali_7_s1r0_c1,locali_7_s1r0_c2,locali_7_s1r0_id01,locali_7_s1r0_id2,locali_7_s1r0_id34,locali_7_s1r0_id5,locali_7_s1r0_id67,locali_7_s1r0_id8;
+	reg [71:0]locali_7_s1r1,locali_7_s1r1_c1,locali_7_s1r1_c2,locali_7_s1r1_id01,locali_7_s1r1_id2,locali_7_s1r1_id34,locali_7_s1r1_id5,locali_7_s1r1_id67,locali_7_s1r1_id8;
 	reg [71:0]locali_7_s0,locali_7_s1;
 	reg [71:0]locali_7;
 	
-	reg [71:0]localw,localw_dff1,localw_dff2;
+	reg [71:0]localw,localw_dff1,localw_dff2,localw_dff3;
 	
 	reg [191:0]i;	
 	reg [79:0]w;
 	
-	reg stride_dff,stride_dff1,stride_dff2,stride_dff3;
-	reg [1:0]wsize_dff,wsize_dff1,wsize_dff2,wsize_dff3;
-	reg [2:0]round_dff,round_dff1,round_dff2;
+	reg stride_dff,stride_dff1,stride_dff2,stride_dff3,stride_dff4;
+	reg [1:0]wsize_dff,wsize_dff1,wsize_dff2,wsize_dff3,wsize_dff4;
+	reg [2:0]round_dff,round_dff1,round_dff2,round_dff3;
 	
-	reg [4:0]format_dff,format_dff1,format_dff2,format_dff3,format_dff4,format_dff5,format_dff6;
-	reg shift_direction_dff,shift_direction_dff1,shift_direction_dff2,shift_direction_dff3,shift_direction_dff4,shift_direction_dff5,shift_direction_dff6,shift_direction_dff7;
+	reg [4:0]format_dff,format_dff1,format_dff2,format_dff3,format_dff4,format_dff5,format_dff6,format_dff7;
+	reg shift_direction_dff,shift_direction_dff1,shift_direction_dff2,shift_direction_dff3,shift_direction_dff4,shift_direction_dff5,shift_direction_dff6,shift_direction_dff7,shift_direction_dff8;
 	
 	reg[143:0]mul_result,result_right,result_left;
 	
@@ -103,26 +103,32 @@ module CUBE#(
 		if(!rst_n)begin
 			round_dff1<=0;
 			round_dff2<=0;
+			round_dff3<=0;
 			
 			stride_dff1<=0;
 			stride_dff2<=0;
 			stride_dff3<=0;
+			stride_dff4<=0;
 			
 			wsize_dff1<=0;
 			wsize_dff2<=0;
 			wsize_dff3<=0;
+			wsize_dff4<=0;
 		end
 		else begin	
 			round_dff1<=round_dff;
 			round_dff2<=round_dff1;
+			round_dff3<=round_dff2;
 			
 			stride_dff1<=stride_dff;
 			stride_dff2<=stride_dff1;
 			stride_dff3<=stride_dff2;
+			stride_dff4<=stride_dff3;
 			
 			wsize_dff1<=wsize_dff;
 			wsize_dff2<=wsize_dff1;
 			wsize_dff3<=wsize_dff2;
+			wsize_dff4<=wsize_dff3;
 		end
 	end
 	
@@ -134,6 +140,7 @@ module CUBE#(
 			format_dff4<=0;
 			format_dff5<=0;
 			format_dff6<=0;
+			format_dff7<=0;
 			
 			shift_direction_dff1<=0;
 			shift_direction_dff2<=0;
@@ -142,6 +149,7 @@ module CUBE#(
 			shift_direction_dff5<=0;
 			shift_direction_dff6<=0;
 			shift_direction_dff7<=0;
+			shift_direction_dff8<=0;
 		end
 		else begin		
 			format_dff1<=format_dff;
@@ -150,6 +158,7 @@ module CUBE#(
 			format_dff4<=format_dff3;
 			format_dff5<=format_dff4;
 			format_dff6<=format_dff5;
+			format_dff7<=format_dff6;
 			
 			shift_direction_dff1<=shift_direction_dff;
 			shift_direction_dff2<=shift_direction_dff1;
@@ -158,6 +167,7 @@ module CUBE#(
 			shift_direction_dff5<=shift_direction_dff4;
 			shift_direction_dff6<=shift_direction_dff5;
 			shift_direction_dff7<=shift_direction_dff6;
+			shift_direction_dff8<=shift_direction_dff7;
 		end
 	end
 	
@@ -179,12 +189,14 @@ module CUBE#(
 			locali_3_dff2<=0;
 			locali_3_dff3<=0;
 			locali_3_dff4<=0;
+			locali_3_dff5<=0;
 		end
 		else begin
 			locali_3_dff1<=locali_3;
 			locali_3_dff2<=locali_3_dff1;
 			locali_3_dff3<=locali_3_dff2;
 			locali_3_dff4<=locali_3_dff3;
+			locali_3_dff5<=locali_3_dff4;
 		end
 	end
 //-----------------------------------------	
@@ -369,7 +381,16 @@ module CUBE#(
 			endcase	
 		end
 	end
+	always@(posedge clk or negedge rst_n)begin
+		if(!rst_n)begin	
+			locali_5_dff1<=0;
+		end
+		else begin
+			locali_5_dff1<=locali_5;
+		end
+	end
 //-------------------------------------------
+/*
 	always@(posedge clk or negedge rst_n)begin
 		if(!rst_n)begin	
 			locali_7_s0r0<=0;
@@ -386,12 +407,50 @@ module CUBE#(
 			endcase	
 		end
 	end
+	*/
 	always@(posedge clk or negedge rst_n)begin
 		if(!rst_n)begin	
-			locali_7_s0r0_dff<=0;
+			locali_7_s0r0_c1<=0;
 		end
 		else begin
-			locali_7_s0r0_dff<=locali_7_s0r0;
+			case(ID7)		//NO7 : 0 , 1
+				0,1:locali_7_s0r0_c1<={i[D3+NO7*8:NO7*8],i[SB +D3+NO7*8:SB +NO7*8],i[SA +D3+NO7*8:SA +NO7*8]};
+				2:locali_7_s0r0_c1<={{DATA6{1'b0}},i[SA +D3+NO7*8:SA +NO7*8]};
+				3,4:locali_7_s0r0_c1<={i[D3+(NO7+3)*8:(NO7+3)*8],i[SB +D3+(NO7+3)*8:SB +(NO7+3)*8],i[SA +D3+(NO7+3)*8:SA +(NO7+3)*8]};			
+				default:locali_7_s0r0_c1<=0;
+			endcase	
+		end
+	end
+	always@(posedge clk or negedge rst_n)begin
+		if(!rst_n)begin	
+			locali_7_s0r0_c2<=0;
+		end
+		else begin
+			case(ID7)		//NO7 : 0 , 1
+				5:locali_7_s0r0_c2<={{DATA6{1'b0}},i[SA +D3+(NO7+3)*8:SA +(NO7+3)*8]};
+				6,7:locali_7_s0r0_c2<={{DATA2{1'b0}},i[D1+(NO7+6)*8:(NO7+6)*8],{DATA2{1'b0}},i[SB +D1+(NO7+6)*8:SB +(NO7+6)*8],{DATA2{1'b0}},i[SA +D1+(NO7+6)*8:SA +(NO7+6)*8]};				
+				8:locali_7_s0r0_c2<={{DATA7{1'b0}},{DATA1{1'b0}},i[SA +D1+(NO7+6)*8:SA +(NO7+6)*8]};
+				default:locali_7_s0r0_c2<=72'b0;
+			endcase	
+		end
+	end
+	always@(posedge clk or negedge rst_n)begin
+		if(!rst_n)begin	
+			locali_7_s0r0<=0;
+		end
+		else begin
+			if(ID7<5)locali_7_s0r0<=locali_7_s0r0_c1;
+			else locali_7_s0r0<=locali_7_s0r0_c2;
+		end
+	end
+//-----------------------------------------------------
+
+	always@(posedge clk or negedge rst_n)begin
+		if(!rst_n)begin	
+			locali_7_s0r0_dff1<=0;
+		end
+		else begin
+			locali_7_s0r0_dff1<=locali_7_s0r0;
 		end
 	end
 	
@@ -433,6 +492,7 @@ module CUBE#(
 		end
 	end
 //--------------------------------------------------
+/*
 	always@(posedge clk or negedge rst_n)begin
 		if(!rst_n)begin	
 			locali_7_s0r1<=0;
@@ -447,6 +507,41 @@ module CUBE#(
 				8:  locali_7_s0r1 <=locali_7_s0r1_id8;
 				9:  locali_7_s0r1 <=72'b0;
 			endcase
+		end
+	end*/
+	always@(posedge clk or negedge rst_n)begin
+		if(!rst_n)begin	
+			locali_7_s0r1_c1<=0;
+		end
+		else begin
+			case(ID7)		//NO7 : 0 , 1
+				0,1:locali_7_s0r1_c1 <=locali_7_s0r1_id01;
+				2:  locali_7_s0r1_c1 <=locali_7_s0r1_id2;
+				3,4:locali_7_s0r1_c1 <=locali_7_s0r1_id34;
+				default:locali_7_s0r1_c1<=0;
+			endcase
+		end
+	end
+	always@(posedge clk or negedge rst_n)begin
+		if(!rst_n)begin	
+			locali_7_s0r1_c2<=0;
+		end
+		else begin
+			case(ID7)		//NO7 : 0 , 1
+				5:  locali_7_s0r1_c2 <=locali_7_s0r1_id5;
+				6,7:locali_7_s0r1_c2 <=locali_7_s0r1_id67;
+				8:  locali_7_s0r1_c2 <=locali_7_s0r1_id8;
+				default:locali_7_s0r1_c2<=0;
+			endcase
+		end
+	end
+	always@(posedge clk or negedge rst_n)begin
+		if(!rst_n)begin	
+			locali_7_s0r1<=0;
+		end
+		else begin
+			if(ID7<5)locali_7_s0r1<=locali_7_s0r1_c1;
+			else locali_7_s0r1<=locali_7_s0r1_c2;
 		end
 	end
 //-------------------------------------------
@@ -487,7 +582,7 @@ module CUBE#(
 			locali_7_s0r2_id8 <={{DATA7{1'b0}},{DATA1{1'b0}},i[SA +D1+(NO7+2)*8:SA +(NO7+2)*8]};
 		end
 	end
-	
+	/*
 	always@(posedge clk or negedge rst_n)begin
 		if(!rst_n)begin	
 			locali_7_s0r2<=0;
@@ -502,6 +597,41 @@ module CUBE#(
 				8:  locali_7_s0r2 <=locali_7_s0r2_id8;
 				9:  locali_7_s0r2 <=72'b0;
 			endcase
+		end
+	end*/
+	always@(posedge clk or negedge rst_n)begin
+		if(!rst_n)begin	
+			locali_7_s0r2_c1<=0;
+		end
+		else begin
+			case(ID7)		//NO7 : 0 , 1
+				0,1:locali_7_s0r2_c1 <=locali_7_s0r2_id01;
+				2:  locali_7_s0r2_c1 <=locali_7_s0r2_id2;
+				3,4:locali_7_s0r2_c1 <=locali_7_s0r2_id34;
+				default:locali_7_s0r2_c1<=0;
+			endcase
+		end
+	end
+	always@(posedge clk or negedge rst_n)begin
+		if(!rst_n)begin	
+			locali_7_s0r2_c2<=0;
+		end
+		else begin
+			case(ID7)		//NO7 : 0 , 1
+				5:  locali_7_s0r2_c2 <=locali_7_s0r2_id5;
+				6,7:locali_7_s0r2_c2 <=locali_7_s0r2_id67;
+				8:  locali_7_s0r2_c2 <=locali_7_s0r2_id8;
+				default: locali_7_s0r2_c2<=0;
+			endcase
+		end
+	end
+	always@(posedge clk or negedge rst_n)begin
+		if(!rst_n)begin	
+			locali_7_s0r2<=0;
+		end
+		else begin
+			if(ID7<5)locali_7_s0r2<=locali_7_s0r2_c1;
+			else locali_7_s0r2<=locali_7_s0r2_c2;
 		end
 	end
 //-------------------------------------------
@@ -542,7 +672,7 @@ module CUBE#(
 			locali_7_s0r3_id8 <={{DATA7{1'b0}},{DATA1{1'b0}},i[SA +D1+(NO7+4)*8:SA +(NO7+4)*8]};
 		end
 	end
-	
+	/*
 	always@(posedge clk or negedge rst_n)begin
 		if(!rst_n)begin	
 			locali_7_s0r3<=0;
@@ -558,15 +688,51 @@ module CUBE#(
 				9:  locali_7_s0r3 <=72'b0;
 			endcase
 		end
+	end*/
+	always@(posedge clk or negedge rst_n)begin
+		if(!rst_n)begin	
+			locali_7_s0r3_c1<=0;
+		end
+		else begin
+			case(ID7)		//NO7 : 0 , 1
+				0,1:locali_7_s0r3_c1 <=locali_7_s0r3_id01;
+				2:  locali_7_s0r3_c1 <=locali_7_s0r3_id2;
+				3,4:locali_7_s0r3_c1 <=locali_7_s0r3_id34;
+				default:locali_7_s0r3_c1<=0;
+			endcase
+		end
 	end
+	always@(posedge clk or negedge rst_n)begin
+		if(!rst_n)begin	
+			locali_7_s0r3_c2<=0;
+		end
+		else begin
+			case(ID7)		//NO7 : 0 , 1
+				5:  locali_7_s0r3_c2 <=locali_7_s0r3_id5;
+				6,7:locali_7_s0r3_c2 <=locali_7_s0r3_id67;
+				8:  locali_7_s0r3_c2 <=locali_7_s0r3_id8;
+				default:  locali_7_s0r3_c2 <=72'd0;
+			endcase
+		end
+	end
+	always@(posedge clk or negedge rst_n)begin
+		if(!rst_n)begin	
+			locali_7_s0r3<=0;
+		end
+		else begin
+			if(ID7<5)locali_7_s0r3<=locali_7_s0r3_c1;
+			else locali_7_s0r3<=locali_7_s0r3_c2;
+		end
+	end
+//-------------------------------------------
 	
 	always@(posedge clk or negedge rst_n)begin
 		if(!rst_n)begin	
 			locali_7_s0<=0;
 		end
 		else begin
-			case(round_dff2)		//NO7 : 0 , 1
-				0:locali_7_s0 <=locali_7_s0r0_dff;
+			case(round_dff3)		//NO7 : 0 , 1
+				0:locali_7_s0 <=locali_7_s0r0_dff1;
 				1:locali_7_s0 <=locali_7_s0r1;
 				2:locali_7_s0 <=locali_7_s0r2;
 				3:locali_7_s0 <=locali_7_s0r3;
@@ -628,7 +794,7 @@ module CUBE#(
 			locali_7_s1r0_id2<={{DATA6{1'b0}},i[SA +D3+(NO7*2)*8:SA +(NO7*2)*8]};
 		end
 	end
-	
+	/*
 	always@(posedge clk or negedge rst_n)begin
 		if(!rst_n)begin	
 			locali_7_s1r0<=0;
@@ -644,7 +810,43 @@ module CUBE#(
 				9:  locali_7_s1r0 <=72'b0;
 			endcase
 		end
+	end*/
+	always@(posedge clk or negedge rst_n)begin
+		if(!rst_n)begin	
+			locali_7_s1r0_c1<=0;
+		end
+		else begin
+			case(ID7)		//NO7 : 0 , 1
+				0,1:locali_7_s1r0_c1 <=locali_7_s1r0_id01;
+				2:  locali_7_s1r0_c1 <=locali_7_s1r0_id2;
+				3,4:locali_7_s1r0_c1 <=locali_7_s1r0_id34;
+				default:locali_7_s1r0_c1<=0;
+			endcase
+		end
 	end
+	always@(posedge clk or negedge rst_n)begin
+		if(!rst_n)begin	
+			locali_7_s1r0_c2<=0;
+		end
+		else begin
+			case(ID7)		//NO7 : 0 , 1
+				5:  locali_7_s1r0_c2 <=locali_7_s1r0_id5;
+				6,7:locali_7_s1r0_c2 <=locali_7_s1r0_id67;
+				8:  locali_7_s1r0_c2 <=locali_7_s1r0_id8;
+				default:locali_7_s1r0_c2<=0;
+			endcase
+		end
+	end
+	always@(posedge clk or negedge rst_n)begin
+		if(!rst_n)begin	
+			locali_7_s1r0<=0;
+		end
+		else begin
+			if(ID7<5)locali_7_s1r0<=locali_7_s1r0_c1;
+			else locali_7_s1r0<=locali_7_s1r0_c2;
+		end
+	end
+	
 //-------------------------------------------
 	always@(posedge clk or negedge rst_n)begin
 		if(!rst_n)begin	
@@ -712,6 +914,7 @@ module CUBE#(
 			endcase
 		end
 	end
+	/*
 	always@(posedge clk or negedge rst_n)begin
 		if(!rst_n)begin	
 			locali_7_s1r1<=0;
@@ -727,14 +930,50 @@ module CUBE#(
 				9:  locali_7_s1r1 <=72'b0;
 			endcase
 		end
+	end*/
+	always@(posedge clk or negedge rst_n)begin
+		if(!rst_n)begin	
+			locali_7_s1r1_c1<=0;
+		end
+		else begin
+			case(ID7)		//NO7 : 0 , 1
+				0,1:locali_7_s1r1_c1 <=locali_7_s1r1_id01;
+				2:  locali_7_s1r1_c1 <=locali_7_s1r1_id2;
+				3,4:locali_7_s1r1_c1 <=locali_7_s1r1_id34;
+				default:locali_7_s1r1_c1<=0;
+			endcase
+		end
 	end
+	always@(posedge clk or negedge rst_n)begin
+		if(!rst_n)begin	
+			locali_7_s1r1_c2<=0;
+		end
+		else begin
+			case(ID7)		//NO7 : 0 , 1
+				5:  locali_7_s1r1_c2 <=locali_7_s1r1_id5;
+				6,7:locali_7_s1r1_c2 <=locali_7_s1r1_id67;
+				8:  locali_7_s1r1_c2 <=locali_7_s1r1_id8;
+				default:  locali_7_s1r1_c2 <=72'd0;
+			endcase
+		end
+	end
+	always@(posedge clk or negedge rst_n)begin
+		if(!rst_n)begin	
+			locali_7_s1r1<=0;
+		end
+		else begin
+			if(ID7<5)locali_7_s1r1<=locali_7_s1r1_c1;
+			else locali_7_s1r1<=locali_7_s1r1_c2;
+		end
+	end
+	
 //-------------------------------------------
 	always@(posedge clk or negedge rst_n)begin
 		if(!rst_n)begin	
 			locali_7_s1<=0;
 		end
 		else begin
-			case(round_dff2)		//NO7 : 0 , 1
+			case(round_dff3)		//NO7 : 0 , 1
 				0:locali_7_s1 <=locali_7_s1r0;
 				1:locali_7_s1 <=locali_7_s1r1;
 			endcase
@@ -746,7 +985,7 @@ module CUBE#(
 			locali_7<=0;
 		end
 		else begin
-			case(stride_dff3)		//NO7 : 0 , 1
+			case(stride_dff4)		//NO7 : 0 , 1
 				0:locali_7 <=locali_7_s0;
 				1:locali_7 <=locali_7_s1;
 			endcase
@@ -758,9 +997,9 @@ module CUBE#(
 			locali<=0;
 		end
 		else begin
-			case(wsize_dff3)
-				0:locali <= locali_3_dff4;
-				1:locali <= locali_5;
+			case(wsize_dff4)
+				0:locali <= locali_3_dff5;
+				1:locali <= locali_5_dff1;
 				2:locali <= locali_7;
 			endcase	
 		end
@@ -1087,10 +1326,12 @@ module CUBE#(
 		if(!rst_n)begin
 			localw_dff1<=0;
 			localw_dff2<=0;
+			localw_dff3<=0;
 		end
 		else begin
 			localw_dff1<=localw;
-			localw_dff2<=localw_dff1;		
+			localw_dff2<=localw_dff1;
+			localw_dff3<=localw_dff2;			
 		end
 	end
 	
@@ -1102,7 +1343,7 @@ module CUBE#(
 		end
 		else begin
 			for(j=0;j<9;j=j+1)begin
-				mul_result[16*j +: 16] <= localw_dff2[8*j +: 8] * locali[8*j +:8];//localw_dff4[8*j +: 8] * locali[8*j +:4];//{localw_dff4[8*j +: 8] * locali[8*j +7 +:1],7'd0} +{localw_dff4[8*j +: 8] * locali[8*j +6 +:1],6'd0} +{localw_dff4[8*j +: 8] * locali[8*j +5 +:1],5'd0} +{localw_dff4[8*j +: 8] * locali[8*j +4 +:1],4'd0} + {localw_dff4[8*j +: 8] * locali[8*j +3 +:1],3'd0} + {localw_dff4[8*j +: 8] * locali[8*j +2 +:1],2'd0} + {localw_dff4[8*j +: 8] * locali[8*j +1 +: 1],1'd0} +  {localw_dff4[8*j +: 8] * locali[8*j  +:1]} ;//localw_dff4[8*j +: 8] * locali[8*j +: 8] ;
+				mul_result[16*j +: 16] <= locali[8*j +:8] * localw_dff3[8*j +: 2];//localw_dff4[8*j +: 8] * locali[8*j +:4];//{localw_dff4[8*j +: 8] * locali[8*j +7 +:1],7'd0} +{localw_dff4[8*j +: 8] * locali[8*j +6 +:1],6'd0} +{localw_dff4[8*j +: 8] * locali[8*j +5 +:1],5'd0} +{localw_dff4[8*j +: 8] * locali[8*j +4 +:1],4'd0} + {localw_dff4[8*j +: 8] * locali[8*j +3 +:1],3'd0} + {localw_dff4[8*j +: 8] * locali[8*j +2 +:1],2'd0} + {localw_dff4[8*j +: 8] * locali[8*j +1 +: 1],1'd0} +  {localw_dff4[8*j +: 8] * locali[8*j  +:1]} ;//localw_dff4[8*j +: 8] * locali[8*j +: 8] ;
 			end
 		end
 	end
@@ -1126,11 +1367,11 @@ module CUBE#(
 		end
 		else begin	
 			for(j=0;j<9;j=j+1)begin
-				result_right[16*j +: 16] <= mul_result[16*j +: 16] >> format_dff6;
+				result_right[16*j +: 16] <= mul_result[16*j +: 16] >> format_dff;
 			end
 	
 			for(j=0;j<9;j=j+1)begin
-				result_left[16*j +: 16] <= mul_result[16*j +: 16] << format_dff6;
+				result_left[16*j +: 16] <= mul_result[16*j +: 16] << format_dff;
 			end
 		end
 	end
@@ -1140,7 +1381,7 @@ module CUBE#(
 			result<=0;
 		end
 		else begin
-			if(shift_direction_dff7)begin			
+			if(shift_direction_dff8)begin			
 					result <= result_right ;
 			end
 			else begin
