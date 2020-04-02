@@ -9,31 +9,15 @@ module ADD2#(parameter N=16,RN=16)( 						// 1 cycle
 );
 	parameter HALF = N>>1;
 	reg [N-1:0]locali0,locali1;
-	reg [HALF:0]ADD2_out_1;
-	reg [HALF+1:0]ADD2_out_2;
-	reg ADD2_valid_;
+	reg [HALF:0]ADD2_out_1,ADD2_out_2;
 	
-	always@(posedge clk or negedge rst_n)begin
-		if(!rst_n)begin
-			locali0<=0;
-			locali1<=0;
-		end
-		else begin
-			locali0<=i0;
-			locali1<=i1;
-		end
-	end
-	always@(posedge clk or negedge rst_n)begin
-		if(!rst_n)
-			ADD3_valid_<=0;
-			ADD3_valid<=0;
-		end
-		else begin
-			ADD3_valid_<=i_valid;
-			ADD3_valid<=ADD3_valid_;
-		end
-	end
 	
+	//assign ADD2_out = locali0 + locali1;
+	/*
+	always@(*)begin
+		ADD2_out = locali0 + locali1;
+	end
+	*/
 	always@(posedge clk or negedge rst_n)begin
 		if(!rst_n)begin
 			ADD2_out_1<=0;
@@ -58,7 +42,19 @@ module ADD2#(parameter N=16,RN=16)( 						// 1 cycle
 			ADD2_out <= {ADD2_out_2,{HALF{1'd0}}} + ADD2_out_1;
 		end
 	end
-		
+	
+	always@(posedge clk or negedge rst_n)begin
+		if(!rst_n)begin
+			locali0<=0;
+			locali1<=0;
+			ADD2_valid<=0;
+		end
+		else begin
+			locali0<=i0;
+			locali1<=i1;
+			ADD2_valid<=i_valid;
+		end
+	end
 endmodule
 
 module ADD3#(parameter N=16,RN=16)(							// 1 cycle
@@ -73,33 +69,14 @@ module ADD3#(parameter N=16,RN=16)(							// 1 cycle
 );
 	parameter HALF = N>>1;
 	reg [N-1:0]locali0,locali1,locali2;
-	reg [HALF+1:0]ADD3_out_1;
-	reg [HALF+2:0]ADD3_out_2;
-	reg ADD3_valid_;
+	reg [HALF+1:0]ADD3_out_1,ADD3_out_2;
+	//assign ADD3_out = locali0 + locali1 + locali2;
 	
-	always@(posedge clk or negedge rst_n)begin
-		if(!rst_n)begin
-			locali0<=0;
-			locali1<=0;
-			locali2<=0;
-		end
-		else begin
-			locali0<=i0;
-			locali1<=i1;
-			locali2<=i2;		
-		end
+	/*
+	always@(*)begin
+		ADD3_out = locali0 + locali1 + locali2;
 	end
-	always@(posedge clk or negedge rst_n)begin
-		if(!rst_n)
-			ADD3_valid_<=0;
-			ADD3_valid<=0;
-		end
-		else begin
-			ADD3_valid_<=i_valid;
-			ADD3_valid<=ADD3_valid_;
-		end
-	end
-	
+	*/
 	always@(posedge clk or negedge rst_n)begin
 		if(!rst_n)begin
 			ADD3_out_1<=0;
@@ -134,9 +111,23 @@ module ADD3#(parameter N=16,RN=16)(							// 1 cycle
 		end
 	end*/
 	
+	always@(posedge clk or negedge rst_n)begin
+		if(!rst_n)begin
+			locali0<=0;
+			locali1<=0;
+			locali2<=0;
+			ADD3_valid<=0;
+		end
+		else begin
+			locali0<=i0;
+			locali1<=i1;
+			locali2<=i2;
+			ADD3_valid<=i_valid;
+		end
+	end
 endmodule
 
-module FA(											// 13 cycles
+module FA(											// 4 cycles
 	input 	clk,
 	input 	rst_n,
 	input  	[383:0]data,
@@ -155,7 +146,6 @@ module FA(											// 13 cycles
 	wire [19:0]L3_res[0:1];
 	
 	wire [20:0] FAout_wire;
-	wire FAvalid_wire;
 	
 	generate
 		for(idx=0;idx<8;idx=idx+1)begin:FA_L1
@@ -169,16 +159,14 @@ module FA(											// 13 cycles
 		end		
 	endgenerate
 	
-	ADD2 #(20,21)L4(.clk(clk),.rst_n(rst_n),.i0(L3_res[0]),.i1(L3_res[1]),.i_valid(L3_valid),.ADD2_valid(FAvalid_wire),.ADD2_out(FAout_wire));
+	ADD2 #(20,21)L4(.clk(clk),.rst_n(rst_n),.i0(L3_res[0]),.i1(L3_res[1]),.i_valid(L3_valid),.ADD2_valid(FAvalid),.ADD2_out(FAout_wire));
 	
 	always@(posedge clk or negedge rst_n)begin
 		if(!rst_n)begin
 			FAout<=0;
-			FAvalid<=0;
 		end
 		else begin
 			FAout	<= FAout_wire;
-			FAvalid<=FAvalid_wire;
 		end	
 	end
 	
@@ -214,20 +202,18 @@ module FSA#(parameter NO3=0,parameter NO5=0,parameter ID5=0,parameter NO7=0,para
 	reg FAvalid;
 	wire R1R2valid,R2R3valid,R1R2R3valid;
 	wire [22:0]R1R2,R2R3,R1R2R3;
-	reg [22:0]R1,R1_dff1,R1_dff2,R3_dff1,R3_dff2,R3;
+	reg [22:0]R1,R3;
 	//
 	
-	/* FA ,  13 cycles */
+	/* FA ,  4 cycles */
 	FA ROW1(.clk(clk),.rst_n(rst_n),.data(data[383:0]),.data_valid(data_valid),.FAout(row1_wire),.FAvalid(FAvalid1));
 	FA ROW2(.clk(clk),.rst_n(rst_n),.data(data[767:384]),.data_valid(data_valid),.FAout(row2_wire),.FAvalid(FAvalid2));
 	FA ROW3(.clk(clk),.rst_n(rst_n),.data(data[1151:768]),.data_valid(data_valid),.FAout(row3_wire),.FAvalid(FAvalid3));
 	
-	//3 cycles
 	ADD2 #(21,23)R1R2_(.clk(clk),.rst_n(rst_n),.i0(row1),.i1(row2),.i_valid(FAvalid),.ADD2_valid(R1R2valid),.ADD2_out(R1R2));
 	ADD2 #(21,23)R2R3_(.clk(clk),.rst_n(rst_n),.i0(row2),.i1(row3),.i_valid(FAvalid),.ADD2_valid(R2R3valid),.ADD2_out(R2R3));
 	ADD3 #(21,23)R1R2R3_(.clk(clk),.rst_n(rst_n),.i0(row1),.i1(row2),.i2(row3),.i_valid(FAvalid),.ADD3_valid(R1R2R3valid),.ADD3_out(R1R2R3));
 	
-	//1 cycle
 	always@(posedge clk or negedge rst_n)begin
 		if(!rst_n)begin
 			row1<=0;
@@ -244,22 +230,12 @@ module FSA#(parameter NO3=0,parameter NO5=0,parameter ID5=0,parameter NO7=0,para
 	end
 	always@(posedge clk or negedge rst_n)begin
 		if(!rst_n)begin
-			R1_dff1<=0;
-			R1_dff2<=0;
 			R1<=0;
-			
-			R3_dff1<=0;
-			R3_dff2<=0;
 			R3<=0;
 		end
 		else begin
-			R1_dff1<=row1;
-			R1_dff2<=R1_dff1;
-			R1<=R1_dff2;
-			
-			R3_dff1<=row3;
-			R3_dff2<=R3_dff1;
-			R3<=R3_dff2;
+			R1<=row1;
+			R3<=row3;
 		end	
 	end
 	
@@ -285,11 +261,11 @@ module FSA#(parameter NO3=0,parameter NO5=0,parameter ID5=0,parameter NO7=0,para
 				end
 				7:begin
 					FSAout_3[FRONT +:D1] 	<= R1;
-					FSAout_3[BACK +:D1]		<= R2R3;
+					FSAout_3[BACK +:D1]	<= R2R3;
 				end
 				default:begin
 					FSAout_3[FRONT +:D1] 	<= 0;
-					FSAout_3[BACK +:D1]		<= R1R2R3;
+					FSAout_3[BACK +:D1]	<= R1R2R3;
 				end
 			endcase
 		end
@@ -303,20 +279,20 @@ module FSA#(parameter NO3=0,parameter NO5=0,parameter ID5=0,parameter NO7=0,para
 			case(wround)
 				0:begin
 					FSAout_5_s0[FRONT +:D1] 	<= 0;
-					FSAout_5_s0[BACK +:D1]		<= R1R2R3;
+					FSAout_5_s0[BACK +:D1]	<= R1R2R3;
 				end
 				1:begin
 					if((NO5==0 && (ID5==2 || ID5==3)) || (NO5==3 && (ID5==0 || ID5==1)))begin
 						FSAout_5_s0[FRONT +:D1] 	<= R1;
-						FSAout_5_s0[BACK +:D1]		<= R2R3;
+						FSAout_5_s0[BACK +:D1]	<= R2R3;
 					end
 					else if(NO5==2 && (ID5==0 || ID5==1))begin
 						FSAout_5_s0[FRONT +:D1] 	<= row3;
-						FSAout_5_s0[BACK +:D1] 		<= R1R2;
+						FSAout_5_s0[BACK +:D1] 	<= R1R2;
 					end
 					else begin
 						FSAout_5_s0[FRONT +:D1] 	<= 0;
-						FSAout_5_s0[BACK +:D1]		<= R1R2R3;
+						FSAout_5_s0[BACK +:D1]	<= R1R2R3;
 					end
 				end
 			endcase
@@ -329,15 +305,15 @@ module FSA#(parameter NO3=0,parameter NO5=0,parameter ID5=0,parameter NO7=0,para
 		else begin 
 			if(NO5==2 && (ID5==2 || ID5==3))begin
 				FSAout_5_s1[FRONT +:D1] 	<= R1;
-				FSAout_5_s1[BACK +:D1]		<= R2R3;
+				FSAout_5_s1[BACK +:D1]	<= R2R3;
 			end
 			else if(NO5==3 && (ID5==0 || ID5==1))begin
 				FSAout_5_s1[FRONT +:D1] 	<= row3;
-				FSAout_5_s1[BACK +:D1] 		<= R1R2;
+				FSAout_5_s1[BACK +:D1] 	<= R1R2;
 			end
 			else begin
 				FSAout_5_s1[FRONT +:D1] 	<= 0;
-				FSAout_5_s1[BACK +:D1]		<= R1R2R3;
+				FSAout_5_s1[BACK +:D1]	<= R1R2R3;
 			end
 		end
 	end
@@ -359,40 +335,40 @@ module FSA#(parameter NO3=0,parameter NO5=0,parameter ID5=0,parameter NO7=0,para
 			case(wround)
 				0:begin
 					FSAout_7_s0[FRONT +:D1] 	<= 0;
-					FSAout_7_s0[BACK +:D1]		<= R1R2R3;
+					FSAout_7_s0[BACK +:D1]	<= R1R2R3;
 				end
 				1:begin
 					if(NO7==1 && (ID7==3 || ID7==4 || ID7==5))begin
 						FSAout_7_s0[FRONT +:D1] 	<= row3;
-						FSAout_7_s0[BACK +:D1] 		<= R1R2;
+						FSAout_7_s0[BACK +:D1] 	<= R1R2;
 					end
 					else begin
 						FSAout_7_s0[FRONT +:D1] 	<= 0;
-						FSAout_7_s0[BACK +:D1]		<= R1R2R3;
+						FSAout_7_s0[BACK +:D1]	<= R1R2R3;
 					end
 				end
 				2:begin
 					if(NO7==0 && (ID7==3 || ID7==4 || ID7==5))begin
 						FSAout_7_s0[FRONT +:D1] 	<= R1;
-						FSAout_7_s0[BACK +:D1] 		<= R2R3;
+						FSAout_7_s0[BACK +:D1] 	<= R2R3;
 					end
 					else begin
 						FSAout_7_s0[FRONT +:D1] 	<= 0;
-						FSAout_7_s0[BACK +:D1]		<= R1R2R3;
+						FSAout_7_s0[BACK +:D1]	<= R1R2R3;
 					end
 				end
 				3:begin
 					if(NO7==0 && (ID7==0 || ID7==1 || ID7==2))begin
 						FSAout_7_s0[FRONT +:D1] 	<= row3;
-						FSAout_7_s0[BACK +:D1] 		<= R1R2;
+						FSAout_7_s0[BACK +:D1] 	<= R1R2;
 					end
 					else if(NO7==1 && (ID7==0 || ID7==1 || ID7==2))begin
 						FSAout_7_s0[FRONT +:D1] 	<= R1;
-						FSAout_7_s0[BACK +:D1]		<= R2R3;
+						FSAout_7_s0[BACK +:D1]	<= R2R3;
 					end
 					else begin
 						FSAout_7_s0[FRONT +:D1] 	<= 0;
-						FSAout_7_s0[BACK +:D1]		<= R1R2R3;
+						FSAout_7_s0[BACK +:D1]	<= R1R2R3;
 					end
 				end
 			endcase		
@@ -406,20 +382,20 @@ module FSA#(parameter NO3=0,parameter NO5=0,parameter ID5=0,parameter NO7=0,para
 			case(wround)
 				0:begin
 					FSAout_7_s1[FRONT +:D1] 	<= 0;
-					FSAout_7_s1[BACK +:D1]		<= R1R2R3;
+					FSAout_7_s1[BACK +:D1]	<= R1R2R3;
 				end
 				1:begin
 					if(NO7==0 && (ID7==3 || ID7==4 || ID7==5))begin
 						FSAout_7_s1[FRONT +:D1] 	<= R1;
-						FSAout_7_s1[BACK +:D1] 		<= R2R3;
+						FSAout_7_s1[BACK +:D1] 	<= R2R3;
 					end
 					else if(NO7==1 && (ID7==0 || ID7==1 || ID7==2))begin
 						FSAout_7_s1[FRONT +:D1] 	<= R3;
-						FSAout_7_s1[BACK +:D1]		<= R1R2;
+						FSAout_7_s1[BACK +:D1]	<= R1R2;
 					end
 					else begin
 						FSAout_7_s1[FRONT +:D1] 	<= 0;
-						FSAout_7_s1[BACK +:D1]		<= R1R2R3;
+						FSAout_7_s1[BACK +:D1]	<= R1R2R3;
 					end
 				end
 			endcase	
@@ -629,7 +605,7 @@ module A#(parameter NO5=0)(
 	reg[22:0]A2_0i_s1[0:1];
 	reg[22:0]A2_1i_dff1[0:1];
 	reg[22:0]A2_1i_dff2[0:1];
-
+	reg[22:0]A2_1i_dff3[0:1];
 	
 	reg [53:0]Aout_s0;
 	reg [53:0]Aout_s0r0;
@@ -1035,18 +1011,18 @@ module A#(parameter NO5=0)(
 		if(!rst_n)begin
 			A2_1i_dff1[0]<=0;
 			A2_1i_dff2[0]<=0;
-			
+			A2_1i_dff3[0]<=0;
 			A2_1i_dff1[1]<=0;
 			A2_1i_dff2[1]<=0;
-			
+			A2_1i_dff3[1]<=0;
 		end
 		else begin	
 			A2_1i_dff1[0]<=A2_1i[0];
 			A2_1i_dff2[0]<=A2_1i_dff1[0];
-			
+			A2_1i_dff3[0]<=A2_1i_dff2[0];
 			A2_1i_dff1[1]<=A2_1i[1];
 			A2_1i_dff2[1]<=A2_1i_dff1[1];
-			
+			A2_1i_dff3[1]<=A2_1i_dff2[1];
 		end
 	end
 	
@@ -1055,7 +1031,7 @@ module A#(parameter NO5=0)(
 	
 	A1 a1(.clk(clk),.rst_n(rst_n),.i0(A1i[0]),.i1(A1i[1]),.i2(A1i[2]),.i3(A1i[3]),.i_valid(i_valid_),.A1valid(A1valid),.A1out(A1out));
 	A2_0 a2_0(.clk(clk),.rst_n(rst_n),.i0(A2_0i_dff1[0]),.i1(A2_0i_dff1[1]),.i_valid(i_valid_),.A2_0valid(A2_0valid),.A2_0out(A2_0out));
-	A2_1 a2_1(.clk(clk),.rst_n(rst_n),.i0(A2_1i_dff2[0]),.i1(A2_1i_dff2[1]),.i_valid(i_valid_),.A2_1valid(A2_1valid),.A2_1out(A2_1out));
+	A2_1 a2_1(.clk(clk),.rst_n(rst_n),.i0(A2_1i_dff3[0]),.i1(A2_1i_dff3[1]),.i_valid(i_valid_),.A2_1valid(A2_1valid),.A2_1out(A2_1out));
 	
 //-----------------------------------------------------	
 	/* A output */
@@ -1272,10 +1248,7 @@ module A2_0(
 	wire [23:0]L1_res;
 	wire L1_valid;
 	
-	reg A2_0valid_dff1,A2_0valid_dff2;
-	reg [26:0]A2_0out_dff1,A2_0out_dff2;
-	
-	
+	// may not need this dff
 	always@(posedge clk or negedge rst_n)begin
 		if(!rst_n)begin
 			locali[0]<= 0;
@@ -1293,25 +1266,14 @@ module A2_0(
 	
 	always@(posedge clk or negedge rst_n)begin
 		if(!rst_n)begin
-			A2_0out_dff1<=0;
-			A2_0out_dff2<=0;
 			A2_0out	 <=0;
-			
-			A2_0valid_dff1<=0;
-			A2_0valid_dff2<=0;
 			A2_0valid<=0;
 		end
 		else begin	
-			A2_0out_dff1<= {3'b0,L1_res};
-			A2_0out_dff2<= A2_0out_dff1;
-			A2_0out	 <=A2_0out_dff2;
-			
-			A2_0valid_dff1<= L1_valid;
-			A2_0valid_dff2<= A2_0valid_dff1;
-			A2_0valid<= A2_0valid_dff2;
+			A2_0out	 <= {3'b0,L1_res};
+			A2_0valid<= L1_valid;
 		end
 	end
-	
 endmodule
 
 module A2_1(
@@ -1328,9 +1290,6 @@ module A2_1(
 	
 	wire [23:0]L1_res;
 	wire L1_valid;
-	
-	reg A2_1valid_dff1,A2_1valid_dff2;
-	reg [26:0]A2_1out_dff1,A2_1out_dff2;
 	
 	
 	always@(posedge clk or negedge rst_n)begin
@@ -1350,22 +1309,12 @@ module A2_1(
 	
 	always@(posedge clk or negedge rst_n)begin
 		if(!rst_n)begin
-			A2_1out_dff1<=0;
-			A2_1out_dff2<=0;
 			A2_1out	 <=0;
-			
-			A2_1valid_dff1<=0;
-			A2_1valid_dff2<=0;
 			A2_1valid<=0;
 		end
 		else begin	
-			A2_1out_dff1<= {3'b0,L1_res};
-			A2_1out_dff2<= A2_1out_dff1;
-			A2_1out	 <=A2_1out_dff2;
-			
-			A2_1valid_dff1<= L1_valid;
-			A2_1valid_dff2<= A2_1valid_dff1;
-			A2_1valid<= A2_1valid_dff2;
+			A2_1out	 <= {3'b0,L1_res};
+			A2_1valid<= L1_valid;
 		end
 	end
 
@@ -1397,19 +1346,12 @@ module B#(parameter NO7=0)(
 	reg data_valid_tmp,data_valid_;
 	
 	//
-	reg[22:0]B1i_dff1[0:8];
-	reg[22:0]B1i_dff2[0:8];
 	reg[22:0]B2_0i_s0[0:5];
 	reg[22:0]B2_0i_s0r013[0:5];
 	reg[22:0]B2_0i_s0r2[0:5];
 	reg[22:0]B2_0i_s1[0:5];
 	reg[22:0]B2_0i_s1_dff[0:5];
-	reg[22:0]B2_1i_dff1[0:5];
-	reg[22:0]B2_1i_dff2[0:5];
-	reg[22:0]B3i_dff1[0:2];
-	reg[22:0]B3i_dff2[0:2];
 	reg [53:0]Bout_s0,Bout_s1;
-	
 	//
 	
 	reg [2:0]wround_,wround_cnt1,wround_cnt2,wround_cnt3;
@@ -1527,20 +1469,6 @@ module B#(parameter NO7=0)(
 				end
 			endcase
 		end*/
-	end
-	always@(posedge clk or negedge rst_n)begin
-		if(!rst_n)begin
-			for(id=0;id<9;id=id+1)begin
-				B1i_dff1[id]<=0;
-				B1i_dff2[id]<=0;
-			end
-		end
-		else begin	
-			for(id=0;id<9;id=id+1)begin
-				B1i_dff1[id]<=B1i[id];
-				B1i_dff2[id]<=B1i_dff1[id];
-			end
-		end	
 	end
 	
 	/* B2_0 input */
@@ -1738,20 +1666,6 @@ module B#(parameter NO7=0)(
 			end
 		end
 	end
-	always@(posedge clk or negedge rst_n)begin
-		if(!rst_n)begin
-			for(id=0;id<6;id=id+1)begin
-				B2_1i_dff1[id]<=0;
-				B2_1i_dff2[id]<=0;
-			end
-		end
-		else begin	
-			for(id=0;id<6;id=id+1)begin
-				B2_1i_dff1[id]<=B2_1i[id];
-				B2_1i_dff2[id]<=B2_1i_dff1[id];
-			end
-		end	
-	end
 	
 	/* B3 input */
 	
@@ -1778,21 +1692,7 @@ module B#(parameter NO7=0)(
 				end
 			end
 		end
-	end	
-	always@(posedge clk or negedge rst_n)begin
-		if(!rst_n)begin
-			for(id=0;id<6;id=id+1)begin
-				B3i_dff1[id]<=0;
-				B3i_dff2[id]<=0;
-			end
-		end
-		else begin	
-			for(id=0;id<6;id=id+1)begin
-				B3i_dff1[id]<=B3i[id];
-				B3i_dff2[id]<=B3i_dff1[id];
-			end
-		end	
-	end	
+	end			
 							
 //-----------------------------------------------------------------			
 	/* module instantiation */
@@ -2081,8 +1981,6 @@ module B3(
 	wire [25:0]B3out_tmp;
 	wire B3_valid_tmp;
 	wire [24:0]L1;
-	reg B3_valid_dff1,B3_valid_dff2;
-	reg [26:0]B3out_dff1,B3out_dff2;
 	
 	
 	always@(posedge clk or negedge rst_n)begin
@@ -2105,22 +2003,12 @@ module B3(
 	
 	always@(posedge clk or negedge rst_n)begin
 		if(!rst_n)begin
-			B3out_dff1	<= 0;
-			B3out_dff2	<= 0;
 			B3out	<= 0;
-			
-			B3_valid_dff1<=0;
-			B3_valid_dff2<=0;
 			B3_valid<= 0;
 		end
 		else begin	
-			B3out_dff1<= {2'b0,L1};
-			B3out_dff2<=B3out_dff1;
-			B3out<=B3out_dff2;
-			
-			B3_valid_dff1<= B3_valid_tmp;
-			B3_valid_dff2<= B3_valid_dff1;
-			B3_valid<=B3_valid_dff2;
+			B3out<= {2'b0,L1};
+			B3_valid<= B3_valid_tmp;	
 		end
 	end	
 	
@@ -2146,9 +2034,9 @@ module ADDER(
 	reg [3:0]wsize_dff;
 	
 	
-	reg [2:0]wround_dff1,wround_dff2,wround_dff3,wround_dff4,wround_dff5,wround_dff6,wround_dff7,wround_dff8,wround_dff9,wround_dff10,wround_dff11,wround_dff12,wround_dff13,wround_dff14,wround_dff15,wround_dff16,wround_dff17,wround_dff18,wround_dff19,wround_dff20,wround_dff21,wround_dff22,wround_dff23,wround_dff24,wround_dff25,wround_dff26,wround_dff27,wround_dff28,wround_dff29,wround_dff30,wround_dff31,wround_dff32,wround_dff33,wround_dff34,wround_dff35,wround_dff36;
-	reg stride_dff1,stride_dff2,stride_dff3,stride_dff4,stride_dff5,stride_dff6,stride_dff7,stride_dff8,stride_dff9,stride_dff10,stride_dff11,stride_dff12,stride_dff13,stride_dff14,stride_dff15,stride_dff16,stride_dff17,stride_dff18,stride_dff19,stride_dff20,stride_dff21,stride_dff22,stride_dff23,stride_dff24,stride_dff25,stride_dff26,stride_dff27,stride_dff28,stride_dff29,stride_dff30,stride_dff31,stride_dff32,stride_dff33,stride_dff34,stride_dff35,stride_dff36;
-	reg [3:0]wsize_dff1,wsize_dff2,wsize_dff3,wsize_dff4,wsize_dff5,wsize_dff6,wsize_dff7,wsize_dff8,wsize_dff9,wsize_dff10,wsize_dff11,wsize_dff12,wsize_dff13,wsize_dff14,wsize_dff15,wsize_dff16,wsize_dff17,wsize_dff18,wsize_dff19,wsize_dff20,wsize_dff21,wsize_dff22,wsize_dff23,wsize_dff24,wsize_dff25,wsize_dff26,wsize_dff27,wsize_dff28,wsize_dff29,wsize_dff30,wsize_dff31,wsize_dff32,wsize_dff33,wsize_dff34,wsize_dff35,wsize_dff36;
+	reg [2:0]wround_cnt1,wround_cnt2,wround_cnt3,wround_cnt4,wround_5;
+	reg stride_cnt1,stride_cnt2,stride_cnt3,stride_cnt4,stride_5;
+	reg [3:0]wsize_cnt1,wsize_cnt2,wsize_cnt3,wsize_cnt4,wsize_cnt5;
 	reg wsize_is3,wsize_is5,wsize_is7;
 	
 	wire [45:0]fsa_res[0:63];
@@ -2159,7 +2047,7 @@ module ADDER(
 	
 	/* FSA */
 	FSA#(.NO3(0),.NO5(0),.ID5(0),.NO7(0),.ID7(0))C0(.clk(clk),.rst_n(rst_n),.wsize(wsize_cnt4),.stride(stride_cnt4),.wround(wround_cnt4),.data(MUL_results_dff[0 +: CUBE_D1]),.data_valid(MUL_DATA_valid_dff),.FSAout(fsa_res[0]),.FSAvalid(FSAvalid));
-	/*FSA#(.NO3(1),.NO5(0),.ID5(1),.NO7(0),.ID7(1))C1(.clk(clk),.rst_n(rst_n),.wsize(wsize_cnt4),.stride(stride_cnt4),.wround(wround_cnt4),.data(MUL_results_dff[1152 +: CUBE_D1]),.data_valid(MUL_DATA_valid_dff),.FSAout(fsa_res[1]),.FSAvalid(FSAvalid));
+	FSA#(.NO3(1),.NO5(0),.ID5(1),.NO7(0),.ID7(1))C1(.clk(clk),.rst_n(rst_n),.wsize(wsize_cnt4),.stride(stride_cnt4),.wround(wround_cnt4),.data(MUL_results_dff[1152 +: CUBE_D1]),.data_valid(MUL_DATA_valid_dff),.FSAout(fsa_res[1]),.FSAvalid(FSAvalid));
 	FSA#(.NO3(2),.NO5(0),.ID5(2),.NO7(0),.ID7(2))C2(.clk(clk),.rst_n(rst_n),.wsize(wsize_cnt4),.stride(stride_cnt4),.wround(wround_cnt4),.data(MUL_results_dff[2304 +: CUBE_D1]),.data_valid(MUL_DATA_valid_dff),.FSAout(fsa_res[2]),.FSAvalid(FSAvalid));
 	FSA#(.NO3(3),.NO5(0),.ID5(3),.NO7(0),.ID7(3))C3(.clk(clk),.rst_n(rst_n),.wsize(wsize_cnt4),.stride(stride_cnt4),.wround(wround_cnt4),.data(MUL_results_dff[3456 +: CUBE_D1]),.data_valid(MUL_DATA_valid_dff),.FSAout(fsa_res[3]),.FSAvalid(FSAvalid));
 	FSA#(.NO3(4),.NO5(1),.ID5(0),.NO7(0),.ID7(4))C4(.clk(clk),.rst_n(rst_n),.wsize(wsize_cnt4),.stride(stride_cnt4),.wround(wround_cnt4),.data(MUL_results_dff[4608 +: CUBE_D1]),.data_valid(MUL_DATA_valid_dff),.FSAout(fsa_res[4]),.FSAvalid(FSAvalid));
@@ -2225,250 +2113,61 @@ module ADDER(
 	FSA#(.NO3(5),.NO5(3),.ID5(1),.NO7(1),.ID7(9))C61(.clk(clk),.rst_n(rst_n),.wsize(wsize_cnt4),.stride(stride_cnt4),.wround(wround_cnt4),.data(MUL_results_dff[70272 +: CUBE_D1]),.data_valid(MUL_DATA_valid_dff),.FSAout(fsa_res[61]),.FSAvalid(FSAvalid));
 	FSA#(.NO3(6),.NO5(3),.ID5(2),.NO7(1),.ID7(9))C62(.clk(clk),.rst_n(rst_n),.wsize(wsize_cnt4),.stride(stride_cnt4),.wround(wround_cnt4),.data(MUL_results_dff[71424 +: CUBE_D1]),.data_valid(MUL_DATA_valid_dff),.FSAout(fsa_res[62]),.FSAvalid(FSAvalid));
 	FSA#(.NO3(7),.NO5(3),.ID5(3),.NO7(1),.ID7(9))C63(.clk(clk),.rst_n(rst_n),.wsize(wsize_cnt4),.stride(stride_cnt4),.wround(wround_cnt4),.data(MUL_results_dff[72576 +: CUBE_D1]),.data_valid(MUL_DATA_valid_dff),.FSAout(fsa_res[63]),.FSAvalid(FSAvalid));
-	*/
+	
 	/* stride & wround put off 6 cycles */
 	always@(posedge clk or negedge rst_n)begin
 		if(!rst_n)begin
 			MUL_results_dff <=0;
-			MUL_DATA_valid_dff <=0;	
+			MUL_DATA_valid_dff <=0;
+			
+			wround_dff <=0;
+			wround_cnt1<=0;
+			wround_cnt2<=0;
+			wround_cnt3<=0;
+			wround_cnt4<=0;
+			wround_5   <=0;
+			
+			stride_dff <=0;
+			stride_cnt1<=0;
+			stride_cnt2<=0;
+			stride_cnt3<=0;
+			stride_cnt4<=0;
+			stride_5   <=0;
+			
+			wsize_dff <=0;
+			wsize_cnt1<=0;
+			wsize_cnt2<=0;
+			wsize_cnt3<=0;
+			wsize_cnt4<=0;
+			wsize_cnt5<=0;
+			
 		end
 		else begin	
 			MUL_results_dff <= MUL_results;
 			MUL_DATA_valid_dff <=MUL_DATA_valid;
+			
+			wround_dff <=wround;
+			wround_cnt1<=wround_dff;
+			wround_cnt2<=wround_cnt1;
+			wround_cnt3<=wround_cnt2;
+			wround_cnt4<=wround_cnt3;
+			wround_5   <=wround_cnt4;
+			
+			stride_dff <=stride;
+			stride_cnt1<=stride_dff;
+			stride_cnt2<=stride_cnt1;
+			stride_cnt3<=stride_cnt2;
+			stride_cnt4<=stride_cnt3;
+			stride_5   <=stride_cnt4;
+			
+			wsize_dff <= wsize;
+			wsize_cnt1<= wsize_dff;
+			wsize_cnt2<= wsize_cnt1;
+			wsize_cnt3<= wsize_cnt2;
+			wsize_cnt4<= wsize_cnt3;
+			wsize_cnt5<= wsize_cnt4;
 		end
 	end	
-	
-	always@(posedge clk or negedge rst_n)begin
-		if(!rst_n)begin	
-			wround_dff1<=0;
-			wround_dff2<=0;
-			wround_dff3<=0;
-			wround_dff4<=0;
-			wround_dff5<=0;
-			wround_dff6<=0;
-			wround_dff7<=0;
-			wround_dff8<=0;
-			wround_dff9<=0;
-			wround_dff10<=0;
-			wround_dff11<=0;
-			wround_dff12<=0;
-			wround_dff13<=0;
-			wround_dff14<=0;
-			wround_dff15<=0;
-			wround_dff16<=0;
-			wround_dff17<=0;
-			wround_dff18<=0;
-			wround_dff19<=0;
-			wround_dff20<=0;
-			wround_dff21<=0;
-			wround_dff22<=0;
-			wround_dff23<=0;
-			wround_dff24<=0;
-			wround_dff25<=0;
-			wround_dff26<=0;
-			wround_dff27<=0;
-			wround_dff28<=0;
-			wround_dff29<=0;
-			wround_dff30<=0;
-			wround_dff31<=0;
-			wround_dff32<=0;
-			wround_dff33<=0;
-			wround_dff34<=0;
-			wround_dff35<=0;
-			wround_dff36<=0;
-			
-			stride_dff1<=0;
-			stride_dff2<=0;
-			stride_dff3<=0;
-			stride_dff4<=0;
-			stride_dff5<=0;
-			stride_dff6<=0;
-			stride_dff7<=0;
-			stride_dff8<=0;
-			stride_dff9<=0;
-			stride_dff10<=0;
-			stride_dff11<=0;
-			stride_dff12<=0;
-			stride_dff13<=0;
-			stride_dff14<=0;
-			stride_dff15<=0;
-			stride_dff16<=0;
-			stride_dff17<=0;
-			stride_dff18<=0;
-			stride_dff19<=0;
-			stride_dff20<=0;
-			stride_dff21<=0;
-			stride_dff22<=0;
-			stride_dff23<=0;
-			stride_dff24<=0;
-			stride_dff25<=0;
-			stride_dff26<=0;
-			stride_dff27<=0;
-			stride_dff28<=0;
-			stride_dff29<=0;
-			stride_dff30<=0;
-			stride_dff31<=0;
-			stride_dff32<=0;
-			stride_dff33<=0;
-			stride_dff34<=0;
-			stride_dff35<=0;
-			stride_dff36<=0;
-			
-			wsize_dff1<=0;
-			wsize_dff2<=0;
-			wsize_dff3<=0;
-			wsize_dff4<=0;
-			wsize_dff5<=0;
-			wsize_dff6<=0;
-			wsize_dff7<=0;
-			wsize_dff8<=0;
-			wsize_dff9<=0;
-			wsize_dff10<=0;
-			wsize_dff11<=0;
-			wsize_dff12<=0;
-			wsize_dff13<=0;
-			wsize_dff14<=0;
-			wsize_dff15<=0;
-			wsize_dff16<=0;
-			wsize_dff17<=0;
-			wsize_dff18<=0;
-			wsize_dff19<=0;
-			wsize_dff20<=0;
-			wsize_dff21<=0;
-			wsize_dff22<=0;
-			wsize_dff23<=0;
-			wsize_dff24<=0;
-			wsize_dff25<=0;
-			wsize_dff26<=0;
-			wsize_dff27<=0;
-			wsize_dff28<=0;
-			wsize_dff29<=0;
-			wsize_dff30<=0;
-			wsize_dff31<=0;
-			wsize_dff32<=0;
-			wsize_dff33<=0;
-			wsize_dff34<=0;
-			wsize_dff35<=0;
-			wsize_dff36<=0;
-			
-		end
-		else begin	
-			
-			wround_dff1<=wround;
-			wround_dff2<=wround_dff1;
-			wround_dff3<=wround_dff2;
-			wround_dff4<=wround_dff3;
-			wround_dff5<=wround_dff4;
-			wround_dff6<=wround_dff5;
-			wround_dff7<=wround_dff6;
-			wround_dff8<=wround_dff7;
-			wround_dff9<=wround_dff8;
-			wround_dff10<=wround_dff9;
-			wround_dff11<=wround_dff10;
-			wround_dff12<=wround_dff11;
-			wround_dff13<=wround_dff12;
-			wround_dff14<=wround_dff13;
-			wround_dff15<=wround_dff14;
-			wround_dff16<=wround_dff15;
-			wround_dff17<=wround_dff16;
-			wround_dff18<=wround_dff17;
-			wround_dff19<=wround_dff18;
-			wround_dff20<=wround_dff19;
-			wround_dff21<=wround_dff20;
-			wround_dff22<=wround_dff21;
-			wround_dff23<=wround_dff22;
-			wround_dff24<=wround_dff23;
-			wround_dff25<=wround_dff24;
-			wround_dff26<=wround_dff25;
-			wround_dff27<=wround_dff26;
-			wround_dff28<=wround_dff27;
-			wround_dff29<=wround_dff28;
-			wround_dff30<=wround_dff29;
-			wround_dff31<=wround_dff30;
-			wround_dff32<=wround_dff31;
-			wround_dff33<=wround_dff32;
-			wround_dff34<=wround_dff33;
-			wround_dff35<=wround_dff34;
-			wround_dff36<=wround_dff35;
-
-			
-			stride_dff1<=stride;
-			stride_dff2<=stride_dff1;
-			stride_dff3<=stride_dff2;
-			stride_dff4<=stride_dff3;
-			stride_dff5<=stride_dff4;
-			stride_dff6<=stride_dff5;
-			stride_dff7<=stride_dff6;
-			stride_dff8<=stride_dff7;
-			stride_dff9<=stride_dff8;
-			stride_dff10<=stride_dff9;
-			stride_dff11<=stride_dff10;
-			stride_dff12<=stride_dff11;
-			stride_dff13<=stride_dff12;
-			stride_dff14<=stride_dff13;
-			stride_dff15<=stride_dff14;
-			stride_dff16<=stride_dff15;
-			stride_dff17<=stride_dff16;
-			stride_dff18<=stride_dff17;
-			stride_dff19<=stride_dff18;
-			stride_dff20<=stride_dff19;
-			stride_dff21<=stride_dff20;
-			stride_dff22<=stride_dff21;
-			stride_dff23<=stride_dff22;
-			stride_dff24<=stride_dff23;
-			stride_dff25<=stride_dff24;
-			stride_dff26<=stride_dff25;
-			stride_dff27<=stride_dff26;
-			stride_dff28<=stride_dff27;
-			stride_dff29<=stride_dff28;
-			stride_dff30<=stride_dff29;
-			stride_dff31<=stride_dff30;
-			stride_dff32<=stride_dff31;
-			stride_dff33<=stride_dff32;
-			stride_dff34<=stride_dff33;
-			stride_dff35<=stride_dff34;
-			stride_dff36<=stride_dff35;
-				
-			
-			wsize_dff1<= wsize;
-			wsize_dff2<= wsize_dff1;
-			wsize_dff3<= wsize_dff2;
-			wsize_dff4<= wsize_dff3;
-			wsize_dff5<= wsize_dff4;
-			wsize_dff6<= wsize_dff5;
-			wsize_dff7<= wsize_dff6;
-			wsize_dff8<= wsize_dff7;
-			wsize_dff9<= wsize_dff8;
-			wsize_dff10<= wsize_dff9;
-			wsize_dff11<= wsize_dff10;
-			wsize_dff12<= wsize_dff11;
-			wsize_dff13<= wsize_dff12;
-			wsize_dff14<= wsize_dff13;
-			wsize_dff15<= wsize_dff14;
-			wsize_dff16<= wsize_dff15;
-			wsize_dff17<= wsize_dff16;
-			wsize_dff18<= wsize_dff17;
-			wsize_dff19<= wsize_dff18;
-			wsize_dff20<= wsize_dff19;
-			wsize_dff21<= wsize_dff20;
-			wsize_dff22<= wsize_dff21;
-			wsize_dff23<= wsize_dff22;
-			wsize_dff24<= wsize_dff23;
-			wsize_dff25<= wsize_dff24;
-			wsize_dff26<= wsize_dff25;
-			wsize_dff27<= wsize_dff26;
-			wsize_dff28<= wsize_dff27;
-			wsize_dff29<= wsize_dff28;
-			wsize_dff30<= wsize_dff29;
-			wsize_dff31<= wsize_dff30;
-			wsize_dff32<= wsize_dff31;
-			wsize_dff33<= wsize_dff32;
-			wsize_dff34<= wsize_dff33;
-			wsize_dff35<= wsize_dff34;
-			wsize_dff36<= wsize_dff35;
-		end
-	end	
-	
 	always@(*)begin
 		wsize_is3=0;
 		wsize_is5=0;
