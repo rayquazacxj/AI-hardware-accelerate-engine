@@ -1,0 +1,38 @@
+mul: constant   6bits =>1.26
+multest:   少 6 bits =>1.78
+multestt:  多 6 bits =>1.75
+18 bits=>1.28
+
+
+3/10
+mul: 18bit normalcase     =1.28
+multest: 18 bits constant =1.23
+multestt: 18bits lesscase = 1.33
+
+multestt * clk 18bit normalcase work.8 =1.33
+
+
+multest: 4cyc=0.04 , 2cyc(icu also)=0! (0.000000xx)
+multestt: 2cyc = 0.01 !!
+mul: cases 2cyc =0.15
+
+mul: result1,2 = 0!
+multestt: clka,b wcu locali =
+multest : clk2 clk2_a,b clkb =>還沒跑tthis =0
+
+
+
+multest: pov widcnt neg wcu int_widcnt=>
+mul result neg=>0.02
+
+
+318
+mul:desktop neg wdata
+multest: add NOID,add_format (result_divide\315\seembetter\copy\318localiokmultest)
+
+mul: wait syn
+
+multest:文件 +noid (multestt + noid)
+mul :dsktop pos wdata wid
+
+

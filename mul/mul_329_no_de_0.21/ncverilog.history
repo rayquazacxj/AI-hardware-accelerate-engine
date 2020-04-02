@@ -1,0 +1,85 @@
+s1(07Mar2020:16:24:40):  ncverilog header.v IPF_tb.v IPF_syn.v -v /theda21_2/CBDK_IC_Contest/cur/Verilog/tsmc13.v +define+SDF +access+r +define+MODE0 
+s2(13Mar2020:12:27:07):  ncverilog header.v IPF_tb.v IPF.v +access+r +define+MODE0 
+s3(13Mar2020:12:31:13):  ncverilog header.v IPF_tb.v IPF.v +access+r +define+MODE0 
+s4(13Mar2020:12:34:00):  ncverilog header.v IPF_tb.v IPF.v +access+r +define+MODE0 
+s5(13Mar2020:12:35:56):  ncverilog header.v IPF_tb.v IPF.v +access+r +define+MODE0 
+s6(13Mar2020:12:37:05):  ncverilog header.v IPF_tb.v IPF.v +access+r +define+MODE0 
+s7(13Mar2020:15:30:21):  ncverilog header.v IPF_tb.v IPF.v +access+r +define+MODE0 
+s8(13Mar2020:23:25:46):  ncverilog header.v IPF_tb.v IPF_syn.v -v /theda21_2/CBDK_IC_Contest/cur/Verilog/tsmc13.v +define+SDF +access+r +define+MODE0 
+s9(14Mar2020:08:46:54):  ncverilog header.v IPF_tb.v IPF.v +access+r +define+MODE0 
+s10(14Mar2020:11:06:14):  ncverilog header.v IPF_tb.v IPF_syn.v -v /theda21_2/CBDK_IC_Contest/cur/Verilog/tsmc13.v +define+SDF +access+r +define+MODE0 
+s11(14Mar2020:12:21:08):  ncverilog header.v IPF_tb.v IPF_syn.v -v /theda21_2/CBDK_IC_Contest/cur/Verilog/tsmc13.v +define+SDF +access+r +define+MODE0 
+s12(14Mar2020:16:52:56):  ncverilog header.v IPF_tb.v IPF_syn.v -v /theda21_2/CBDK_IC_Contest/cur/Verilog/tsmc13.v +define+SDF +access+r +define+MODE0 
+s13(14Mar2020:16:58:09):  ncverilog header.v IPF_tb.v IPF.v +access+r +define+MODE0 
+s14(14Mar2020:18:27:02):  ncverilog header.v IPF_tb.v IPF_syn.v -v /theda21_2/CBDK_IC_Contest/cur/Verilog/tsmc13.v +define+SDF +access+r +define+MODE0 
+s15(14Mar2020:20:00:45):  ncverilog header.v IPF_tb.v IPF_syn.v -v /theda21_2/CBDK_IC_Contest/cur/Verilog/tsmc13.v +define+SDF +access+r +define+MODE0 
+s16(14Mar2020:20:05:06):  ncverilog header.v IPF_tb.v IPF.v +access+r +define+MODE0 
+s17(14Mar2020:21:18:33):  ncverilog header.v IPF_tb.v IPF_syn.v -v /theda21_2/CBDK_IC_Contest/cur/Verilog/tsmc13.v +define+SDF +access+r +define+MODE0 
+s18(15Mar2020:13:33:51):  ncverilog header.v IPF_tb.v IPF.v +access+r +define+MODE0 
+s19(15Mar2020:14:45:27):  ncverilog header.v IPF_tb.v IPF_syn.v -v /theda21_2/CBDK_IC_Contest/cur/Verilog/tsmc13.v +define+SDF +access+r +define+MODE0 
+s20(15Mar2020:14:48:44):  ncverilog header.v IPF_tb.v IPF.v +access+r +define+MODE0 
+s21(15Mar2020:14:48:51):  ncverilog header.v IPF_tb.v IPF_syn.v -v /theda21_2/CBDK_IC_Contest/cur/Verilog/tsmc13.v +define+SDF +access+r +define+MODE0 
+s22(15Mar2020:15:07:33):  ncverilog header.v IPF_tb.v IPF.v +access+r +define+MODE0 
+s23(15Mar2020:17:32:54):  ncverilog header.v IPF_tb.v IPF_syn.v -v /theda21_2/CBDK_IC_Contest/cur/Verilog/tsmc13.v +define+SDF +access+r +define+MODE0 
+s24(15Mar2020:17:39:52):  ncverilog header.v IPF_tb.v IPF.v +access+r +define+MODE0 
+s25(15Mar2020:17:40:22):  ncverilog header.v IPF_tb.v IPF.v +access+r +define+MODE0 
+s26(15Mar2020:17:41:00):  ncverilog header.v IPF_tb.v IPF.v +access+r +define+MODE0 
+s27(15Mar2020:19:03:18):  ncverilog header.v IPF_tb.v IPF_syn.v -v /theda21_2/CBDK_IC_Contest/cur/Verilog/tsmc13.v +define+SDF +access+r +define+MODE0 
+s28(15Mar2020:22:23:36):  ncverilog header.v IPF_tb.v IPF.v +access+r +define+MODE0 
+s29(15Mar2020:23:56:02):  ncverilog header.v IPF_tb.v IPF_syn.v -v /theda21_2/CBDK_IC_Contest/cur/Verilog/tsmc13.v +define+SDF +access+r +define+MODE0 
+s30(15Mar2020:23:59:40):  ncverilog header.v IPF_tb.v IPF.v +access+r +define+MODE0 
+s31(16Mar2020:09:40:35):  ncverilog header.v IPF_tb.v IPF.v +access+r +define+MODE0 
+s32(16Mar2020:09:41:22):  ncverilog header.v IPF_tb.v IPF.v +access+r +define+MODE0 
+s33(16Mar2020:12:14:46):  ncverilog header.v IPF_tb.v IPF_syn.v -v /theda21_2/CBDK_IC_Contest/cur/Verilog/tsmc13.v +define+SDF +access+r +define+MODE0 
+s34(16Mar2020:12:26:57):  ncverilog header.v IPF_tb.v IPF.v +access+r +define+MODE0 
+s35(16Mar2020:12:27:33):  ncverilog header.v IPF_tb.v IPF.v +access+r +define+MODE0 
+s36(17Mar2020:18:50:46):  ncverilog header.v IPF_tb.v IPF.v +access+r +define+MODE0 
+s37(17Mar2020:20:37:07):  ncverilog header.v IPF_tb.v IPF_syn.v -v /theda21_2/CBDK_IC_Contest/cur/Verilog/tsmc13.v +define+SDF +access+r +define+MODE0 
+s38(17Mar2020:21:39:57):  ncverilog header.v IPF_tb.v IPF_syn.v -v /theda21_2/CBDK_IC_Contest/cur/Verilog/tsmc13.v +define+SDF +access+r +define+MODE0 
+s39(17Mar2020:21:43:14):  ncverilog header.v IPF_tb.v IPF_syn.v -v /theda21_2/CBDK_IC_Contest/cur/Verilog/tsmc13.v +define+SDF +access+r +define+MODE0 
+s40(17Mar2020:21:48:04):  ncverilog header.v IPF_tb.v IPF_syn.v -v /theda21_2/CBDK_IC_Contest/cur/Verilog/tsmc13.v +define+SDF +access+r +define+MODE0 
+s41(17Mar2020:21:50:20):  ncverilog header.v IPF_tb.v IPF_syn.v -v /theda21_2/CBDK_IC_Contest/cur/Verilog/tsmc13.v +define+SDF +access+r +define+MODE0 
+s42(17Mar2020:21:56:12):  ncverilog header.v IPF_tb.v IPF_syn.v -v /theda21_2/CBDK_IC_Contest/cur/Verilog/tsmc13.v +define+SDF +access+r +define+MODE0 
+s43(17Mar2020:22:01:49):  ncverilog header.v IPF_tb.v IPF_syn.v -v /theda21_2/CBDK_IC_Contest/cur/Verilog/tsmc13.v +define+SDF +access+r +define+MODE0 
+s44(17Mar2020:22:03:58):  ncverilog header.v IPF_tb.v IPF_syn.v -v /theda21_2/CBDK_IC_Contest/cur/Verilog/tsmc13.v +define+SDF +access+r +define+MODE0 
+s45(17Mar2020:22:08:06):  ncverilog header.v IPF_tb.v IPF_syn.v -v /theda21_2/CBDK_IC_Contest/cur/Verilog/tsmc13.v +define+SDF +access+r +define+MODE0 
+s46(17Mar2020:22:12:37):  ncverilog header.v IPF_tb.v IPF_syn.v -v /theda21_2/CBDK_IC_Contest/cur/Verilog/tsmc13.v +define+SDF +access+r +define+MODE0 
+s47(17Mar2020:22:14:52):  ncverilog header.v IPF_tb.v IPF_syn.v -v /theda21_2/CBDK_IC_Contest/cur/Verilog/tsmc13.v +define+SDF +access+r +define+MODE0 
+s48(18Mar2020:07:28:42):  ncverilog header.v IPF_tb.v IPF.v +access+r +define+MODE0 
+s49(18Mar2020:07:36:00):  ncverilog header.v IPF_tb.v IPF.v +access+r +define+MODE0 
+s50(18Mar2020:07:39:11):  ncverilog header.v IPF_tb.v IPF.v +access+r +define+MODE0 
+s51(18Mar2020:07:40:54):  ncverilog header.v IPF_tb.v IPF.v +access+r +define+MODE0 
+s52(18Mar2020:07:44:22):  ncverilog header.v IPF_tb.v IPF.v +access+r +define+MODE0 
+s53(18Mar2020:07:46:23):  ncverilog header.v IPF_tb.v IPF.v +access+r +define+MODE0 
+s54(18Mar2020:07:47:15):  ncverilog header.v IPF_tb.v IPF.v +access+r +define+MODE0 
+s55(18Mar2020:07:52:49):  ncverilog header.v IPF_tb.v IPF.v +access+r +define+MODE0 
+s56(18Mar2020:07:56:04):  ncverilog header.v IPF_tb.v IPF.v +access+r +define+MODE0 
+s57(18Mar2020:07:58:05):  ncverilog header.v IPF_tb.v IPF.v +access+r +define+MODE0 
+s58(18Mar2020:08:03:35):  ncverilog header.v IPF_tb.v IPF.v +access+r +define+MODE0 
+s59(18Mar2020:08:10:10):  ncverilog header.v IPF_tb.v IPF.v +access+r +define+MODE0 
+s60(18Mar2020:08:13:52):  ncverilog header.v IPF_tb.v IPF.v +access+r +define+MODE0 
+s61(18Mar2020:08:16:53):  ncverilog header.v IPF_tb.v IPF.v +access+r +define+MODE0 
+s62(18Mar2020:08:20:05):  ncverilog header.v IPF_tb.v IPF.v +access+r +define+MODE0 
+s63(18Mar2020:17:58:47):  ncverilog header.v IPF_tb.v IPF.v +access+r +define+MODE0 
+s64(18Mar2020:18:00:38):  ncverilog header.v IPF_tb.v IPF.v +access+r +define+MODE0 
+s65(18Mar2020:18:01:15):  ncverilog header.v IPF_tb.v IPF.v +access+r +define+MODE0 
+s66(18Mar2020:19:16:38):  ncverilog header.v IPF_tb.v IPF.v +access+r +define+MODE0 
+s67(18Mar2020:23:00:36):  ncverilog header.v IPF_tb.v IPF.v +access+r +define+MODE0 
+s68(19Mar2020:07:31:13):  ncverilog header.v IPF_tb.v IPF.v +access+r +define+MODE0 
+s69(19Mar2020:09:33:23):  ncverilog header.v IPF_tb.v IPF.v +access+r +define+MODE0 
+s70(19Mar2020:09:33:46):  ncverilog header.v IPF_tb.v IPF.v +access+r +define+MODE0 
+s71(20Mar2020:06:39:30):  ncverilog header.v IPF_tb.v IPF.v +access+r +define+MODE0 
+s72(20Mar2020:17:26:00):  ncverilog header.v IPF_tb.v IPF.v +access+r +define+MODE0 
+s73(21Mar2020:08:23:50):  ncverilog header.v IPF_tb.v IPF.v +access+r +define+MODE0 
+s74(21Mar2020:11:29:21):  ncverilog header.v IPF_tb.v IPF.v +access+r +define+MODE0 
+s75(21Mar2020:11:31:36):  ncverilog header.v IPF_tb.v IPF.v +access+r +define+MODE0 
+s76(21Mar2020:11:35:15):  ncverilog header.v IPF_tb.v IPF.v +access+r +define+MODE0 
+s77(22Mar2020:08:24:16):  ncverilog header.v IPF_tb.v IPF_syn.v -v /theda21_2/CBDK_IC_Contest/cur/Verilog/tsmc13.v +define+SDF +access+r +define+MODE0 
+s78(22Mar2020:09:48:26):  ncverilog header.v IPF_tb.v IPF.v +access+r +define+MODE0 
+s79(22Mar2020:09:50:26):  ncverilog header.v IPF_tb.v IPF.v +access+r +define+MODE0 
+s80(22Mar2020:22:17:59):  ncverilog header.v IPF_tb.v IPF.v +access+r +define+MODE0 
+s81(23Mar2020:14:37:02):  ncverilog header.v IPF_tb.v IPF.v +access+r +define+MODE0 
+s82(24Mar2020:14:02:06):  ncverilog header.v IPF_tb.v IPF.v +access+r +define+MODE0 
+s83(24Mar2020:18:30:14):  ncverilog header.v IPF_tb.v IPF.v +access+r +define+MODE0 
+s84(29Mar2020:11:17:43):  ncverilog header.v IPF_tb.v IPF.v +access+r +define+MODE0 
+s85(29Mar2020:12:41:42):  ncverilog header.v IPF_tb.v IPF.v +access+r +define+MODE0 
