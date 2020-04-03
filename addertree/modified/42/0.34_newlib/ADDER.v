@@ -11,7 +11,7 @@ module ADD2#(parameter N=16,RN=16)( 						// 1 cycle
 	reg [N-1:0]locali0,locali1;
 	reg [HALF:0]ADD2_out_1;
 	reg [HALF+1:0]ADD2_out_2;
-	reg ADD2_valid_;
+	reg ADD2_valid_dff1,ADD2_valid_dff2;
 	
 	always@(posedge clk or negedge rst_n)begin
 		if(!rst_n)begin
@@ -21,16 +21,6 @@ module ADD2#(parameter N=16,RN=16)( 						// 1 cycle
 		else begin
 			locali0<=i0;
 			locali1<=i1;
-		end
-	end
-	always@(posedge clk or negedge rst_n)begin
-		if(!rst_n)
-			ADD3_valid_<=0;
-			ADD3_valid<=0;
-		end
-		else begin
-			ADD3_valid_<=i_valid;
-			ADD3_valid<=ADD3_valid_;
 		end
 	end
 	
@@ -50,12 +40,25 @@ module ADD2#(parameter N=16,RN=16)( 						// 1 cycle
 			ADD2_out_2 <= locali0[N-1:HALF] + locali1[N-1:HALF];
 		end
 	end
+	
 	always@(posedge clk or negedge rst_n)begin
 		if(!rst_n)begin
 			ADD2_out<=0;
 		end
 		else begin
 			ADD2_out <= {ADD2_out_2,{HALF{1'd0}}} + ADD2_out_1;
+		end
+	end
+	always@(posedge clk or negedge rst_n)begin
+		if(!rst_n)
+			ADD2_valid_dff1<=0;
+			ADD2_valid_dff2<=0;
+			ADD2_valid <=0;
+		end
+		else begin
+			ADD2_valid_dff1<=i_valid;
+			ADD2_valid_dff2<=ADD2_valid_dff1;
+			ADD2_valid<=ADD2_valid_dff2;
 		end
 	end
 		
@@ -75,7 +78,7 @@ module ADD3#(parameter N=16,RN=16)(							// 1 cycle
 	reg [N-1:0]locali0,locali1,locali2;
 	reg [HALF+1:0]ADD3_out_1;
 	reg [HALF+2:0]ADD3_out_2;
-	reg ADD3_valid_;
+	reg ADD3_valid_dff1,ADD3_valid_dff2;
 	
 	always@(posedge clk or negedge rst_n)begin
 		if(!rst_n)begin
@@ -87,16 +90,6 @@ module ADD3#(parameter N=16,RN=16)(							// 1 cycle
 			locali0<=i0;
 			locali1<=i1;
 			locali2<=i2;		
-		end
-	end
-	always@(posedge clk or negedge rst_n)begin
-		if(!rst_n)
-			ADD3_valid_<=0;
-			ADD3_valid<=0;
-		end
-		else begin
-			ADD3_valid_<=i_valid;
-			ADD3_valid<=ADD3_valid_;
 		end
 	end
 	
@@ -116,12 +109,25 @@ module ADD3#(parameter N=16,RN=16)(							// 1 cycle
 			ADD3_out_2 <= locali0[N-1:HALF] + locali1[N-1:HALF]+ locali2[N-1:HALF];
 		end
 	end
+	
 	always@(posedge clk or negedge rst_n)begin
 		if(!rst_n)begin
 			ADD3_out<=0;
 		end
 		else begin
 			ADD3_out <= {ADD3_out_2,{HALF{1'd0}}} + ADD3_out_1;
+		end
+	end
+	always@(posedge clk or negedge rst_n)begin
+		if(!rst_n)
+			ADD3_valid_dff1<=0;
+			ADD3_valid_dff2<=0;
+			ADD3_valid <=0;
+		end
+		else begin
+			ADD3_valid_dff1<=i_valid;
+			ADD3_valid_dff2<=ADD3_valid_dff1;
+			ADD3_valid<=ADD3_valid_dff2;
 		end
 	end
 	/*
@@ -203,8 +209,8 @@ module FSA#(parameter NO3=0,parameter NO5=0,parameter ID5=0,parameter NO7=0,para
 	reg [20:0]row1,row2,row3;
 	wire [20:0]row1_wire,row2_wire,row3_wire;
 	//
-	reg [45:0]FSAout_1;
-	reg [45:0]FSAout_3;
+	reg [45:0]FSAout_1,FSAout_1_dff1;
+	reg [45:0]FSAout_3,FSAout_3_dff1;
 	reg [45:0]FSAout_5;
 	reg [45:0]FSAout_5_s0;
 	reg [45:0]FSAout_5_s1;
@@ -215,6 +221,7 @@ module FSA#(parameter NO3=0,parameter NO5=0,parameter ID5=0,parameter NO7=0,para
 	wire R1R2valid,R2R3valid,R1R2R3valid;
 	wire [22:0]R1R2,R2R3,R1R2R3;
 	reg [22:0]R1,R1_dff1,R1_dff2,R3_dff1,R3_dff2,R3;
+	reg FSAvalid_dff1,FSAvalid_dff2;
 	//
 	
 	/* FA ,  13 cycles */
@@ -222,12 +229,7 @@ module FSA#(parameter NO3=0,parameter NO5=0,parameter ID5=0,parameter NO7=0,para
 	FA ROW2(.clk(clk),.rst_n(rst_n),.data(data[767:384]),.data_valid(data_valid),.FAout(row2_wire),.FAvalid(FAvalid2));
 	FA ROW3(.clk(clk),.rst_n(rst_n),.data(data[1151:768]),.data_valid(data_valid),.FAout(row3_wire),.FAvalid(FAvalid3));
 	
-	//3 cycles
-	ADD2 #(21,23)R1R2_(.clk(clk),.rst_n(rst_n),.i0(row1),.i1(row2),.i_valid(FAvalid),.ADD2_valid(R1R2valid),.ADD2_out(R1R2));
-	ADD2 #(21,23)R2R3_(.clk(clk),.rst_n(rst_n),.i0(row2),.i1(row3),.i_valid(FAvalid),.ADD2_valid(R2R3valid),.ADD2_out(R2R3));
-	ADD3 #(21,23)R1R2R3_(.clk(clk),.rst_n(rst_n),.i0(row1),.i1(row2),.i2(row3),.i_valid(FAvalid),.ADD3_valid(R1R2R3valid),.ADD3_out(R1R2R3));
-	
-	//1 cycle
+	/* R1R2R3 */
 	always@(posedge clk or negedge rst_n)begin
 		if(!rst_n)begin
 			row1<=0;
@@ -242,6 +244,12 @@ module FSA#(parameter NO3=0,parameter NO5=0,parameter ID5=0,parameter NO7=0,para
 			FAvalid<= (FAvalid1 && FAvalid2 && FAvalid3);
 		end	
 	end
+	
+	//3 cycles
+	ADD2 #(21,23)R1R2_(.clk(clk),.rst_n(rst_n),.i0(row1),.i1(row2),.i_valid(FAvalid),.ADD2_valid(R1R2valid),.ADD2_out(R1R2));
+	ADD2 #(21,23)R2R3_(.clk(clk),.rst_n(rst_n),.i0(row2),.i1(row3),.i_valid(FAvalid),.ADD2_valid(R2R3valid),.ADD2_out(R2R3));
+	ADD3 #(21,23)R1R2R3_(.clk(clk),.rst_n(rst_n),.i0(row1),.i1(row2),.i2(row3),.i_valid(FAvalid),.ADD3_valid(R1R2R3valid),.ADD3_out(R1R2R3));	
+	
 	always@(posedge clk or negedge rst_n)begin
 		if(!rst_n)begin
 			R1_dff1<=0;
@@ -263,6 +271,32 @@ module FSA#(parameter NO3=0,parameter NO5=0,parameter ID5=0,parameter NO7=0,para
 		end	
 	end
 	
+	/* FSAout */
+	always@(posedge clk or negedge rst_n)begin
+		if(!rst_n)begin
+			wround_dff1<=0;
+			
+			stride_dff1<=0;
+			stride_dff2<=0;
+			
+			wsize_dff1<=0;
+			wsize_dff2<=0;
+			wsize_dff3<=0;
+			
+		end
+		else begin						
+			wround_dff1<=wround;
+			
+			stride_dff1<=stride;
+			stride_dff2<=stride_dff1;
+			
+			wsize_dff1<=wsize;
+			wsize_dff2<=wsize_dff1;
+			wsize_dff3<=wsize_dff2;
+			
+		end	
+	end
+	
 	always@(posedge clk or negedge rst_n)begin
 		if(!rst_n)begin
 			FSAout_1<=0;
@@ -270,6 +304,14 @@ module FSA#(parameter NO3=0,parameter NO5=0,parameter ID5=0,parameter NO7=0,para
 		else begin
 			FSAout_1[BACK +:D1]	<= R1R2R3;
 		end	
+	end
+	always@(posedge clk or negedge rst_n)begin
+		if(!rst_n)begin
+			FSAout_1_dff1<=0;
+		end
+		else begin
+			FSAout_1_dff1<=FSAout_1;
+		end
 	end
 	
 	always@(posedge clk or negedge rst_n)begin
@@ -294,13 +336,21 @@ module FSA#(parameter NO3=0,parameter NO5=0,parameter ID5=0,parameter NO7=0,para
 			endcase
 		end
 	end
+	always@(posedge clk or negedge rst_n)begin
+		if(!rst_n)begin
+			FSAout_3_dff1<=0;
+		end
+		else begin
+			FSAout_3_dff1<=FSAout_3;
+		end
+	end
 	
 	always@(posedge clk or negedge rst_n)begin
 		if(!rst_n)begin
 			FSAout_5_s0<=0;
 		end
 		else begin 
-			case(wround)
+			case(wround_dff1)
 				0:begin
 					FSAout_5_s0[FRONT +:D1] 	<= 0;
 					FSAout_5_s0[BACK +:D1]		<= R1R2R3;
@@ -346,7 +396,7 @@ module FSA#(parameter NO3=0,parameter NO5=0,parameter ID5=0,parameter NO7=0,para
 			FSAout_5<=0;
 		end
 		else begin 
-			if(stride==0)FSAout_5<= FSAout_5_s0;
+			if(stride_dff2==0)FSAout_5<= FSAout_5_s0;
 			else FSAout_5<= FSAout_5_s1;			
 		end
 	end
@@ -356,7 +406,7 @@ module FSA#(parameter NO3=0,parameter NO5=0,parameter ID5=0,parameter NO7=0,para
 			FSAout_7_s0<=0;
 		end
 		else begin 
-			case(wround)
+			case(wround_dff1)
 				0:begin
 					FSAout_7_s0[FRONT +:D1] 	<= 0;
 					FSAout_7_s0[BACK +:D1]		<= R1R2R3;
@@ -403,7 +453,7 @@ module FSA#(parameter NO3=0,parameter NO5=0,parameter ID5=0,parameter NO7=0,para
 			FSAout_7_s1<=0;
 		end
 		else begin 
-			case(wround)
+			case(wround_dff1)
 				0:begin
 					FSAout_7_s1[FRONT +:D1] 	<= 0;
 					FSAout_7_s1[BACK +:D1]		<= R1R2R3;
@@ -430,24 +480,34 @@ module FSA#(parameter NO3=0,parameter NO5=0,parameter ID5=0,parameter NO7=0,para
 			FSAout_7<=0;
 		end
 		else begin 
-			if(stride==0)FSAout_7<= FSAout_7_s0;
+			if(stride_dff2==0)FSAout_7<= FSAout_7_s0;
 			else FSAout_7<= FSAout_7_s1;			
+		end
+	end
+	
+	always@(posedge clk or negedge rst_n)begin
+		if(!rst_n)begin
+			FSAout<=0;		
+		end
+		else begin 
+			case(wsize_dff3)
+				0:FSAout<=FSAout_3_dff1;
+				1:FSAout<=FSAout_5;
+				2:FSAout<=FSAout_7;
+				3:FSAout<=FSAout_1_dff1;
+			endcase		
 		end
 	end
 	always@(posedge clk or negedge rst_n)begin
 		if(!rst_n)begin
-			FSAout<=0;
-			FSAvalid<=0;
+			FSAvalid_dff1<=0;
+			FSAvalid_dff2<=0;
 		end
-		else begin 
-			FSAvalid<= (FAvalid1 && FAvalid2 && FAvalid3);
-			case(wsize)
-				0:FSAout<=FSAout_3;
-				1:FSAout<=FSAout_5;
-				2:FSAout<=FSAout_7;
-				3:FSAout<=FSAout_1;
-			endcase		
-		end
+		else begin							
+			FSAvalid_dff1<=(R1R2valid && R1R2R3valid && R2R3valid);
+			FSAvalid_dff2<=FSAvalid_dff1;
+			FSAvalid<=FSAvalid_dff2;	
+		end	
 	end
 	
 	
@@ -636,11 +696,17 @@ module A#(parameter NO5=0)(
 	reg [53:0]Aout_s0r1;
 	reg [53:0]Aout_s1;
 	reg [53:0]Aout_s1_dff1;
+	
+	reg [2:0]wround_dff1,wround_dff2,wround_dff3,wround_dff4,wround_dff5,wround_dff6,wround_dff7,wround_dff8,wround_dff9,wround_dff10,wround_dff11,wround_dff12,wround_dff13;
+	reg stride_dff1,stride_dff2,stride_dff3,stride_dff4,stride_dff5,stride_dff6,stride_dff7,stride_dff8,stride_dff9,stride_dff10,stride_dff11,stride_dff12,stride_dff13;
+	
+	reg i_valid_dff1,i_valid_dff2,i_valid_dff3,i_valid_dff4;
+	reg Avalid_dff1,Avalid_dff2;
 	//
 	
-	reg i_valid_tmp,i_valid_;
-	reg [2:0]wround_,wround_cnt1,wround_cnt2,wround_cnt3;
-	reg stride_,stride_cnt1,stride_cnt2,stride_cnt3;
+	//reg i_valid_tmp,i_valid_;
+	//reg [2:0]wround_,wround_cnt1,wround_cnt2,wround_cnt3;
+	//reg stride_,stride_cnt1,stride_cnt2,stride_cnt3;
 	
 	wire[26:0]A1out,A2_0out,A2_1out;
 	wire A1valid,A2_0valid,A2_1valid;
@@ -651,10 +717,13 @@ module A#(parameter NO5=0)(
 			i1<=0;
 			i2<=0;
 			i3<=0;
-			i_valid_tmp <= 0;
-			i_valid_    <= 0;
 		end
 		else begin
+			i0<=i0_;
+			i1<=i1_;
+			i2<=i2_;
+			i3<=i3_;
+		/*
 			i_valid_tmp <= i_valid;
 			i_valid_    <= i_valid_tmp;
 			if(i_valid)begin
@@ -662,32 +731,82 @@ module A#(parameter NO5=0)(
 				i1<=i1_;
 				i2<=i2_;
 				i3<=i3_;
-			end
+			end*/
+		end
+	end
+	always@(posedge clk or negedge rst_n)begin
+		if(!rst_n)begin
+			i_valid_dff1 <= 0;
+			i_valid_dff2 <= 0;
+			i_valid_dff3 <= 0;
+			i_valid_dff4 <= 0;
+		end
+		else begin
+			i_valid_dff1 <= i_valid;
+			i_valid_dff2 <= i_valid_dff1;
+			i_valid_dff3 <= i_valid_dff2;
+			i_valid_dff4 <= i_valid_dff3;
 		end
 	end
 	
 	always@(posedge clk or negedge rst_n)begin
 		if(!rst_n)begin
-			wround_<=0;
-			wround_cnt1<=0;
-			wround_cnt2<=0;
-			wround_cnt3<=0;
+			stride_dff1<=0;
+			stride_dff2<=0;
+			stride_dff3<=0;
+			stride_dff4<=0;
+			stride_dff5<=0;
+			stride_dff6<=0;
+			stride_dff7<=0;
+			stride_dff8<=0;
+			stride_dff9<=0;
+			stride_dff10<=0;
+			stride_dff11<=0;
+			stride_dff12<=0;
+			stride_dff13<=0;
 			
-			stride_<=0;
-			stride_cnt1<=0;
-			stride_cnt2<=0;
-			stride_cnt3<=0;
+			wround_dff1<=0;
+			wround_dff2<=0;
+			wround_dff3<=0;
+			wround_dff4<=0;
+			wround_dff5<=0;
+			wround_dff6<=0;
+			wround_dff7<=0;
+			wround_dff8<=0;
+			wround_dff9<=0;
+			wround_dff10<=0;
+			wround_dff11<=0;
+			wround_dff12<=0;
+			wround_dff13<=0;			
 		end
 		else begin
-			wround_<=wround;
-			wround_cnt1<=wround_;
-			wround_cnt2<=wround_cnt1;
-			wround_cnt3<=wround_cnt2;
-			
-			stride_<=stride;
-			stride_cnt1<=stride_;
-			stride_cnt2<=stride_cnt1;
-			stride_cnt3<=stride_cnt2;
+			wround_dff1<=wround;
+			wround_dff2<=wround_dff1;
+			wround_dff3<=wround_dff2;
+			wround_dff4<=wround_dff3;
+			wround_dff5<=wround_dff4;
+			wround_dff6<=wround_dff5;
+			wround_dff7<=wround_dff6;
+			wround_dff8<=wround_dff7;
+			wround_dff9<=wround_dff8;
+			wround_dff10<=wround_dff9;
+			wround_dff11<=wround_dff10;
+			wround_dff12<=wround_dff11;
+			wround_dff13<=wround_dff12;
+						
+			stride_dff1<=stride;
+			stride_dff2<=stride_dff1;
+			stride_dff3<=stride_dff2;
+			stride_dff4<=stride_dff3;
+			stride_dff5<=stride_dff4;
+			stride_dff6<=stride_dff5;
+			stride_dff7<=stride_dff6;
+			stride_dff8<=stride_dff7;
+			stride_dff9<=stride_dff8;
+			stride_dff10<=stride_dff9;
+			stride_dff11<=stride_dff10;
+			stride_dff12<=stride_dff11;
+			stride_dff13<=stride_dff12;			
 		end
 	end
 	
@@ -747,7 +866,7 @@ module A#(parameter NO5=0)(
 			A1i_s0[3]<=0;
 		end
 		else begin		
-			if(wround_ == 0)begin
+			if(wround_dff2 == 0)begin
 				A1i_s0[0]<=A1i_s0r0[0];
 				A1i_s0[1]<=A1i_s0r0[1];
 				A1i_s0[2]<=A1i_s0r0[2];
@@ -808,7 +927,7 @@ module A#(parameter NO5=0)(
 			A1i[3]<=0;
 		end
 		else begin	
-			if(stride_ == 0)begin
+			if(stride_dff3 == 0)begin
 				A1i[0]<=A1i_s0[0];
 				A1i[1]<=A1i_s0[1];
 				A1i[2]<=A1i_s0[2];
@@ -939,7 +1058,7 @@ module A#(parameter NO5=0)(
 			A2_0i[1]<=0;
 		end
 		else begin  
-			if(stride_ == 0)begin
+			if(stride_dff2== 0)begin
 				A2_0i[0]<=A2_0i_s0[0];
 				A2_0i[1]<=A2_0i_s0[1];
 			end
@@ -1021,7 +1140,7 @@ module A#(parameter NO5=0)(
 			A2_1i[1]<=0;
 		end
 		else begin	
-			if(stride_ ==0 && wround_ ==1 && NO5==1)begin
+			if(stride_dff1 ==0 && wround_dff1 ==1 && NO5==1)begin
 				A2_1i[0]<=i2[BACK +: D1];
 				A2_1i[1]<=i3[BACK +: D1];
 			end
@@ -1053,9 +1172,9 @@ module A#(parameter NO5=0)(
 //-----------------------------------------------------
 	/* module instantiation */
 	
-	A1 a1(.clk(clk),.rst_n(rst_n),.i0(A1i[0]),.i1(A1i[1]),.i2(A1i[2]),.i3(A1i[3]),.i_valid(i_valid_),.A1valid(A1valid),.A1out(A1out));
-	A2_0 a2_0(.clk(clk),.rst_n(rst_n),.i0(A2_0i_dff1[0]),.i1(A2_0i_dff1[1]),.i_valid(i_valid_),.A2_0valid(A2_0valid),.A2_0out(A2_0out));
-	A2_1 a2_1(.clk(clk),.rst_n(rst_n),.i0(A2_1i_dff2[0]),.i1(A2_1i_dff2[1]),.i_valid(i_valid_),.A2_1valid(A2_1valid),.A2_1out(A2_1out));
+	A1 a1(.clk(clk),.rst_n(rst_n),.i0(A1i[0]),.i1(A1i[1]),.i2(A1i[2]),.i3(A1i[3]),.i_valid(i_valid_dff4),.A1valid(A1valid),.A1out(A1out));
+	A2_0 a2_0(.clk(clk),.rst_n(rst_n),.i0(A2_0i_dff1[0]),.i1(A2_0i_dff1[1]),.i_valid(i_valid_dff4),.A2_0valid(A2_0valid),.A2_0out(A2_0out));
+	A2_1 a2_1(.clk(clk),.rst_n(rst_n),.i0(A2_1i_dff2[0]),.i1(A2_1i_dff2[1]),.i_valid(i_valid_dff4),.A2_1valid(A2_1valid),.A2_1out(A2_1out));
 	
 //-----------------------------------------------------	
 	/* A output */
@@ -1095,7 +1214,7 @@ module A#(parameter NO5=0)(
 			Aout_s0<=0;	
 		end
 		else begin
-			if(wround==0)begin
+			if(wround_dff12==0)begin
 				Aout_s0[BACK +: D1_OUT] <= Aout_s0r0[BACK +: D1_OUT];
 				Aout_s0[FRONT_OUT +: D1_OUT]<=Aout_s0r0[FRONT_OUT +: D1_OUT];
 			end
@@ -1141,7 +1260,7 @@ module A#(parameter NO5=0)(
 			Aout<=0;	
 		end
 		else begin
-			if(stride_ ==0)begin
+			if(stride_dff13 ==0)begin
 				Aout<=Aout_s0;
 			end
 			else begin
@@ -1149,7 +1268,18 @@ module A#(parameter NO5=0)(
 			end
 		end
 	end
-	
+	always@(posedge clk or negedge rst_n)begin
+		if(!rst_n)begin
+			Avalid_dff1<=0;	
+			Avalid_dff2<=0;	
+			Avalid<=0;	
+		end
+		else begin
+			Avalid_dff1<=(A1valid && A2_0valid && A2_1valid);	
+			Avalid_dff2<=Avalid_dff1;	
+			Avalid<=Avalid_dff2;	
+		end
+	end
 	/* A output old*/
 	/*
 	always@(posedge clk or negedge rst_n)begin
@@ -1397,6 +1527,8 @@ module B#(parameter NO7=0)(
 	reg data_valid_tmp,data_valid_;
 	
 	//
+	reg [2:0]wround_dff1,wround_dff2,wround_dff3,wround_dff4,wround_dff5,wround_dff6,wround_dff7,wround_dff8,wround_dff9,wround_dff10,wround_dff11,wround_dff12;
+	reg stride_dff1,stride_dff2,stride_dff3,stride_dff4,stride_dff5,stride_dff6,stride_dff7,stride_dff8,stride_dff9,stride_dff10,stride_dff11,stride_dff12;
 	reg[22:0]B1i_dff1[0:8];
 	reg[22:0]B1i_dff2[0:8];
 	reg[22:0]B2_0i_s0[0:5];
@@ -1410,10 +1542,13 @@ module B#(parameter NO7=0)(
 	reg[22:0]B3i_dff2[0:2];
 	reg [53:0]Bout_s0,Bout_s1;
 	
+	reg data_valid_dff1,data_valid_dff2,data_valid_dff3,data_valid_dff4;
+	
+	reg Bvalid_dff1,Bvalid_dff2;
 	//
 	
-	reg [2:0]wround_,wround_cnt1,wround_cnt2,wround_cnt3;
-	reg stride_,stride_cnt1,stride_cnt2,stride_cnt3;
+	//reg [2:0]wround_,wround_cnt1,wround_cnt2,wround_cnt3;
+	//reg stride_,stride_cnt1,stride_cnt2,stride_cnt3;
 	
 	wire[26:0]B1out,B2_0out,B2_1out,B3out;
 	wire B1out_valid,B2_0out_valid,B2_1out_valid,B3out_valid;
@@ -1421,41 +1556,86 @@ module B#(parameter NO7=0)(
 	always@(posedge clk or negedge rst_n)begin
 		if(!rst_n)begin
 			data<=0;
-			data_valid_<=0;
-			data_valid_tmp<=0;
 		end
 		else begin
-			data_valid_tmp<=data_valid;
-			data_valid_<=data_valid_tmp;
+			data<=data_;
+			/*
 			if(data_valid)begin
 				data<=data_;
-			end
-			
+			end*/			
+		end
+	end
+	always@(posedge clk or negedge rst_n)begin
+		if(!rst_n)begin
+			data_valid_dff1 <= 0;
+			data_valid_dff2 <= 0;
+			data_valid_dff3 <= 0;
+			data_valid_dff4 <= 0;
+		end
+		else begin
+			data_valid_dff1 <= data_valid;
+			data_valid_dff2 <= data_valid_dff1;
+			data_valid_dff3 <= data_valid_dff2;
+			data_valid_dff4 <= data_valid_dff3;
 		end
 	end
 	
 	always@(posedge clk or negedge rst_n)begin
 		if(!rst_n)begin
-			wround_<=0;
-			wround_cnt1<=0;
-			wround_cnt2<=0;
-			wround_cnt3<=0;
+			stride_dff1<=0;
+			stride_dff2<=0;
+			stride_dff3<=0;
+			stride_dff4<=0;
+			stride_dff5<=0;
+			stride_dff6<=0;
+			stride_dff7<=0;
+			stride_dff8<=0;
+			stride_dff9<=0;
+			stride_dff10<=0;
+			stride_dff11<=0;
+			stride_dff12<=0;
 			
-			stride_<=0;
-			stride_cnt1<=0;
-			stride_cnt2<=0;
-			stride_cnt3<=0;
+			
+			wround_dff1<=0;
+			wround_dff2<=0;
+			wround_dff3<=0;
+			wround_dff4<=0;
+			wround_dff5<=0;
+			wround_dff6<=0;
+			wround_dff7<=0;
+			wround_dff8<=0;
+			wround_dff9<=0;
+			wround_dff10<=0;
+			wround_dff11<=0;
+			wround_dff12<=0;
+			
 		end
 		else begin
-			wround_<=wround;
-			wround_cnt1<=wround_;
-			wround_cnt2<=wround_cnt1;
-			wround_cnt3<=wround_cnt2;
-			
-			stride_<=stride;
-			stride_cnt1<=stride_;
-			stride_cnt2<=stride_cnt1;
-			stride_cnt3<=stride_cnt2;
+			wround_dff1<=wround;
+			wround_dff2<=wround_dff1;
+			wround_dff3<=wround_dff2;
+			wround_dff4<=wround_dff3;
+			wround_dff5<=wround_dff4;
+			wround_dff6<=wround_dff5;
+			wround_dff7<=wround_dff6;
+			wround_dff8<=wround_dff7;
+			wround_dff9<=wround_dff8;
+			wround_dff10<=wround_dff9;
+			wround_dff11<=wround_dff10;
+			wround_dff12<=wround_dff11;			
+						
+			stride_dff1<=stride;
+			stride_dff2<=stride_dff1;
+			stride_dff3<=stride_dff2;
+			stride_dff4<=stride_dff3;
+			stride_dff5<=stride_dff4;
+			stride_dff6<=stride_dff5;
+			stride_dff7<=stride_dff6;
+			stride_dff8<=stride_dff7;
+			stride_dff9<=stride_dff8;
+			stride_dff10<=stride_dff9;
+			stride_dff11<=stride_dff10;
+			stride_dff12<=stride_dff11;			
 		end
 	end
 	
@@ -1468,7 +1648,7 @@ module B#(parameter NO7=0)(
 			end
 		end
 		else begin	
-			if((stride_==0 && NO7==0 && wround_==3)||(stride_==1 && NO7==1 && wround_==1))begin
+			if((stride_dff1==0 && NO7==0 && wround_dff1==3)||(stride_dff1==1 && NO7==1 && wround_dff1==1))begin
 				for(id=0;id<3;id=id+1)begin
 					B1i[id]<=data[FRONT+id*D2 +: D1];
 				end
@@ -1588,7 +1768,7 @@ module B#(parameter NO7=0)(
 			end
 		end
 		else begin	
-			if(wround==2)begin	
+			if(wround_dff2==2)begin	
 				for(id=0;id<6;id=id+1)begin
 					B2_0i_s0[id]<=B2_0i_s0r2[id];
 				end	
@@ -1608,7 +1788,7 @@ module B#(parameter NO7=0)(
 			end
 		end
 		else begin	
-			if(NO7==1 && wround_==0)begin
+			if(NO7==1 && wround_dff1==0)begin
 				for(id=0;id<6;id=id+1)begin
 					B2_0i_s1[id]<=data[BACK+id*D2 +: D1];
 				end
@@ -1642,7 +1822,7 @@ module B#(parameter NO7=0)(
 			end
 		end
 		else begin	
-			if(stride==0)begin	
+			if(stride_dff3==0)begin	
 				for(id=0;id<6;id=id+1)begin
 					B2_0i[id]<=B2_0i_s0[id];
 				end	
@@ -1723,7 +1903,7 @@ module B#(parameter NO7=0)(
 			end
 		end
 		else begin	
-			if(stride_==0 && NO7==1 && wround_==1)begin
+			if(stride_dff1==0 && NO7==1 && wround_dff1==1)begin
 				for(id=0;id<3;id=id+1)begin
 					B2_1i[id]<=data[FRONT+id*D2+3*D2 +: D1]; // i3 ~ i5
 				end
@@ -1762,12 +1942,12 @@ module B#(parameter NO7=0)(
 			end
 		end
 		else begin	
-			if((stride_==1 && NO7==1 && wround_==0)||(stride_==0 && NO7==0 && wround_==1))begin
+			if((stride_dff1==1 && NO7==1 && wround_dff1==0)||(stride_dff1==0 && NO7==0 && wround_dff1==1))begin
 				for(id=0;id<3;id=id+1)begin
 					B3i[id]<=data[BACK+id*D2+6*D2 +: D1]; // i6 ~ i8
 				end
 			end
-			else if(stride_==0 && NO7==1 && wround_==3)begin
+			else if(stride_dff1==0 && NO7==1 && wround_dff1==3)begin
 				for(id=0;id<3;id=id+1)begin
 					B3i[id]<=data[FRONT+id*D2 +: D1]; // i0~i2
 				end
@@ -1798,10 +1978,10 @@ module B#(parameter NO7=0)(
 	/* module instantiation */
 	
 	
-	B1 b1(.clk(clk),.rst_n(rst_n),.i0(B1i[0]),.i1(B1i[1]),.i2(B1i[2]),.i3(B1i[3]),.i4(B1i[4]),.i5(B1i[5]),.i6(B1i[6]),.i7(B1i[7]),.i8(B1i[8]),.i_valid(data_valid_),.B1_valid(B1out_valid),.B1out(B1out));
-	B2 b2_0(.clk(clk),.rst_n(rst_n),.i0(B2_0i[0]),.i1(B2_0i[1]),.i2(B2_0i[2]),.i3(B2_0i[3]),.i4(B2_0i[4]),.i5(B2_0i[5]),.i_valid(data_valid_),.B2_valid(B2_0out_valid),.B2out(B2_0out));
-	B2 b2_1(.clk(clk),.rst_n(rst_n),.i0(B2_1i[0]),.i1(B2_1i[1]),.i2(B2_1i[2]),.i3(B2_1i[3]),.i4(B2_1i[4]),.i5(B2_1i[5]),.i_valid(data_valid_),.B2_valid(B2_1out_valid),.B2out(B2_1out));
-	B3 b3(.clk(clk),.rst_n(rst_n),.i0(B3i[0]),.i1(B3i[1]),.i2(B3i[2]),.i_valid(data_valid_),.B3_valid(B3out_valid),.B3out(B3out));
+	B1 b1(.clk(clk),.rst_n(rst_n),.i0(B1i[0]),.i1(B1i[1]),.i2(B1i[2]),.i3(B1i[3]),.i4(B1i[4]),.i5(B1i[5]),.i6(B1i[6]),.i7(B1i[7]),.i8(B1i[8]),.i_valid(data_valid_dff4),.B1_valid(B1out_valid),.B1out(B1out));
+	B2 b2_0(.clk(clk),.rst_n(rst_n),.i0(B2_0i[0]),.i1(B2_0i[1]),.i2(B2_0i[2]),.i3(B2_0i[3]),.i4(B2_0i[4]),.i5(B2_0i[5]),.i_valid(data_valid_dff4),.B2_valid(B2_0out_valid),.B2out(B2_0out));
+	B2 b2_1(.clk(clk),.rst_n(rst_n),.i0(B2_1i[0]),.i1(B2_1i[1]),.i2(B2_1i[2]),.i3(B2_1i[3]),.i4(B2_1i[4]),.i5(B2_1i[5]),.i_valid(data_valid_dff4),.B2_valid(B2_1out_valid),.B2out(B2_1out));
+	B3 b3(.clk(clk),.rst_n(rst_n),.i0(B3i[0]),.i1(B3i[1]),.i2(B3i[2]),.i_valid(data_valid_dff4),.B3_valid(B3out_valid),.B3out(B3out));
 	
 //------------------------------------------------------------------
 	/* B output */
@@ -1812,7 +1992,7 @@ module B#(parameter NO7=0)(
 			
 		end
 		else begin	
-			case(wround_cnt3)
+			case(wround_dff11)
 				0:begin
 					Bout_s0[BACK +: D1_OUT]<= B1out;
 					Bout_s0[FRONT_OUT +: D1_OUT]<= 0;
@@ -1849,7 +2029,7 @@ module B#(parameter NO7=0)(
 			Bout_s1   <=0;	
 		end
 		else begin	
-			case(wround_cnt3)
+			case(wround_dff11)
 				0:begin
 					if(NO7==0)begin
 						Bout_s1[BACK +: D1_OUT]<= B1out;
@@ -1873,15 +2053,28 @@ module B#(parameter NO7=0)(
 			endcase
 		end
 	end	
+	
 	always@(posedge clk or negedge rst_n)begin
 		if(!rst_n)begin
 			Bout   <=0;	
 		end
 		else begin	
-			if(stride==0)Bout <= Bout_s0;
+			if(stride_dff12==0)Bout <= Bout_s0;
 			else Bout <= Bout_s1;		
 		end
 	end	
+	always@(posedge clk or negedge rst_n)begin
+		if(!rst_n)begin
+			Bvalid_dff1<=0;	
+			Bvalid_dff2<=0;	
+			Bvalid<=0;	
+		end
+		else begin
+			Bvalid_dff1<=(B1out_valid && B2_0out_valid && B2_1out_valid && B3out_valid);	
+			Bvalid_dff2<=Bvalid_dff1;	
+			Bvalid<=Bvalid_dff2;	
+		end
+	end
 	
 	/* B output old*/
 	/*
@@ -2146,9 +2339,9 @@ module ADDER(
 	reg [3:0]wsize_dff;
 	
 	
-	reg [2:0]wround_dff1,wround_dff2,wround_dff3,wround_dff4,wround_dff5,wround_dff6,wround_dff7,wround_dff8,wround_dff9,wround_dff10,wround_dff11,wround_dff12,wround_dff13,wround_dff14,wround_dff15,wround_dff16,wround_dff17,wround_dff18,wround_dff19,wround_dff20,wround_dff21,wround_dff22,wround_dff23,wround_dff24,wround_dff25,wround_dff26,wround_dff27,wround_dff28,wround_dff29,wround_dff30,wround_dff31,wround_dff32,wround_dff33,wround_dff34,wround_dff35,wround_dff36;
-	reg stride_dff1,stride_dff2,stride_dff3,stride_dff4,stride_dff5,stride_dff6,stride_dff7,stride_dff8,stride_dff9,stride_dff10,stride_dff11,stride_dff12,stride_dff13,stride_dff14,stride_dff15,stride_dff16,stride_dff17,stride_dff18,stride_dff19,stride_dff20,stride_dff21,stride_dff22,stride_dff23,stride_dff24,stride_dff25,stride_dff26,stride_dff27,stride_dff28,stride_dff29,stride_dff30,stride_dff31,stride_dff32,stride_dff33,stride_dff34,stride_dff35,stride_dff36;
-	reg [3:0]wsize_dff1,wsize_dff2,wsize_dff3,wsize_dff4,wsize_dff5,wsize_dff6,wsize_dff7,wsize_dff8,wsize_dff9,wsize_dff10,wsize_dff11,wsize_dff12,wsize_dff13,wsize_dff14,wsize_dff15,wsize_dff16,wsize_dff17,wsize_dff18,wsize_dff19,wsize_dff20,wsize_dff21,wsize_dff22,wsize_dff23,wsize_dff24,wsize_dff25,wsize_dff26,wsize_dff27,wsize_dff28,wsize_dff29,wsize_dff30,wsize_dff31,wsize_dff32,wsize_dff33,wsize_dff34,wsize_dff35,wsize_dff36;
+	reg [2:0]wround_dff1,wround_dff2,wround_dff3,wround_dff4,wround_dff5,wround_dff6,wround_dff7,wround_dff8,wround_dff9,wround_dff10,wround_dff11,wround_dff12,wround_dff13,wround_dff14,wround_dff15,wround_dff16,wround_dff17,wround_dff18,wround_dff19,wround_dff20,wround_dff21;
+	reg stride_dff1,stride_dff2,stride_dff3,stride_dff4,stride_dff5,stride_dff6,stride_dff7,stride_dff8,stride_dff9,stride_dff10,stride_dff11,stride_dff12,stride_dff13,stride_dff14,stride_dff15,stride_dff16,stride_dff17,stride_dff18,stride_dff19,stride_dff20,stride_dff21;
+	reg [3:0]wsize_dff1,wsize_dff2,wsize_dff3,wsize_dff4,wsize_dff5,wsize_dff6,wsize_dff7,wsize_dff8,wsize_dff9,wsize_dff10,wsize_dff11,wsize_dff12,wsize_dff13,wsize_dff14,wsize_dff15,wsize_dff16,wsize_dff17,wsize_dff18,wsize_dff19,wsize_dff20,wsize_dff21;
 	reg wsize_is3,wsize_is5,wsize_is7;
 	
 	wire [45:0]fsa_res[0:63];
@@ -2158,74 +2351,74 @@ module ADDER(
 	reg [1:0]wsize_;
 	
 	/* FSA */
-	FSA#(.NO3(0),.NO5(0),.ID5(0),.NO7(0),.ID7(0))C0(.clk(clk),.rst_n(rst_n),.wsize(wsize_cnt4),.stride(stride_cnt4),.wround(wround_cnt4),.data(MUL_results_dff[0 +: CUBE_D1]),.data_valid(MUL_DATA_valid_dff),.FSAout(fsa_res[0]),.FSAvalid(FSAvalid));
-	/*FSA#(.NO3(1),.NO5(0),.ID5(1),.NO7(0),.ID7(1))C1(.clk(clk),.rst_n(rst_n),.wsize(wsize_cnt4),.stride(stride_cnt4),.wround(wround_cnt4),.data(MUL_results_dff[1152 +: CUBE_D1]),.data_valid(MUL_DATA_valid_dff),.FSAout(fsa_res[1]),.FSAvalid(FSAvalid));
-	FSA#(.NO3(2),.NO5(0),.ID5(2),.NO7(0),.ID7(2))C2(.clk(clk),.rst_n(rst_n),.wsize(wsize_cnt4),.stride(stride_cnt4),.wround(wround_cnt4),.data(MUL_results_dff[2304 +: CUBE_D1]),.data_valid(MUL_DATA_valid_dff),.FSAout(fsa_res[2]),.FSAvalid(FSAvalid));
-	FSA#(.NO3(3),.NO5(0),.ID5(3),.NO7(0),.ID7(3))C3(.clk(clk),.rst_n(rst_n),.wsize(wsize_cnt4),.stride(stride_cnt4),.wround(wround_cnt4),.data(MUL_results_dff[3456 +: CUBE_D1]),.data_valid(MUL_DATA_valid_dff),.FSAout(fsa_res[3]),.FSAvalid(FSAvalid));
-	FSA#(.NO3(4),.NO5(1),.ID5(0),.NO7(0),.ID7(4))C4(.clk(clk),.rst_n(rst_n),.wsize(wsize_cnt4),.stride(stride_cnt4),.wround(wround_cnt4),.data(MUL_results_dff[4608 +: CUBE_D1]),.data_valid(MUL_DATA_valid_dff),.FSAout(fsa_res[4]),.FSAvalid(FSAvalid));
-	FSA#(.NO3(5),.NO5(1),.ID5(1),.NO7(0),.ID7(5))C5(.clk(clk),.rst_n(rst_n),.wsize(wsize_cnt4),.stride(stride_cnt4),.wround(wround_cnt4),.data(MUL_results_dff[5760 +: CUBE_D1]),.data_valid(MUL_DATA_valid_dff),.FSAout(fsa_res[5]),.FSAvalid(FSAvalid));
-	FSA#(.NO3(6),.NO5(1),.ID5(2),.NO7(0),.ID7(6))C6(.clk(clk),.rst_n(rst_n),.wsize(wsize_cnt4),.stride(stride_cnt4),.wround(wround_cnt4),.data(MUL_results_dff[6912 +: CUBE_D1]),.data_valid(MUL_DATA_valid_dff),.FSAout(fsa_res[6]),.FSAvalid(FSAvalid));
-	FSA#(.NO3(7),.NO5(1),.ID5(3),.NO7(0),.ID7(7))C7(.clk(clk),.rst_n(rst_n),.wsize(wsize_cnt4),.stride(stride_cnt4),.wround(wround_cnt4),.data(MUL_results_dff[8064 +: CUBE_D1]),.data_valid(MUL_DATA_valid_dff),.FSAout(fsa_res[7]),.FSAvalid(FSAvalid));
-	FSA#(.NO3(0),.NO5(2),.ID5(0),.NO7(0),.ID7(8))C8(.clk(clk),.rst_n(rst_n),.wsize(wsize_cnt4),.stride(stride_cnt4),.wround(wround_cnt4),.data(MUL_results_dff[9216 +: CUBE_D1]),.data_valid(MUL_DATA_valid_dff),.FSAout(fsa_res[8]),.FSAvalid(FSAvalid));
-	FSA#(.NO3(1),.NO5(2),.ID5(1),.NO7(0),.ID7(9))C9(.clk(clk),.rst_n(rst_n),.wsize(wsize_cnt4),.stride(stride_cnt4),.wround(wround_cnt4),.data(MUL_results_dff[10368 +: CUBE_D1]),.data_valid(MUL_DATA_valid_dff),.FSAout(fsa_res[9]),.FSAvalid(FSAvalid));
-	FSA#(.NO3(2),.NO5(2),.ID5(2),.NO7(0),.ID7(9))C10(.clk(clk),.rst_n(rst_n),.wsize(wsize_cnt4),.stride(stride_cnt4),.wround(wround_cnt4),.data(MUL_results_dff[11520 +: CUBE_D1]),.data_valid(MUL_DATA_valid_dff),.FSAout(fsa_res[10]),.FSAvalid(FSAvalid));
-	FSA#(.NO3(3),.NO5(2),.ID5(3),.NO7(0),.ID7(9))C11(.clk(clk),.rst_n(rst_n),.wsize(wsize_cnt4),.stride(stride_cnt4),.wround(wround_cnt4),.data(MUL_results_dff[12672 +: CUBE_D1]),.data_valid(MUL_DATA_valid_dff),.FSAout(fsa_res[11]),.FSAvalid(FSAvalid));
-	FSA#(.NO3(4),.NO5(3),.ID5(0),.NO7(0),.ID7(9))C12(.clk(clk),.rst_n(rst_n),.wsize(wsize_cnt4),.stride(stride_cnt4),.wround(wround_cnt4),.data(MUL_results_dff[13824 +: CUBE_D1]),.data_valid(MUL_DATA_valid_dff),.FSAout(fsa_res[12]),.FSAvalid(FSAvalid));
-	FSA#(.NO3(5),.NO5(3),.ID5(1),.NO7(0),.ID7(9))C13(.clk(clk),.rst_n(rst_n),.wsize(wsize_cnt4),.stride(stride_cnt4),.wround(wround_cnt4),.data(MUL_results_dff[14976 +: CUBE_D1]),.data_valid(MUL_DATA_valid_dff),.FSAout(fsa_res[13]),.FSAvalid(FSAvalid));
-	FSA#(.NO3(6),.NO5(3),.ID5(2),.NO7(0),.ID7(9))C14(.clk(clk),.rst_n(rst_n),.wsize(wsize_cnt4),.stride(stride_cnt4),.wround(wround_cnt4),.data(MUL_results_dff[16128 +: CUBE_D1]),.data_valid(MUL_DATA_valid_dff),.FSAout(fsa_res[14]),.FSAvalid(FSAvalid));
-	FSA#(.NO3(7),.NO5(3),.ID5(3),.NO7(0),.ID7(9))C15(.clk(clk),.rst_n(rst_n),.wsize(wsize_cnt4),.stride(stride_cnt4),.wround(wround_cnt4),.data(MUL_results_dff[17280 +: CUBE_D1]),.data_valid(MUL_DATA_valid_dff),.FSAout(fsa_res[15]),.FSAvalid(FSAvalid));
+	FSA#(.NO3(0),.NO5(0),.ID5(0),.NO7(0),.ID7(0))C0(.clk(clk),.rst_n(rst_n),.wsize(wsize_dff19),.stride(stride_dff18),.wround(wround_dff17),.data(MUL_results_dff[0 +: CUBE_D1]),.data_valid(MUL_DATA_valid_dff),.FSAout(fsa_res[0]),.FSAvalid(FSAvalid));
+	FSA#(.NO3(1),.NO5(0),.ID5(1),.NO7(0),.ID7(1))C1(.clk(clk),.rst_n(rst_n),.wsize(wsize_dff19),.stride(stride_dff18),.wround(wround_dff17),.data(MUL_results_dff[1152 +: CUBE_D1]),.data_valid(MUL_DATA_valid_dff),.FSAout(fsa_res[1]),.FSAvalid(FSAvalid));
+	FSA#(.NO3(2),.NO5(0),.ID5(2),.NO7(0),.ID7(2))C2(.clk(clk),.rst_n(rst_n),.wsize(wsize_dff19),.stride(stride_dff18),.wround(wround_dff17),.data(MUL_results_dff[2304 +: CUBE_D1]),.data_valid(MUL_DATA_valid_dff),.FSAout(fsa_res[2]),.FSAvalid(FSAvalid));
+	FSA#(.NO3(3),.NO5(0),.ID5(3),.NO7(0),.ID7(3))C3(.clk(clk),.rst_n(rst_n),.wsize(wsize_dff19),.stride(stride_dff18),.wround(wround_dff17),.data(MUL_results_dff[3456 +: CUBE_D1]),.data_valid(MUL_DATA_valid_dff),.FSAout(fsa_res[3]),.FSAvalid(FSAvalid));
+	FSA#(.NO3(4),.NO5(1),.ID5(0),.NO7(0),.ID7(4))C4(.clk(clk),.rst_n(rst_n),.wsize(wsize_dff19),.stride(stride_dff18),.wround(wround_dff17),.data(MUL_results_dff[4608 +: CUBE_D1]),.data_valid(MUL_DATA_valid_dff),.FSAout(fsa_res[4]),.FSAvalid(FSAvalid));
+	FSA#(.NO3(5),.NO5(1),.ID5(1),.NO7(0),.ID7(5))C5(.clk(clk),.rst_n(rst_n),.wsize(wsize_dff19),.stride(stride_dff18),.wround(wround_dff17),.data(MUL_results_dff[5760 +: CUBE_D1]),.data_valid(MUL_DATA_valid_dff),.FSAout(fsa_res[5]),.FSAvalid(FSAvalid));
+	FSA#(.NO3(6),.NO5(1),.ID5(2),.NO7(0),.ID7(6))C6(.clk(clk),.rst_n(rst_n),.wsize(wsize_dff19),.stride(stride_dff18),.wround(wround_dff17),.data(MUL_results_dff[6912 +: CUBE_D1]),.data_valid(MUL_DATA_valid_dff),.FSAout(fsa_res[6]),.FSAvalid(FSAvalid));
+	FSA#(.NO3(7),.NO5(1),.ID5(3),.NO7(0),.ID7(7))C7(.clk(clk),.rst_n(rst_n),.wsize(wsize_dff19),.stride(stride_dff18),.wround(wround_dff17),.data(MUL_results_dff[8064 +: CUBE_D1]),.data_valid(MUL_DATA_valid_dff),.FSAout(fsa_res[7]),.FSAvalid(FSAvalid));
+	FSA#(.NO3(0),.NO5(2),.ID5(0),.NO7(0),.ID7(8))C8(.clk(clk),.rst_n(rst_n),.wsize(wsize_dff19),.stride(stride_dff18),.wround(wround_dff17),.data(MUL_results_dff[9216 +: CUBE_D1]),.data_valid(MUL_DATA_valid_dff),.FSAout(fsa_res[8]),.FSAvalid(FSAvalid));
+	FSA#(.NO3(1),.NO5(2),.ID5(1),.NO7(0),.ID7(9))C9(.clk(clk),.rst_n(rst_n),.wsize(wsize_dff19),.stride(stride_dff18),.wround(wround_dff17),.data(MUL_results_dff[10368 +: CUBE_D1]),.data_valid(MUL_DATA_valid_dff),.FSAout(fsa_res[9]),.FSAvalid(FSAvalid));
+	FSA#(.NO3(2),.NO5(2),.ID5(2),.NO7(0),.ID7(9))C10(.clk(clk),.rst_n(rst_n),.wsize(wsize_dff19),.stride(stride_dff18),.wround(wround_dff17),.data(MUL_results_dff[11520 +: CUBE_D1]),.data_valid(MUL_DATA_valid_dff),.FSAout(fsa_res[10]),.FSAvalid(FSAvalid));
+	FSA#(.NO3(3),.NO5(2),.ID5(3),.NO7(0),.ID7(9))C11(.clk(clk),.rst_n(rst_n),.wsize(wsize_dff19),.stride(stride_dff18),.wround(wround_dff17),.data(MUL_results_dff[12672 +: CUBE_D1]),.data_valid(MUL_DATA_valid_dff),.FSAout(fsa_res[11]),.FSAvalid(FSAvalid));
+	FSA#(.NO3(4),.NO5(3),.ID5(0),.NO7(0),.ID7(9))C12(.clk(clk),.rst_n(rst_n),.wsize(wsize_dff19),.stride(stride_dff18),.wround(wround_dff17),.data(MUL_results_dff[13824 +: CUBE_D1]),.data_valid(MUL_DATA_valid_dff),.FSAout(fsa_res[12]),.FSAvalid(FSAvalid));
+	FSA#(.NO3(5),.NO5(3),.ID5(1),.NO7(0),.ID7(9))C13(.clk(clk),.rst_n(rst_n),.wsize(wsize_dff19),.stride(stride_dff18),.wround(wround_dff17),.data(MUL_results_dff[14976 +: CUBE_D1]),.data_valid(MUL_DATA_valid_dff),.FSAout(fsa_res[13]),.FSAvalid(FSAvalid));
+	FSA#(.NO3(6),.NO5(3),.ID5(2),.NO7(0),.ID7(9))C14(.clk(clk),.rst_n(rst_n),.wsize(wsize_dff19),.stride(stride_dff18),.wround(wround_dff17),.data(MUL_results_dff[16128 +: CUBE_D1]),.data_valid(MUL_DATA_valid_dff),.FSAout(fsa_res[14]),.FSAvalid(FSAvalid));
+	FSA#(.NO3(7),.NO5(3),.ID5(3),.NO7(0),.ID7(9))C15(.clk(clk),.rst_n(rst_n),.wsize(wsize_dff19),.stride(stride_dff18),.wround(wround_dff17),.data(MUL_results_dff[17280 +: CUBE_D1]),.data_valid(MUL_DATA_valid_dff),.FSAout(fsa_res[15]),.FSAvalid(FSAvalid));
 	
-	FSA#(.NO3(0),.NO5(0),.ID5(0),.NO7(1),.ID7(0))C16(.clk(clk),.rst_n(rst_n),.wsize(wsize_cnt4),.stride(stride_cnt4),.wround(wround_cnt4),.data(MUL_results_dff[18432 +: CUBE_D1]),.data_valid(MUL_DATA_valid_dff),.FSAout(fsa_res[16]),.FSAvalid(FSAvalid));
-	FSA#(.NO3(1),.NO5(0),.ID5(1),.NO7(1),.ID7(1))C17(.clk(clk),.rst_n(rst_n),.wsize(wsize_cnt4),.stride(stride_cnt4),.wround(wround_cnt4),.data(MUL_results_dff[19584 +: CUBE_D1]),.data_valid(MUL_DATA_valid_dff),.FSAout(fsa_res[17]),.FSAvalid(FSAvalid));
-	FSA#(.NO3(2),.NO5(0),.ID5(2),.NO7(1),.ID7(2))C18(.clk(clk),.rst_n(rst_n),.wsize(wsize_cnt4),.stride(stride_cnt4),.wround(wround_cnt4),.data(MUL_results_dff[20736 +: CUBE_D1]),.data_valid(MUL_DATA_valid_dff),.FSAout(fsa_res[18]),.FSAvalid(FSAvalid));
-	FSA#(.NO3(3),.NO5(0),.ID5(3),.NO7(1),.ID7(3))C19(.clk(clk),.rst_n(rst_n),.wsize(wsize_cnt4),.stride(stride_cnt4),.wround(wround_cnt4),.data(MUL_results_dff[21888 +: CUBE_D1]),.data_valid(MUL_DATA_valid_dff),.FSAout(fsa_res[19]),.FSAvalid(FSAvalid));
-	FSA#(.NO3(4),.NO5(1),.ID5(0),.NO7(1),.ID7(4))C20(.clk(clk),.rst_n(rst_n),.wsize(wsize_cnt4),.stride(stride_cnt4),.wround(wround_cnt4),.data(MUL_results_dff[23040 +: CUBE_D1]),.data_valid(MUL_DATA_valid_dff),.FSAout(fsa_res[20]),.FSAvalid(FSAvalid));
-	FSA#(.NO3(5),.NO5(1),.ID5(1),.NO7(1),.ID7(5))C21(.clk(clk),.rst_n(rst_n),.wsize(wsize_cnt4),.stride(stride_cnt4),.wround(wround_cnt4),.data(MUL_results_dff[24192 +: CUBE_D1]),.data_valid(MUL_DATA_valid_dff),.FSAout(fsa_res[21]),.FSAvalid(FSAvalid));
-	FSA#(.NO3(6),.NO5(1),.ID5(2),.NO7(1),.ID7(6))C22(.clk(clk),.rst_n(rst_n),.wsize(wsize_cnt4),.stride(stride_cnt4),.wround(wround_cnt4),.data(MUL_results_dff[25344 +: CUBE_D1]),.data_valid(MUL_DATA_valid_dff),.FSAout(fsa_res[22]),.FSAvalid(FSAvalid));
-	FSA#(.NO3(7),.NO5(1),.ID5(3),.NO7(1),.ID7(7))C23(.clk(clk),.rst_n(rst_n),.wsize(wsize_cnt4),.stride(stride_cnt4),.wround(wround_cnt4),.data(MUL_results_dff[26496 +: CUBE_D1]),.data_valid(MUL_DATA_valid_dff),.FSAout(fsa_res[23]),.FSAvalid(FSAvalid));
-	FSA#(.NO3(0),.NO5(2),.ID5(0),.NO7(1),.ID7(8))C24(.clk(clk),.rst_n(rst_n),.wsize(wsize_cnt4),.stride(stride_cnt4),.wround(wround_cnt4),.data(MUL_results_dff[27648 +: CUBE_D1]),.data_valid(MUL_DATA_valid_dff),.FSAout(fsa_res[24]),.FSAvalid(FSAvalid));
-	FSA#(.NO3(1),.NO5(2),.ID5(1),.NO7(1),.ID7(9))C25(.clk(clk),.rst_n(rst_n),.wsize(wsize_cnt4),.stride(stride_cnt4),.wround(wround_cnt4),.data(MUL_results_dff[28800 +: CUBE_D1]),.data_valid(MUL_DATA_valid_dff),.FSAout(fsa_res[25]),.FSAvalid(FSAvalid));
-	FSA#(.NO3(2),.NO5(2),.ID5(2),.NO7(1),.ID7(9))C26(.clk(clk),.rst_n(rst_n),.wsize(wsize_cnt4),.stride(stride_cnt4),.wround(wround_cnt4),.data(MUL_results_dff[29952 +: CUBE_D1]),.data_valid(MUL_DATA_valid_dff),.FSAout(fsa_res[26]),.FSAvalid(FSAvalid));
-	FSA#(.NO3(3),.NO5(2),.ID5(3),.NO7(1),.ID7(9))C27(.clk(clk),.rst_n(rst_n),.wsize(wsize_cnt4),.stride(stride_cnt4),.wround(wround_cnt4),.data(MUL_results_dff[31104 +: CUBE_D1]),.data_valid(MUL_DATA_valid_dff),.FSAout(fsa_res[27]),.FSAvalid(FSAvalid));
-	FSA#(.NO3(4),.NO5(3),.ID5(0),.NO7(1),.ID7(9))C28(.clk(clk),.rst_n(rst_n),.wsize(wsize_cnt4),.stride(stride_cnt4),.wround(wround_cnt4),.data(MUL_results_dff[32256 +: CUBE_D1]),.data_valid(MUL_DATA_valid_dff),.FSAout(fsa_res[28]),.FSAvalid(FSAvalid));
-	FSA#(.NO3(5),.NO5(3),.ID5(1),.NO7(1),.ID7(9))C29(.clk(clk),.rst_n(rst_n),.wsize(wsize_cnt4),.stride(stride_cnt4),.wround(wround_cnt4),.data(MUL_results_dff[33408 +: CUBE_D1]),.data_valid(MUL_DATA_valid_dff),.FSAout(fsa_res[29]),.FSAvalid(FSAvalid));
-	FSA#(.NO3(6),.NO5(3),.ID5(2),.NO7(1),.ID7(9))C30(.clk(clk),.rst_n(rst_n),.wsize(wsize_cnt4),.stride(stride_cnt4),.wround(wround_cnt4),.data(MUL_results_dff[34560 +: CUBE_D1]),.data_valid(MUL_DATA_valid_dff),.FSAout(fsa_res[30]),.FSAvalid(FSAvalid));
-	FSA#(.NO3(7),.NO5(3),.ID5(3),.NO7(1),.ID7(9))C31(.clk(clk),.rst_n(rst_n),.wsize(wsize_cnt4),.stride(stride_cnt4),.wround(wround_cnt4),.data(MUL_results_dff[35712 +: CUBE_D1]),.data_valid(MUL_DATA_valid_dff),.FSAout(fsa_res[31]),.FSAvalid(FSAvalid));
+	FSA#(.NO3(0),.NO5(0),.ID5(0),.NO7(1),.ID7(0))C16(.clk(clk),.rst_n(rst_n),.wsize(wsize_dff19),.stride(stride_dff18),.wround(wround_dff17),.data(MUL_results_dff[18432 +: CUBE_D1]),.data_valid(MUL_DATA_valid_dff),.FSAout(fsa_res[16]),.FSAvalid(FSAvalid));
+	FSA#(.NO3(1),.NO5(0),.ID5(1),.NO7(1),.ID7(1))C17(.clk(clk),.rst_n(rst_n),.wsize(wsize_dff19),.stride(stride_dff18),.wround(wround_dff17),.data(MUL_results_dff[19584 +: CUBE_D1]),.data_valid(MUL_DATA_valid_dff),.FSAout(fsa_res[17]),.FSAvalid(FSAvalid));
+	FSA#(.NO3(2),.NO5(0),.ID5(2),.NO7(1),.ID7(2))C18(.clk(clk),.rst_n(rst_n),.wsize(wsize_dff19),.stride(stride_dff18),.wround(wround_dff17),.data(MUL_results_dff[20736 +: CUBE_D1]),.data_valid(MUL_DATA_valid_dff),.FSAout(fsa_res[18]),.FSAvalid(FSAvalid));
+	FSA#(.NO3(3),.NO5(0),.ID5(3),.NO7(1),.ID7(3))C19(.clk(clk),.rst_n(rst_n),.wsize(wsize_dff19),.stride(stride_dff18),.wround(wround_dff17),.data(MUL_results_dff[21888 +: CUBE_D1]),.data_valid(MUL_DATA_valid_dff),.FSAout(fsa_res[19]),.FSAvalid(FSAvalid));
+	FSA#(.NO3(4),.NO5(1),.ID5(0),.NO7(1),.ID7(4))C20(.clk(clk),.rst_n(rst_n),.wsize(wsize_dff19),.stride(stride_dff18),.wround(wround_dff17),.data(MUL_results_dff[23040 +: CUBE_D1]),.data_valid(MUL_DATA_valid_dff),.FSAout(fsa_res[20]),.FSAvalid(FSAvalid));
+	FSA#(.NO3(5),.NO5(1),.ID5(1),.NO7(1),.ID7(5))C21(.clk(clk),.rst_n(rst_n),.wsize(wsize_dff19),.stride(stride_dff18),.wround(wround_dff17),.data(MUL_results_dff[24192 +: CUBE_D1]),.data_valid(MUL_DATA_valid_dff),.FSAout(fsa_res[21]),.FSAvalid(FSAvalid));
+	FSA#(.NO3(6),.NO5(1),.ID5(2),.NO7(1),.ID7(6))C22(.clk(clk),.rst_n(rst_n),.wsize(wsize_dff19),.stride(stride_dff18),.wround(wround_dff17),.data(MUL_results_dff[25344 +: CUBE_D1]),.data_valid(MUL_DATA_valid_dff),.FSAout(fsa_res[22]),.FSAvalid(FSAvalid));
+	FSA#(.NO3(7),.NO5(1),.ID5(3),.NO7(1),.ID7(7))C23(.clk(clk),.rst_n(rst_n),.wsize(wsize_dff19),.stride(stride_dff18),.wround(wround_dff17),.data(MUL_results_dff[26496 +: CUBE_D1]),.data_valid(MUL_DATA_valid_dff),.FSAout(fsa_res[23]),.FSAvalid(FSAvalid));
+	FSA#(.NO3(0),.NO5(2),.ID5(0),.NO7(1),.ID7(8))C24(.clk(clk),.rst_n(rst_n),.wsize(wsize_dff19),.stride(stride_dff18),.wround(wround_dff17),.data(MUL_results_dff[27648 +: CUBE_D1]),.data_valid(MUL_DATA_valid_dff),.FSAout(fsa_res[24]),.FSAvalid(FSAvalid));
+	FSA#(.NO3(1),.NO5(2),.ID5(1),.NO7(1),.ID7(9))C25(.clk(clk),.rst_n(rst_n),.wsize(wsize_dff19),.stride(stride_dff18),.wround(wround_dff17),.data(MUL_results_dff[28800 +: CUBE_D1]),.data_valid(MUL_DATA_valid_dff),.FSAout(fsa_res[25]),.FSAvalid(FSAvalid));
+	FSA#(.NO3(2),.NO5(2),.ID5(2),.NO7(1),.ID7(9))C26(.clk(clk),.rst_n(rst_n),.wsize(wsize_dff19),.stride(stride_dff18),.wround(wround_dff17),.data(MUL_results_dff[29952 +: CUBE_D1]),.data_valid(MUL_DATA_valid_dff),.FSAout(fsa_res[26]),.FSAvalid(FSAvalid));
+	FSA#(.NO3(3),.NO5(2),.ID5(3),.NO7(1),.ID7(9))C27(.clk(clk),.rst_n(rst_n),.wsize(wsize_dff19),.stride(stride_dff18),.wround(wround_dff17),.data(MUL_results_dff[31104 +: CUBE_D1]),.data_valid(MUL_DATA_valid_dff),.FSAout(fsa_res[27]),.FSAvalid(FSAvalid));
+	FSA#(.NO3(4),.NO5(3),.ID5(0),.NO7(1),.ID7(9))C28(.clk(clk),.rst_n(rst_n),.wsize(wsize_dff19),.stride(stride_dff18),.wround(wround_dff17),.data(MUL_results_dff[32256 +: CUBE_D1]),.data_valid(MUL_DATA_valid_dff),.FSAout(fsa_res[28]),.FSAvalid(FSAvalid));
+	FSA#(.NO3(5),.NO5(3),.ID5(1),.NO7(1),.ID7(9))C29(.clk(clk),.rst_n(rst_n),.wsize(wsize_dff19),.stride(stride_dff18),.wround(wround_dff17),.data(MUL_results_dff[33408 +: CUBE_D1]),.data_valid(MUL_DATA_valid_dff),.FSAout(fsa_res[29]),.FSAvalid(FSAvalid));
+	FSA#(.NO3(6),.NO5(3),.ID5(2),.NO7(1),.ID7(9))C30(.clk(clk),.rst_n(rst_n),.wsize(wsize_dff19),.stride(stride_dff18),.wround(wround_dff17),.data(MUL_results_dff[34560 +: CUBE_D1]),.data_valid(MUL_DATA_valid_dff),.FSAout(fsa_res[30]),.FSAvalid(FSAvalid));
+	FSA#(.NO3(7),.NO5(3),.ID5(3),.NO7(1),.ID7(9))C31(.clk(clk),.rst_n(rst_n),.wsize(wsize_dff19),.stride(stride_dff18),.wround(wround_dff17),.data(MUL_results_dff[35712 +: CUBE_D1]),.data_valid(MUL_DATA_valid_dff),.FSAout(fsa_res[31]),.FSAvalid(FSAvalid));
 	
-	FSA#(.NO3(0),.NO5(0),.ID5(0),.NO7(0),.ID7(0))C32(.clk(clk),.rst_n(rst_n),.wsize(wsize_cnt4),.stride(stride_cnt4),.wround(wround_cnt4),.data(MUL_results_dff[36864 +: CUBE_D1]),.data_valid(MUL_DATA_valid_dff),.FSAout(fsa_res[32]),.FSAvalid(FSAvalid));
-	FSA#(.NO3(1),.NO5(0),.ID5(1),.NO7(0),.ID7(1))C33(.clk(clk),.rst_n(rst_n),.wsize(wsize_cnt4),.stride(stride_cnt4),.wround(wround_cnt4),.data(MUL_results_dff[38016 +: CUBE_D1]),.data_valid(MUL_DATA_valid_dff),.FSAout(fsa_res[33]),.FSAvalid(FSAvalid));
-	FSA#(.NO3(2),.NO5(0),.ID5(2),.NO7(0),.ID7(2))C34(.clk(clk),.rst_n(rst_n),.wsize(wsize_cnt4),.stride(stride_cnt4),.wround(wround_cnt4),.data(MUL_results_dff[39168 +: CUBE_D1]),.data_valid(MUL_DATA_valid_dff),.FSAout(fsa_res[34]),.FSAvalid(FSAvalid));
-	FSA#(.NO3(3),.NO5(0),.ID5(3),.NO7(0),.ID7(3))C35(.clk(clk),.rst_n(rst_n),.wsize(wsize_cnt4),.stride(stride_cnt4),.wround(wround_cnt4),.data(MUL_results_dff[40320 +: CUBE_D1]),.data_valid(MUL_DATA_valid_dff),.FSAout(fsa_res[35]),.FSAvalid(FSAvalid));
-	FSA#(.NO3(4),.NO5(1),.ID5(0),.NO7(0),.ID7(4))C36(.clk(clk),.rst_n(rst_n),.wsize(wsize_cnt4),.stride(stride_cnt4),.wround(wround_cnt4),.data(MUL_results_dff[41472 +: CUBE_D1]),.data_valid(MUL_DATA_valid_dff),.FSAout(fsa_res[36]),.FSAvalid(FSAvalid));
-	FSA#(.NO3(5),.NO5(1),.ID5(1),.NO7(0),.ID7(5))C37(.clk(clk),.rst_n(rst_n),.wsize(wsize_cnt4),.stride(stride_cnt4),.wround(wround_cnt4),.data(MUL_results_dff[42624 +: CUBE_D1]),.data_valid(MUL_DATA_valid_dff),.FSAout(fsa_res[37]),.FSAvalid(FSAvalid));
-	FSA#(.NO3(6),.NO5(1),.ID5(2),.NO7(0),.ID7(6))C38(.clk(clk),.rst_n(rst_n),.wsize(wsize_cnt4),.stride(stride_cnt4),.wround(wround_cnt4),.data(MUL_results_dff[43776 +: CUBE_D1]),.data_valid(MUL_DATA_valid_dff),.FSAout(fsa_res[38]),.FSAvalid(FSAvalid));
-	FSA#(.NO3(7),.NO5(1),.ID5(3),.NO7(0),.ID7(7))C39(.clk(clk),.rst_n(rst_n),.wsize(wsize_cnt4),.stride(stride_cnt4),.wround(wround_cnt4),.data(MUL_results_dff[44928 +: CUBE_D1]),.data_valid(MUL_DATA_valid_dff),.FSAout(fsa_res[39]),.FSAvalid(FSAvalid));
-	FSA#(.NO3(0),.NO5(2),.ID5(0),.NO7(0),.ID7(8))C40(.clk(clk),.rst_n(rst_n),.wsize(wsize_cnt4),.stride(stride_cnt4),.wround(wround_cnt4),.data(MUL_results_dff[46080 +: CUBE_D1]),.data_valid(MUL_DATA_valid_dff),.FSAout(fsa_res[40]),.FSAvalid(FSAvalid));
-	FSA#(.NO3(1),.NO5(2),.ID5(1),.NO7(0),.ID7(9))C41(.clk(clk),.rst_n(rst_n),.wsize(wsize_cnt4),.stride(stride_cnt4),.wround(wround_cnt4),.data(MUL_results_dff[47232 +: CUBE_D1]),.data_valid(MUL_DATA_valid_dff),.FSAout(fsa_res[41]),.FSAvalid(FSAvalid));
-	FSA#(.NO3(2),.NO5(2),.ID5(2),.NO7(0),.ID7(9))C42(.clk(clk),.rst_n(rst_n),.wsize(wsize_cnt4),.stride(stride_cnt4),.wround(wround_cnt4),.data(MUL_results_dff[48384 +: CUBE_D1]),.data_valid(MUL_DATA_valid_dff),.FSAout(fsa_res[42]),.FSAvalid(FSAvalid));
-	FSA#(.NO3(3),.NO5(2),.ID5(3),.NO7(0),.ID7(9))C43(.clk(clk),.rst_n(rst_n),.wsize(wsize_cnt4),.stride(stride_cnt4),.wround(wround_cnt4),.data(MUL_results_dff[49536 +: CUBE_D1]),.data_valid(MUL_DATA_valid_dff),.FSAout(fsa_res[43]),.FSAvalid(FSAvalid));
-	FSA#(.NO3(4),.NO5(3),.ID5(0),.NO7(0),.ID7(9))C44(.clk(clk),.rst_n(rst_n),.wsize(wsize_cnt4),.stride(stride_cnt4),.wround(wround_cnt4),.data(MUL_results_dff[50688 +: CUBE_D1]),.data_valid(MUL_DATA_valid_dff),.FSAout(fsa_res[44]),.FSAvalid(FSAvalid));
-	FSA#(.NO3(5),.NO5(3),.ID5(1),.NO7(0),.ID7(9))C45(.clk(clk),.rst_n(rst_n),.wsize(wsize_cnt4),.stride(stride_cnt4),.wround(wround_cnt4),.data(MUL_results_dff[51840 +: CUBE_D1]),.data_valid(MUL_DATA_valid_dff),.FSAout(fsa_res[45]),.FSAvalid(FSAvalid));
-	FSA#(.NO3(6),.NO5(3),.ID5(2),.NO7(0),.ID7(9))C46(.clk(clk),.rst_n(rst_n),.wsize(wsize_cnt4),.stride(stride_cnt4),.wround(wround_cnt4),.data(MUL_results_dff[52992 +: CUBE_D1]),.data_valid(MUL_DATA_valid_dff),.FSAout(fsa_res[46]),.FSAvalid(FSAvalid));
-	FSA#(.NO3(7),.NO5(3),.ID5(3),.NO7(0),.ID7(9))C47(.clk(clk),.rst_n(rst_n),.wsize(wsize_cnt4),.stride(stride_cnt4),.wround(wround_cnt4),.data(MUL_results_dff[54144 +: CUBE_D1]),.data_valid(MUL_DATA_valid_dff),.FSAout(fsa_res[47]),.FSAvalid(FSAvalid));
+	FSA#(.NO3(0),.NO5(0),.ID5(0),.NO7(0),.ID7(0))C32(.clk(clk),.rst_n(rst_n),.wsize(wsize_dff19),.stride(stride_dff18),.wround(wround_dff17),.data(MUL_results_dff[36864 +: CUBE_D1]),.data_valid(MUL_DATA_valid_dff),.FSAout(fsa_res[32]),.FSAvalid(FSAvalid));
+	FSA#(.NO3(1),.NO5(0),.ID5(1),.NO7(0),.ID7(1))C33(.clk(clk),.rst_n(rst_n),.wsize(wsize_dff19),.stride(stride_dff18),.wround(wround_dff17),.data(MUL_results_dff[38016 +: CUBE_D1]),.data_valid(MUL_DATA_valid_dff),.FSAout(fsa_res[33]),.FSAvalid(FSAvalid));
+	FSA#(.NO3(2),.NO5(0),.ID5(2),.NO7(0),.ID7(2))C34(.clk(clk),.rst_n(rst_n),.wsize(wsize_dff19),.stride(stride_dff18),.wround(wround_dff17),.data(MUL_results_dff[39168 +: CUBE_D1]),.data_valid(MUL_DATA_valid_dff),.FSAout(fsa_res[34]),.FSAvalid(FSAvalid));
+	FSA#(.NO3(3),.NO5(0),.ID5(3),.NO7(0),.ID7(3))C35(.clk(clk),.rst_n(rst_n),.wsize(wsize_dff19),.stride(stride_dff18),.wround(wround_dff17),.data(MUL_results_dff[40320 +: CUBE_D1]),.data_valid(MUL_DATA_valid_dff),.FSAout(fsa_res[35]),.FSAvalid(FSAvalid));
+	FSA#(.NO3(4),.NO5(1),.ID5(0),.NO7(0),.ID7(4))C36(.clk(clk),.rst_n(rst_n),.wsize(wsize_dff19),.stride(stride_dff18),.wround(wround_dff17),.data(MUL_results_dff[41472 +: CUBE_D1]),.data_valid(MUL_DATA_valid_dff),.FSAout(fsa_res[36]),.FSAvalid(FSAvalid));
+	FSA#(.NO3(5),.NO5(1),.ID5(1),.NO7(0),.ID7(5))C37(.clk(clk),.rst_n(rst_n),.wsize(wsize_dff19),.stride(stride_dff18),.wround(wround_dff17),.data(MUL_results_dff[42624 +: CUBE_D1]),.data_valid(MUL_DATA_valid_dff),.FSAout(fsa_res[37]),.FSAvalid(FSAvalid));
+	FSA#(.NO3(6),.NO5(1),.ID5(2),.NO7(0),.ID7(6))C38(.clk(clk),.rst_n(rst_n),.wsize(wsize_dff19),.stride(stride_dff18),.wround(wround_dff17),.data(MUL_results_dff[43776 +: CUBE_D1]),.data_valid(MUL_DATA_valid_dff),.FSAout(fsa_res[38]),.FSAvalid(FSAvalid));
+	FSA#(.NO3(7),.NO5(1),.ID5(3),.NO7(0),.ID7(7))C39(.clk(clk),.rst_n(rst_n),.wsize(wsize_dff19),.stride(stride_dff18),.wround(wround_dff17),.data(MUL_results_dff[44928 +: CUBE_D1]),.data_valid(MUL_DATA_valid_dff),.FSAout(fsa_res[39]),.FSAvalid(FSAvalid));
+	FSA#(.NO3(0),.NO5(2),.ID5(0),.NO7(0),.ID7(8))C40(.clk(clk),.rst_n(rst_n),.wsize(wsize_dff19),.stride(stride_dff18),.wround(wround_dff17),.data(MUL_results_dff[46080 +: CUBE_D1]),.data_valid(MUL_DATA_valid_dff),.FSAout(fsa_res[40]),.FSAvalid(FSAvalid));
+	FSA#(.NO3(1),.NO5(2),.ID5(1),.NO7(0),.ID7(9))C41(.clk(clk),.rst_n(rst_n),.wsize(wsize_dff19),.stride(stride_dff18),.wround(wround_dff17),.data(MUL_results_dff[47232 +: CUBE_D1]),.data_valid(MUL_DATA_valid_dff),.FSAout(fsa_res[41]),.FSAvalid(FSAvalid));
+	FSA#(.NO3(2),.NO5(2),.ID5(2),.NO7(0),.ID7(9))C42(.clk(clk),.rst_n(rst_n),.wsize(wsize_dff19),.stride(stride_dff18),.wround(wround_dff17),.data(MUL_results_dff[48384 +: CUBE_D1]),.data_valid(MUL_DATA_valid_dff),.FSAout(fsa_res[42]),.FSAvalid(FSAvalid));
+	FSA#(.NO3(3),.NO5(2),.ID5(3),.NO7(0),.ID7(9))C43(.clk(clk),.rst_n(rst_n),.wsize(wsize_dff19),.stride(stride_dff18),.wround(wround_dff17),.data(MUL_results_dff[49536 +: CUBE_D1]),.data_valid(MUL_DATA_valid_dff),.FSAout(fsa_res[43]),.FSAvalid(FSAvalid));
+	FSA#(.NO3(4),.NO5(3),.ID5(0),.NO7(0),.ID7(9))C44(.clk(clk),.rst_n(rst_n),.wsize(wsize_dff19),.stride(stride_dff18),.wround(wround_dff17),.data(MUL_results_dff[50688 +: CUBE_D1]),.data_valid(MUL_DATA_valid_dff),.FSAout(fsa_res[44]),.FSAvalid(FSAvalid));
+	FSA#(.NO3(5),.NO5(3),.ID5(1),.NO7(0),.ID7(9))C45(.clk(clk),.rst_n(rst_n),.wsize(wsize_dff19),.stride(stride_dff18),.wround(wround_dff17),.data(MUL_results_dff[51840 +: CUBE_D1]),.data_valid(MUL_DATA_valid_dff),.FSAout(fsa_res[45]),.FSAvalid(FSAvalid));
+	FSA#(.NO3(6),.NO5(3),.ID5(2),.NO7(0),.ID7(9))C46(.clk(clk),.rst_n(rst_n),.wsize(wsize_dff19),.stride(stride_dff18),.wround(wround_dff17),.data(MUL_results_dff[52992 +: CUBE_D1]),.data_valid(MUL_DATA_valid_dff),.FSAout(fsa_res[46]),.FSAvalid(FSAvalid));
+	FSA#(.NO3(7),.NO5(3),.ID5(3),.NO7(0),.ID7(9))C47(.clk(clk),.rst_n(rst_n),.wsize(wsize_dff19),.stride(stride_dff18),.wround(wround_dff17),.data(MUL_results_dff[54144 +: CUBE_D1]),.data_valid(MUL_DATA_valid_dff),.FSAout(fsa_res[47]),.FSAvalid(FSAvalid));
 	
-	FSA#(.NO3(0),.NO5(0),.ID5(0),.NO7(1),.ID7(0))C48(.clk(clk),.rst_n(rst_n),.wsize(wsize_cnt4),.stride(stride_cnt4),.wround(wround_cnt4),.data(MUL_results_dff[55296 +: CUBE_D1]),.data_valid(MUL_DATA_valid_dff),.FSAout(fsa_res[48]),.FSAvalid(FSAvalid));
-	FSA#(.NO3(1),.NO5(0),.ID5(1),.NO7(1),.ID7(1))C49(.clk(clk),.rst_n(rst_n),.wsize(wsize_cnt4),.stride(stride_cnt4),.wround(wround_cnt4),.data(MUL_results_dff[56448 +: CUBE_D1]),.data_valid(MUL_DATA_valid_dff),.FSAout(fsa_res[49]),.FSAvalid(FSAvalid));
-	FSA#(.NO3(2),.NO5(0),.ID5(2),.NO7(1),.ID7(2))C50(.clk(clk),.rst_n(rst_n),.wsize(wsize_cnt4),.stride(stride_cnt4),.wround(wround_cnt4),.data(MUL_results_dff[57600 +: CUBE_D1]),.data_valid(MUL_DATA_valid_dff),.FSAout(fsa_res[50]),.FSAvalid(FSAvalid));
-	FSA#(.NO3(3),.NO5(0),.ID5(3),.NO7(1),.ID7(3))C51(.clk(clk),.rst_n(rst_n),.wsize(wsize_cnt4),.stride(stride_cnt4),.wround(wround_cnt4),.data(MUL_results_dff[58752 +: CUBE_D1]),.data_valid(MUL_DATA_valid_dff),.FSAout(fsa_res[51]),.FSAvalid(FSAvalid));
-	FSA#(.NO3(4),.NO5(1),.ID5(0),.NO7(1),.ID7(4))C52(.clk(clk),.rst_n(rst_n),.wsize(wsize_cnt4),.stride(stride_cnt4),.wround(wround_cnt4),.data(MUL_results_dff[59904 +: CUBE_D1]),.data_valid(MUL_DATA_valid_dff),.FSAout(fsa_res[52]),.FSAvalid(FSAvalid));
-	FSA#(.NO3(5),.NO5(1),.ID5(1),.NO7(1),.ID7(5))C53(.clk(clk),.rst_n(rst_n),.wsize(wsize_cnt4),.stride(stride_cnt4),.wround(wround_cnt4),.data(MUL_results_dff[61056 +: CUBE_D1]),.data_valid(MUL_DATA_valid_dff),.FSAout(fsa_res[53]),.FSAvalid(FSAvalid));
-	FSA#(.NO3(6),.NO5(1),.ID5(2),.NO7(1),.ID7(6))C54(.clk(clk),.rst_n(rst_n),.wsize(wsize_cnt4),.stride(stride_cnt4),.wround(wround_cnt4),.data(MUL_results_dff[62208 +: CUBE_D1]),.data_valid(MUL_DATA_valid_dff),.FSAout(fsa_res[54]),.FSAvalid(FSAvalid));
-	FSA#(.NO3(7),.NO5(1),.ID5(3),.NO7(1),.ID7(7))C55(.clk(clk),.rst_n(rst_n),.wsize(wsize_cnt4),.stride(stride_cnt4),.wround(wround_cnt4),.data(MUL_results_dff[63360 +: CUBE_D1]),.data_valid(MUL_DATA_valid_dff),.FSAout(fsa_res[55]),.FSAvalid(FSAvalid));
-	FSA#(.NO3(0),.NO5(2),.ID5(0),.NO7(1),.ID7(8))C56(.clk(clk),.rst_n(rst_n),.wsize(wsize_cnt4),.stride(stride_cnt4),.wround(wround_cnt4),.data(MUL_results_dff[64512 +: CUBE_D1]),.data_valid(MUL_DATA_valid_dff),.FSAout(fsa_res[56]),.FSAvalid(FSAvalid));
-	FSA#(.NO3(1),.NO5(2),.ID5(1),.NO7(1),.ID7(9))C57(.clk(clk),.rst_n(rst_n),.wsize(wsize_cnt4),.stride(stride_cnt4),.wround(wround_cnt4),.data(MUL_results_dff[65664 +: CUBE_D1]),.data_valid(MUL_DATA_valid_dff),.FSAout(fsa_res[57]),.FSAvalid(FSAvalid));
-	FSA#(.NO3(2),.NO5(2),.ID5(2),.NO7(1),.ID7(9))C58(.clk(clk),.rst_n(rst_n),.wsize(wsize_cnt4),.stride(stride_cnt4),.wround(wround_cnt4),.data(MUL_results_dff[66816 +: CUBE_D1]),.data_valid(MUL_DATA_valid_dff),.FSAout(fsa_res[58]),.FSAvalid(FSAvalid));
-	FSA#(.NO3(3),.NO5(2),.ID5(3),.NO7(1),.ID7(9))C59(.clk(clk),.rst_n(rst_n),.wsize(wsize_cnt4),.stride(stride_cnt4),.wround(wround_cnt4),.data(MUL_results_dff[67968 +: CUBE_D1]),.data_valid(MUL_DATA_valid_dff),.FSAout(fsa_res[59]),.FSAvalid(FSAvalid));
-	FSA#(.NO3(4),.NO5(3),.ID5(0),.NO7(1),.ID7(9))C60(.clk(clk),.rst_n(rst_n),.wsize(wsize_cnt4),.stride(stride_cnt4),.wround(wround_cnt4),.data(MUL_results_dff[69120 +: CUBE_D1]),.data_valid(MUL_DATA_valid_dff),.FSAout(fsa_res[60]),.FSAvalid(FSAvalid));
-	FSA#(.NO3(5),.NO5(3),.ID5(1),.NO7(1),.ID7(9))C61(.clk(clk),.rst_n(rst_n),.wsize(wsize_cnt4),.stride(stride_cnt4),.wround(wround_cnt4),.data(MUL_results_dff[70272 +: CUBE_D1]),.data_valid(MUL_DATA_valid_dff),.FSAout(fsa_res[61]),.FSAvalid(FSAvalid));
-	FSA#(.NO3(6),.NO5(3),.ID5(2),.NO7(1),.ID7(9))C62(.clk(clk),.rst_n(rst_n),.wsize(wsize_cnt4),.stride(stride_cnt4),.wround(wround_cnt4),.data(MUL_results_dff[71424 +: CUBE_D1]),.data_valid(MUL_DATA_valid_dff),.FSAout(fsa_res[62]),.FSAvalid(FSAvalid));
-	FSA#(.NO3(7),.NO5(3),.ID5(3),.NO7(1),.ID7(9))C63(.clk(clk),.rst_n(rst_n),.wsize(wsize_cnt4),.stride(stride_cnt4),.wround(wround_cnt4),.data(MUL_results_dff[72576 +: CUBE_D1]),.data_valid(MUL_DATA_valid_dff),.FSAout(fsa_res[63]),.FSAvalid(FSAvalid));
-	*/
+	FSA#(.NO3(0),.NO5(0),.ID5(0),.NO7(1),.ID7(0))C48(.clk(clk),.rst_n(rst_n),.wsize(wsize_dff19),.stride(stride_dff18),.wround(wround_dff17),.data(MUL_results_dff[55296 +: CUBE_D1]),.data_valid(MUL_DATA_valid_dff),.FSAout(fsa_res[48]),.FSAvalid(FSAvalid));
+	FSA#(.NO3(1),.NO5(0),.ID5(1),.NO7(1),.ID7(1))C49(.clk(clk),.rst_n(rst_n),.wsize(wsize_dff19),.stride(stride_dff18),.wround(wround_dff17),.data(MUL_results_dff[56448 +: CUBE_D1]),.data_valid(MUL_DATA_valid_dff),.FSAout(fsa_res[49]),.FSAvalid(FSAvalid));
+	FSA#(.NO3(2),.NO5(0),.ID5(2),.NO7(1),.ID7(2))C50(.clk(clk),.rst_n(rst_n),.wsize(wsize_dff19),.stride(stride_dff18),.wround(wround_dff17),.data(MUL_results_dff[57600 +: CUBE_D1]),.data_valid(MUL_DATA_valid_dff),.FSAout(fsa_res[50]),.FSAvalid(FSAvalid));
+	FSA#(.NO3(3),.NO5(0),.ID5(3),.NO7(1),.ID7(3))C51(.clk(clk),.rst_n(rst_n),.wsize(wsize_dff19),.stride(stride_dff18),.wround(wround_dff17),.data(MUL_results_dff[58752 +: CUBE_D1]),.data_valid(MUL_DATA_valid_dff),.FSAout(fsa_res[51]),.FSAvalid(FSAvalid));
+	FSA#(.NO3(4),.NO5(1),.ID5(0),.NO7(1),.ID7(4))C52(.clk(clk),.rst_n(rst_n),.wsize(wsize_dff19),.stride(stride_dff18),.wround(wround_dff17),.data(MUL_results_dff[59904 +: CUBE_D1]),.data_valid(MUL_DATA_valid_dff),.FSAout(fsa_res[52]),.FSAvalid(FSAvalid));
+	FSA#(.NO3(5),.NO5(1),.ID5(1),.NO7(1),.ID7(5))C53(.clk(clk),.rst_n(rst_n),.wsize(wsize_dff19),.stride(stride_dff18),.wround(wround_dff17),.data(MUL_results_dff[61056 +: CUBE_D1]),.data_valid(MUL_DATA_valid_dff),.FSAout(fsa_res[53]),.FSAvalid(FSAvalid));
+	FSA#(.NO3(6),.NO5(1),.ID5(2),.NO7(1),.ID7(6))C54(.clk(clk),.rst_n(rst_n),.wsize(wsize_dff19),.stride(stride_dff18),.wround(wround_dff17),.data(MUL_results_dff[62208 +: CUBE_D1]),.data_valid(MUL_DATA_valid_dff),.FSAout(fsa_res[54]),.FSAvalid(FSAvalid));
+	FSA#(.NO3(7),.NO5(1),.ID5(3),.NO7(1),.ID7(7))C55(.clk(clk),.rst_n(rst_n),.wsize(wsize_dff19),.stride(stride_dff18),.wround(wround_dff17),.data(MUL_results_dff[63360 +: CUBE_D1]),.data_valid(MUL_DATA_valid_dff),.FSAout(fsa_res[55]),.FSAvalid(FSAvalid));
+	FSA#(.NO3(0),.NO5(2),.ID5(0),.NO7(1),.ID7(8))C56(.clk(clk),.rst_n(rst_n),.wsize(wsize_dff19),.stride(stride_dff18),.wround(wround_dff17),.data(MUL_results_dff[64512 +: CUBE_D1]),.data_valid(MUL_DATA_valid_dff),.FSAout(fsa_res[56]),.FSAvalid(FSAvalid));
+	FSA#(.NO3(1),.NO5(2),.ID5(1),.NO7(1),.ID7(9))C57(.clk(clk),.rst_n(rst_n),.wsize(wsize_dff19),.stride(stride_dff18),.wround(wround_dff17),.data(MUL_results_dff[65664 +: CUBE_D1]),.data_valid(MUL_DATA_valid_dff),.FSAout(fsa_res[57]),.FSAvalid(FSAvalid));
+	FSA#(.NO3(2),.NO5(2),.ID5(2),.NO7(1),.ID7(9))C58(.clk(clk),.rst_n(rst_n),.wsize(wsize_dff19),.stride(stride_dff18),.wround(wround_dff17),.data(MUL_results_dff[66816 +: CUBE_D1]),.data_valid(MUL_DATA_valid_dff),.FSAout(fsa_res[58]),.FSAvalid(FSAvalid));
+	FSA#(.NO3(3),.NO5(2),.ID5(3),.NO7(1),.ID7(9))C59(.clk(clk),.rst_n(rst_n),.wsize(wsize_dff19),.stride(stride_dff18),.wround(wround_dff17),.data(MUL_results_dff[67968 +: CUBE_D1]),.data_valid(MUL_DATA_valid_dff),.FSAout(fsa_res[59]),.FSAvalid(FSAvalid));
+	FSA#(.NO3(4),.NO5(3),.ID5(0),.NO7(1),.ID7(9))C60(.clk(clk),.rst_n(rst_n),.wsize(wsize_dff19),.stride(stride_dff18),.wround(wround_dff17),.data(MUL_results_dff[69120 +: CUBE_D1]),.data_valid(MUL_DATA_valid_dff),.FSAout(fsa_res[60]),.FSAvalid(FSAvalid));
+	FSA#(.NO3(5),.NO5(3),.ID5(1),.NO7(1),.ID7(9))C61(.clk(clk),.rst_n(rst_n),.wsize(wsize_dff19),.stride(stride_dff18),.wround(wround_dff17),.data(MUL_results_dff[70272 +: CUBE_D1]),.data_valid(MUL_DATA_valid_dff),.FSAout(fsa_res[61]),.FSAvalid(FSAvalid));
+	FSA#(.NO3(6),.NO5(3),.ID5(2),.NO7(1),.ID7(9))C62(.clk(clk),.rst_n(rst_n),.wsize(wsize_dff19),.stride(stride_dff18),.wround(wround_dff17),.data(MUL_results_dff[71424 +: CUBE_D1]),.data_valid(MUL_DATA_valid_dff),.FSAout(fsa_res[62]),.FSAvalid(FSAvalid));
+	FSA#(.NO3(7),.NO5(3),.ID5(3),.NO7(1),.ID7(9))C63(.clk(clk),.rst_n(rst_n),.wsize(wsize_dff19),.stride(stride_dff18),.wround(wround_dff17),.data(MUL_results_dff[72576 +: CUBE_D1]),.data_valid(MUL_DATA_valid_dff),.FSAout(fsa_res[63]),.FSAvalid(FSAvalid));
+	
 	/* stride & wround put off 6 cycles */
 	always@(posedge clk or negedge rst_n)begin
 		if(!rst_n)begin
@@ -2261,22 +2454,7 @@ module ADDER(
 			wround_dff19<=0;
 			wround_dff20<=0;
 			wround_dff21<=0;
-			wround_dff22<=0;
-			wround_dff23<=0;
-			wround_dff24<=0;
-			wround_dff25<=0;
-			wround_dff26<=0;
-			wround_dff27<=0;
-			wround_dff28<=0;
-			wround_dff29<=0;
-			wround_dff30<=0;
-			wround_dff31<=0;
-			wround_dff32<=0;
-			wround_dff33<=0;
-			wround_dff34<=0;
-			wround_dff35<=0;
-			wround_dff36<=0;
-			
+		
 			stride_dff1<=0;
 			stride_dff2<=0;
 			stride_dff3<=0;
@@ -2298,22 +2476,7 @@ module ADDER(
 			stride_dff19<=0;
 			stride_dff20<=0;
 			stride_dff21<=0;
-			stride_dff22<=0;
-			stride_dff23<=0;
-			stride_dff24<=0;
-			stride_dff25<=0;
-			stride_dff26<=0;
-			stride_dff27<=0;
-			stride_dff28<=0;
-			stride_dff29<=0;
-			stride_dff30<=0;
-			stride_dff31<=0;
-			stride_dff32<=0;
-			stride_dff33<=0;
-			stride_dff34<=0;
-			stride_dff35<=0;
-			stride_dff36<=0;
-			
+					
 			wsize_dff1<=0;
 			wsize_dff2<=0;
 			wsize_dff3<=0;
@@ -2335,22 +2498,7 @@ module ADDER(
 			wsize_dff19<=0;
 			wsize_dff20<=0;
 			wsize_dff21<=0;
-			wsize_dff22<=0;
-			wsize_dff23<=0;
-			wsize_dff24<=0;
-			wsize_dff25<=0;
-			wsize_dff26<=0;
-			wsize_dff27<=0;
-			wsize_dff28<=0;
-			wsize_dff29<=0;
-			wsize_dff30<=0;
-			wsize_dff31<=0;
-			wsize_dff32<=0;
-			wsize_dff33<=0;
-			wsize_dff34<=0;
-			wsize_dff35<=0;
-			wsize_dff36<=0;
-			
+					
 		end
 		else begin	
 			
@@ -2375,22 +2523,7 @@ module ADDER(
 			wround_dff19<=wround_dff18;
 			wround_dff20<=wround_dff19;
 			wround_dff21<=wround_dff20;
-			wround_dff22<=wround_dff21;
-			wround_dff23<=wround_dff22;
-			wround_dff24<=wround_dff23;
-			wround_dff25<=wround_dff24;
-			wround_dff26<=wround_dff25;
-			wround_dff27<=wround_dff26;
-			wround_dff28<=wround_dff27;
-			wround_dff29<=wround_dff28;
-			wround_dff30<=wround_dff29;
-			wround_dff31<=wround_dff30;
-			wround_dff32<=wround_dff31;
-			wround_dff33<=wround_dff32;
-			wround_dff34<=wround_dff33;
-			wround_dff35<=wround_dff34;
-			wround_dff36<=wround_dff35;
-
+			
 			
 			stride_dff1<=stride;
 			stride_dff2<=stride_dff1;
@@ -2413,21 +2546,7 @@ module ADDER(
 			stride_dff19<=stride_dff18;
 			stride_dff20<=stride_dff19;
 			stride_dff21<=stride_dff20;
-			stride_dff22<=stride_dff21;
-			stride_dff23<=stride_dff22;
-			stride_dff24<=stride_dff23;
-			stride_dff25<=stride_dff24;
-			stride_dff26<=stride_dff25;
-			stride_dff27<=stride_dff26;
-			stride_dff28<=stride_dff27;
-			stride_dff29<=stride_dff28;
-			stride_dff30<=stride_dff29;
-			stride_dff31<=stride_dff30;
-			stride_dff32<=stride_dff31;
-			stride_dff33<=stride_dff32;
-			stride_dff34<=stride_dff33;
-			stride_dff35<=stride_dff34;
-			stride_dff36<=stride_dff35;
+			
 				
 			
 			wsize_dff1<= wsize;
@@ -2451,32 +2570,18 @@ module ADDER(
 			wsize_dff19<= wsize_dff18;
 			wsize_dff20<= wsize_dff19;
 			wsize_dff21<= wsize_dff20;
-			wsize_dff22<= wsize_dff21;
-			wsize_dff23<= wsize_dff22;
-			wsize_dff24<= wsize_dff23;
-			wsize_dff25<= wsize_dff24;
-			wsize_dff26<= wsize_dff25;
-			wsize_dff27<= wsize_dff26;
-			wsize_dff28<= wsize_dff27;
-			wsize_dff29<= wsize_dff28;
-			wsize_dff30<= wsize_dff29;
-			wsize_dff31<= wsize_dff30;
-			wsize_dff32<= wsize_dff31;
-			wsize_dff33<= wsize_dff32;
-			wsize_dff34<= wsize_dff33;
-			wsize_dff35<= wsize_dff34;
-			wsize_dff36<= wsize_dff35;
+			
 		end
 	end	
 	
 	always@(*)begin
-		wsize_is3=0;
+		wsize_is13=0;
 		wsize_is5=0;
 		wsize_is7=0;
 		
-		if(wsize_cnt5 ==0)wsize_is3=1;
-		if(wsize_cnt5 ==1)wsize_is5=1;
-		if(wsize_cnt5 ==2)wsize_is7=1;
+		if(wsize_dff21 ==0)wsize_is13=1;
+		if(wsize_dff21 ==1)wsize_is5=1;
+		if(wsize_dff21 ==2)wsize_is7=1;
 	end
 	
 	
@@ -2485,7 +2590,7 @@ module ADDER(
 	generate
 		for(id=0;id<4;id=id+1)begin:A_CH
 			for(idx=0;idx<4;idx=idx+1)begin:A_ID
-				A #(.NO5(idx))aa(.clk(clk),.rst_n(rst_n),.wround(wround_5),.stride(stride_5),.i0_(fsa_res[id*16+idx*4]),.i1_(fsa_res[id*16+idx*4+1]),.i2_(fsa_res[id*16+idx*4+2]),.i3_(fsa_res[id*16+idx*4+3]),.i_valid(FSAvalid & wsize_is5),.Aout(Aout[id*4+idx]),.Avalid(Avalid));
+				A #(.NO5(idx))aa(.clk(clk),.rst_n(rst_n),.wround(wround_dff21),.stride(stride_dff21),.i0_(fsa_res[id*16+idx*4]),.i1_(fsa_res[id*16+idx*4+1]),.i2_(fsa_res[id*16+idx*4+2]),.i3_(fsa_res[id*16+idx*4+3]),.i_valid(FSAvalid & wsize_is5),.Aout(Aout[id*4+idx]),.Avalid(Avalid));
 			end
 		end
 	endgenerate
@@ -2494,7 +2599,7 @@ module ADDER(
 	generate
 		for(id=0;id<2;id=id+1)begin:B_CH
 			for(idx=0;idx<2;idx=idx+1)begin:B_ID
-				B #(.NO7(idx))bb(.clk(clk),.rst_n(rst_n),.wround(wround_5),.stride(stride_5),.data_({fsa_res[id*32+idx*16+8],fsa_res[id*32+idx*16+7],fsa_res[id*32+idx*16+6],fsa_res[id*32+idx*16+5],fsa_res[id*32+idx*16+4],fsa_res[id*32+idx*16+3],fsa_res[id*32+idx*16+2],fsa_res[id*32+idx*16+1],fsa_res[id*32+idx*16]}),.data_valid(FSAvalid & wsize_is7),.Bout(Bout[id*2+idx]),.Bvalid(Bvalid));
+				B #(.NO7(idx))bb(.clk(clk),.rst_n(rst_n),.wround(wround_dff21),.stride(stride_dff21),.data_({fsa_res[id*32+idx*16+8],fsa_res[id*32+idx*16+7],fsa_res[id*32+idx*16+6],fsa_res[id*32+idx*16+5],fsa_res[id*32+idx*16+4],fsa_res[id*32+idx*16+3],fsa_res[id*32+idx*16+2],fsa_res[id*32+idx*16+1],fsa_res[id*32+idx*16]}),.data_valid(FSAvalid & wsize_is7),.Bout(Bout[id*2+idx]),.Bvalid(Bvalid));
 			end
 		end
 	endgenerate
@@ -2515,7 +2620,7 @@ module ADDER(
 			Psum_valid<= 0;	
 		end
 		else begin
-			Psum_valid<= ((wsize_is3 & FSAvalid) || Avalid || Bvalid);
+			Psum_valid<= ((wsize_is13 & FSAvalid) || Avalid || Bvalid);
 			
 			case(wsize_)
 				0:Psum<={fsa_res[63],fsa_res[62],fsa_res[61],fsa_res[60],fsa_res[59],fsa_res[58],fsa_res[57],fsa_res[56],fsa_res[55],fsa_res[54],fsa_res[53],fsa_res[52],fsa_res[51],fsa_res[50],fsa_res[49],fsa_res[48],fsa_res[47],fsa_res[46],fsa_res[45],fsa_res[44],fsa_res[43],fsa_res[42],fsa_res[41],fsa_res[40],fsa_res[39],fsa_res[38],fsa_res[37],fsa_res[36],fsa_res[35],fsa_res[34],fsa_res[33],fsa_res[32],fsa_res[31],fsa_res[30],fsa_res[29],fsa_res[28],fsa_res[27],fsa_res[26],fsa_res[25],fsa_res[24],fsa_res[23],fsa_res[22],fsa_res[21],fsa_res[20],fsa_res[19],fsa_res[18],fsa_res[17],fsa_res[16],fsa_res[15],fsa_res[14],fsa_res[13],fsa_res[12],fsa_res[11],fsa_res[10],fsa_res[9],fsa_res[8],fsa_res[7],fsa_res[6],fsa_res[5],fsa_res[4],fsa_res[3],fsa_res[2],fsa_res[1],fsa_res[0]};
