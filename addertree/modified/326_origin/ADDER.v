@@ -1224,7 +1224,7 @@ module ADDER(
 	FSA#(.NO3(5),.NO5(3),.ID5(1),.NO7(0),.ID7(9))C13(.clk(clk),.rst_n(rst_n),.wsize(wsize_cnt4),.stride(stride_cnt4),.wround(wround_cnt4),.data(MUL_results_dff[14976 +: CUBE_D1]),.data_valid(MUL_DATA_valid_dff),.FSAout(fsa_res[13]),.FSAvalid(FSAvalid));
 	FSA#(.NO3(6),.NO5(3),.ID5(2),.NO7(0),.ID7(9))C14(.clk(clk),.rst_n(rst_n),.wsize(wsize_cnt4),.stride(stride_cnt4),.wround(wround_cnt4),.data(MUL_results_dff[16128 +: CUBE_D1]),.data_valid(MUL_DATA_valid_dff),.FSAout(fsa_res[14]),.FSAvalid(FSAvalid));
 	FSA#(.NO3(7),.NO5(3),.ID5(3),.NO7(0),.ID7(9))C15(.clk(clk),.rst_n(rst_n),.wsize(wsize_cnt4),.stride(stride_cnt4),.wround(wround_cnt4),.data(MUL_results_dff[17280 +: CUBE_D1]),.data_valid(MUL_DATA_valid_dff),.FSAout(fsa_res[15]),.FSAvalid(FSAvalid));
-	
+	/*
 	FSA#(.NO3(0),.NO5(0),.ID5(0),.NO7(1),.ID7(0))C16(.clk(clk),.rst_n(rst_n),.wsize(wsize_cnt4),.stride(stride_cnt4),.wround(wround_cnt4),.data(MUL_results_dff[18432 +: CUBE_D1]),.data_valid(MUL_DATA_valid_dff),.FSAout(fsa_res[16]),.FSAvalid(FSAvalid));
 	FSA#(.NO3(1),.NO5(0),.ID5(1),.NO7(1),.ID7(1))C17(.clk(clk),.rst_n(rst_n),.wsize(wsize_cnt4),.stride(stride_cnt4),.wround(wround_cnt4),.data(MUL_results_dff[19584 +: CUBE_D1]),.data_valid(MUL_DATA_valid_dff),.FSAout(fsa_res[17]),.FSAvalid(FSAvalid));
 	FSA#(.NO3(2),.NO5(0),.ID5(2),.NO7(1),.ID7(2))C18(.clk(clk),.rst_n(rst_n),.wsize(wsize_cnt4),.stride(stride_cnt4),.wround(wround_cnt4),.data(MUL_results_dff[20736 +: CUBE_D1]),.data_valid(MUL_DATA_valid_dff),.FSAout(fsa_res[18]),.FSAvalid(FSAvalid));
@@ -1275,7 +1275,7 @@ module ADDER(
 	FSA#(.NO3(5),.NO5(3),.ID5(1),.NO7(1),.ID7(9))C61(.clk(clk),.rst_n(rst_n),.wsize(wsize_cnt4),.stride(stride_cnt4),.wround(wround_cnt4),.data(MUL_results_dff[70272 +: CUBE_D1]),.data_valid(MUL_DATA_valid_dff),.FSAout(fsa_res[61]),.FSAvalid(FSAvalid));
 	FSA#(.NO3(6),.NO5(3),.ID5(2),.NO7(1),.ID7(9))C62(.clk(clk),.rst_n(rst_n),.wsize(wsize_cnt4),.stride(stride_cnt4),.wround(wround_cnt4),.data(MUL_results_dff[71424 +: CUBE_D1]),.data_valid(MUL_DATA_valid_dff),.FSAout(fsa_res[62]),.FSAvalid(FSAvalid));
 	FSA#(.NO3(7),.NO5(3),.ID5(3),.NO7(1),.ID7(9))C63(.clk(clk),.rst_n(rst_n),.wsize(wsize_cnt4),.stride(stride_cnt4),.wround(wround_cnt4),.data(MUL_results_dff[72576 +: CUBE_D1]),.data_valid(MUL_DATA_valid_dff),.FSAout(fsa_res[63]),.FSAvalid(FSAvalid));
-	
+	*/
 	/* stride & wround put off 6 cycles */
 	always@(posedge clk or negedge rst_n)begin
 		if(!rst_n)begin

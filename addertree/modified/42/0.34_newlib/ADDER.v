@@ -50,7 +50,7 @@ module ADD2#(parameter N=16,RN=16)( 						// 1 cycle
 		end
 	end
 	always@(posedge clk or negedge rst_n)begin
-		if(!rst_n)
+		if(!rst_n)begin
 			ADD2_valid_dff1<=0;
 			ADD2_valid_dff2<=0;
 			ADD2_valid <=0;
@@ -119,7 +119,7 @@ module ADD3#(parameter N=16,RN=16)(							// 1 cycle
 		end
 	end
 	always@(posedge clk or negedge rst_n)begin
-		if(!rst_n)
+		if(!rst_n)begin
 			ADD3_valid_dff1<=0;
 			ADD3_valid_dff2<=0;
 			ADD3_valid <=0;
@@ -147,7 +147,7 @@ module FA(											// 13 cycles
 	input 	rst_n,
 	input  	[383:0]data,
 	input 	data_valid,
-	output 	FAvalid,
+	output 	reg FAvalid,
 	output 	reg[20:0]FAout
 );
 	parameter D1=16;
@@ -184,7 +184,7 @@ module FA(											// 13 cycles
 		end
 		else begin
 			FAout	<= FAout_wire;
-			FAvalid<=FAvalid_wire;
+			FAvalid <=FAvalid_wire;
 		end	
 	end
 	
@@ -222,6 +222,10 @@ module FSA#(parameter NO3=0,parameter NO5=0,parameter ID5=0,parameter NO7=0,para
 	wire [22:0]R1R2,R2R3,R1R2R3;
 	reg [22:0]R1,R1_dff1,R1_dff2,R3_dff1,R3_dff2,R3;
 	reg FSAvalid_dff1,FSAvalid_dff2;
+	
+	reg [3:0]wsize_dff1,wsize_dff2,wsize_dff3;
+	reg stride_dff1,stride_dff2;
+	reg [2:0]wround_dff1;
 	//
 	
 	/* FA ,  13 cycles */
@@ -2342,7 +2346,7 @@ module ADDER(
 	reg [2:0]wround_dff1,wround_dff2,wround_dff3,wround_dff4,wround_dff5,wround_dff6,wround_dff7,wround_dff8,wround_dff9,wround_dff10,wround_dff11,wround_dff12,wround_dff13,wround_dff14,wround_dff15,wround_dff16,wround_dff17,wround_dff18,wround_dff19,wround_dff20,wround_dff21;
 	reg stride_dff1,stride_dff2,stride_dff3,stride_dff4,stride_dff5,stride_dff6,stride_dff7,stride_dff8,stride_dff9,stride_dff10,stride_dff11,stride_dff12,stride_dff13,stride_dff14,stride_dff15,stride_dff16,stride_dff17,stride_dff18,stride_dff19,stride_dff20,stride_dff21;
 	reg [3:0]wsize_dff1,wsize_dff2,wsize_dff3,wsize_dff4,wsize_dff5,wsize_dff6,wsize_dff7,wsize_dff8,wsize_dff9,wsize_dff10,wsize_dff11,wsize_dff12,wsize_dff13,wsize_dff14,wsize_dff15,wsize_dff16,wsize_dff17,wsize_dff18,wsize_dff19,wsize_dff20,wsize_dff21;
-	reg wsize_is3,wsize_is5,wsize_is7;
+	reg wsize_is13,wsize_is5,wsize_is7;
 	
 	wire [45:0]fsa_res[0:63];
 	wire [53:0]Bout[0:3];
