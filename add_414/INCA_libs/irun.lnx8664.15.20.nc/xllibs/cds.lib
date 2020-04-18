@@ -1,0 +1,3 @@
+define sc9_cln40g_base_lvt_neg ./sc9_cln40g_base_lvt_neg
+define sc9_cln40g_base_lvt ./sc9_cln40g_base_lvt
+define sc9_cln40g_base_lvt_udp ./sc9_cln40g_base_lvt_udp

@@ -1,0 +1,114 @@
+ 
+****************************************
+Report : timing
+        -path full
+        -delay max
+        -max_paths 1
+        -sort_by group
+Design : ADDER
+Version: Q-2019.12
+Date   : Sat Mar  7 11:27:56 2020
+****************************************
+
+ # A fanout number of 1000 was used for high fanout net computations.
+
+Operating Conditions: slow   Library: slow
+Wire Load Model Mode: top
+
+  Startpoint: genblk2[0].genblk1[1].bb/b1/L2/locali0_reg[1]
+              (rising edge-triggered flip-flop clocked by clk)
+  Endpoint: genblk2[0].genblk1[1].bb/Bout_reg[52]
+            (rising edge-triggered flip-flop clocked by clk)
+  Path Group: clk
+  Path Type: max
+
+  Point                                                   Incr       Path
+  --------------------------------------------------------------------------
+  clock clk (rise edge)                                   0.00       0.00
+  clock network delay (ideal)                             0.00       0.00
+  genblk2[0].genblk1[1].bb/b1/L2/locali0_reg[1]/CK (DFFRX1)
+                                                          0.00 #     0.00 r
+  genblk2[0].genblk1[1].bb/b1/L2/locali0_reg[1]/Q (DFFRX1)
+                                                          0.50       0.50 f
+  genblk2[0].genblk1[1].bb/b1/L2/add_1_root_add_0_root_add_44_2/B[1] (ADD3_N25_3_DW01_add_1_DW01_add_1603)
+                                                          0.00       0.50 f
+  genblk2[0].genblk1[1].bb/b1/L2/add_1_root_add_0_root_add_44_2/U1_1/S (ADDFXL)
+                                                          0.64       1.13 f
+  genblk2[0].genblk1[1].bb/b1/L2/add_1_root_add_0_root_add_44_2/SUM[1] (ADD3_N25_3_DW01_add_1_DW01_add_1603)
+                                                          0.00       1.13 f
+  genblk2[0].genblk1[1].bb/b1/L2/add_0_root_add_0_root_add_44_2/B[1] (ADD3_N25_3_DW01_add_0_DW01_add_1602)
+                                                          0.00       1.13 f
+  genblk2[0].genblk1[1].bb/b1/L2/add_0_root_add_0_root_add_44_2/U1_1/CO (ADDFXL)
+                                                          0.64       1.78 f
+  genblk2[0].genblk1[1].bb/b1/L2/add_0_root_add_0_root_add_44_2/U1_2/CO (ADDFXL)
+                                                          0.38       2.15 f
+  genblk2[0].genblk1[1].bb/b1/L2/add_0_root_add_0_root_add_44_2/U1_3/CO (ADDFXL)
+                                                          0.38       2.53 f
+  genblk2[0].genblk1[1].bb/b1/L2/add_0_root_add_0_root_add_44_2/U1_4/CO (ADDFXL)
+                                                          0.38       2.91 f
+  genblk2[0].genblk1[1].bb/b1/L2/add_0_root_add_0_root_add_44_2/U1_5/CO (ADDFXL)
+                                                          0.38       3.28 f
+  genblk2[0].genblk1[1].bb/b1/L2/add_0_root_add_0_root_add_44_2/U1_6/CO (ADDFXL)
+                                                          0.38       3.66 f
+  genblk2[0].genblk1[1].bb/b1/L2/add_0_root_add_0_root_add_44_2/U1_7/CO (ADDFXL)
+                                                          0.38       4.03 f
+  genblk2[0].genblk1[1].bb/b1/L2/add_0_root_add_0_root_add_44_2/U1_8/CO (ADDFXL)
+                                                          0.38       4.41 f
+  genblk2[0].genblk1[1].bb/b1/L2/add_0_root_add_0_root_add_44_2/U1_9/CO (ADDFXL)
+                                                          0.38       4.79 f
+  genblk2[0].genblk1[1].bb/b1/L2/add_0_root_add_0_root_add_44_2/U1_10/CO (ADDFXL)
+                                                          0.38       5.16 f
+  genblk2[0].genblk1[1].bb/b1/L2/add_0_root_add_0_root_add_44_2/U1_11/CO (ADDFXL)
+                                                          0.38       5.54 f
+  genblk2[0].genblk1[1].bb/b1/L2/add_0_root_add_0_root_add_44_2/U1_12/CO (ADDFXL)
+                                                          0.38       5.91 f
+  genblk2[0].genblk1[1].bb/b1/L2/add_0_root_add_0_root_add_44_2/U1_13/CO (ADDFXL)
+                                                          0.38       6.29 f
+  genblk2[0].genblk1[1].bb/b1/L2/add_0_root_add_0_root_add_44_2/U1_14/CO (ADDFXL)
+                                                          0.38       6.67 f
+  genblk2[0].genblk1[1].bb/b1/L2/add_0_root_add_0_root_add_44_2/U1_15/CO (ADDFXL)
+                                                          0.38       7.04 f
+  genblk2[0].genblk1[1].bb/b1/L2/add_0_root_add_0_root_add_44_2/U1_16/CO (ADDFXL)
+                                                          0.38       7.42 f
+  genblk2[0].genblk1[1].bb/b1/L2/add_0_root_add_0_root_add_44_2/U1_17/CO (ADDFXL)
+                                                          0.38       7.79 f
+  genblk2[0].genblk1[1].bb/b1/L2/add_0_root_add_0_root_add_44_2/U1_18/CO (ADDFXL)
+                                                          0.38       8.17 f
+  genblk2[0].genblk1[1].bb/b1/L2/add_0_root_add_0_root_add_44_2/U1_19/CO (ADDFXL)
+                                                          0.38       8.55 f
+  genblk2[0].genblk1[1].bb/b1/L2/add_0_root_add_0_root_add_44_2/U1_20/CO (ADDFXL)
+                                                          0.38       8.92 f
+  genblk2[0].genblk1[1].bb/b1/L2/add_0_root_add_0_root_add_44_2/U1_21/CO (ADDFXL)
+                                                          0.38       9.30 f
+  genblk2[0].genblk1[1].bb/b1/L2/add_0_root_add_0_root_add_44_2/U1_22/CO (ADDFXL)
+                                                          0.38       9.68 f
+  genblk2[0].genblk1[1].bb/b1/L2/add_0_root_add_0_root_add_44_2/U1_23/CO (ADDFXL)
+                                                          0.38      10.05 f
+  genblk2[0].genblk1[1].bb/b1/L2/add_0_root_add_0_root_add_44_2/U1_24/CO (ADDFXL)
+                                                          0.36      10.42 f
+  genblk2[0].genblk1[1].bb/b1/L2/add_0_root_add_0_root_add_44_2/U2/Y (CLKINVX1)
+                                                          0.08      10.50 r
+  genblk2[0].genblk1[1].bb/b1/L2/add_0_root_add_0_root_add_44_2/U1/Y (XNOR2X1)
+                                                          0.15      10.66 f
+  genblk2[0].genblk1[1].bb/b1/L2/add_0_root_add_0_root_add_44_2/SUM[25] (ADD3_N25_3_DW01_add_0_DW01_add_1602)
+                                                          0.00      10.66 f
+  genblk2[0].genblk1[1].bb/b1/L2/ADD3_out[25] (ADD3_N25_3)
+                                                          0.00      10.66 f
+  genblk2[0].genblk1[1].bb/b1/B1out[25] (B1_3)            0.00      10.66 f
+  genblk2[0].genblk1[1].bb/U171/Y (AOI222XL)              0.38      11.04 r
+  genblk2[0].genblk1[1].bb/U170/Y (OAI21XL)               0.11      11.14 f
+  genblk2[0].genblk1[1].bb/Bout_reg[52]/D (DFFRX1)        0.00      11.14 f
+  data arrival time                                                 11.14
+
+  clock clk (rise edge)                                  30.00      30.00
+  clock network delay (ideal)                             0.00      30.00
+  genblk2[0].genblk1[1].bb/Bout_reg[52]/CK (DFFRX1)       0.00      30.00 r
+  library setup time                                     -0.22      29.78
+  data required time                                                29.78
+  --------------------------------------------------------------------------
+  data required time                                                29.78
+  data arrival time                                                -11.14
+  --------------------------------------------------------------------------
+  slack (MET)                                                       18.64
+
+

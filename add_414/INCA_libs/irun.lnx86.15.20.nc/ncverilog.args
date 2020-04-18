@@ -1,0 +1,9 @@
+//
+// File created by:  ncverilog
+// Do not modify this file
+//
+header.v
+ADDER_tb.v
+ADDER.v
++access+r
++define+MODE0

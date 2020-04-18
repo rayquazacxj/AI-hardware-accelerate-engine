@@ -1,0 +1,48 @@
+ 
+****************************************
+Report : power
+        -analysis_effort low
+Design : ADDER
+Version: Q-2019.12
+Date   : Sat Mar  7 11:29:10 2020
+****************************************
+
+
+Library(s) Used:
+
+    slow (File: /theda21_2/CBDK_IC_Contest/cur/SynopsysDC/db/slow.db)
+
+
+Operating Conditions: slow   Library: slow
+Wire Load Model Mode: top
+
+
+Global Operating Voltage = 1.08 
+Power-specific unit information :
+    Voltage Units = 1V
+    Capacitance Units = 1.000000pf
+    Time Units = 1ns
+    Dynamic Power Units = 1mW    (derived from V,C,T units)
+    Leakage Power Units = 1pW
+
+
+  Cell Internal Power  = 164.4078 mW   (98%)
+  Net Switching Power  =   3.3180 mW    (2%)
+                         ---------
+Total Dynamic Power    = 167.7258 mW  (100%)
+
+Cell Leakage Power     =   9.7666 mW
+
+
+                 Internal         Switching           Leakage            Total
+Power Group      Power            Power               Power              Power   (   %    )  Attrs
+--------------------------------------------------------------------------------------------------
+io_pad             0.0000            0.0000            0.0000            0.0000  (   0.00%)
+memory             0.0000            0.0000            0.0000            0.0000  (   0.00%)
+black_box          0.0000            0.0000            0.0000            0.0000  (   0.00%)
+clock_network      0.0000            0.0000            0.0000            0.0000  (   0.00%)
+register         157.6001            0.7432        6.5735e+09          164.5043  (  92.76%)
+sequential         0.0000            0.0000            0.0000            0.0000  (   0.00%)
+combinational      7.0661            2.5748        3.1931e+09           12.8344  (   7.24%)
+--------------------------------------------------------------------------------------------------
+Total            164.6662 mW         3.3180 mW     9.7666e+09 pW       177.3387 mW

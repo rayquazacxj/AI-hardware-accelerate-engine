@@ -1,0 +1,7 @@
+irun: 15.20-s039: (c) Copyright 1995-2017 Cadence Design Systems, Inc.
+TOOL:	irun	15.20-s039: Started on Apr 12, 2020 at 16:40:23 CST
+irun
+	-access +rwc
+	-loadpli1 debpli:novas_pli_boot
+irun: *E,NOMOPT: You have not specified a -R (or a -r <snapshot>) option, nor have you specified a source file for compilation.
+TOOL:	irun	15.20-s039: Exiting on Apr 12, 2020 at 16:40:23 CST  (total: 00:00:00)

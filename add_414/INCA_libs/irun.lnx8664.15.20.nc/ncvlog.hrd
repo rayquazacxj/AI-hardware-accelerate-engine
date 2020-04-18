@@ -1,0 +1,14 @@
+//
+// File created by:  ncverilog
+// Do not modify this file
+//
+-VFILE
+/theda21_2/yllab/CBDK40_TSMC/CBDK_TSMC40_Arm_f1.0/CIC/Verilog/sc9_cln40g_base_lvt_udp.v
+-VFILE
+/theda21_2/yllab/CBDK40_TSMC/CBDK_TSMC40_Arm_f1.0/CIC/Verilog/sc9_cln40g_base_lvt.v
+-VFILE
+/theda21_2/yllab/CBDK40_TSMC/CBDK_TSMC40_Arm_f1.0/CIC/Verilog/sc9_cln40g_base_lvt_neg.v
+-DEFINE
+SDF
+-DEFINE
+MODE0

@@ -1,0 +1,164 @@
+ncsim(64) 15.20-s039
+Linux 3.10.0-1062.18.1.el7.x86_64 #1 SMP Tue Mar 17 23:49:17 UTC 2020 x86_64
+CPU cores: 48
+Limit information:
+======================================
+cputime			unlimited
+filesize		unlimited
+datasize		unlimited
+stacksize		8192 kbytes
+coredumpsize	0 kbytes
+memoryuse		unlimited
+vmemoryuse		unlimited
+descriptors		4096
+memorylocked	64 kbytes
+maxproc			4096
+======================================
+(Special)Runtime environment variables:
+
+Runtime environment variables:
+VCS_HOME=/usr/cad/synopsys/vcs-mx/cur
+SOFT_MAN_DIR=/usr/cad/synopsys/coreconsultant/cur/doc/dware/man
+SHELL=/bin/tcsh
+PCTHOME=/usr/cad/synopsys/pa_virtualizer/cur/SLS/linux/pc
+MACHTYPE=x86_64
+LESSOPEN=||/usr/bin/lesspipe.sh %s
+SSH_CONNECTION=192.168.75.200 59091 192.168.75.29 22
+PATH=/usr/cad/cadence/INCISIV/cur/tools/bin/64bit:/usr/cad/cadence/INCISIV/cur/tools/bin:/usr/cad/cadence/INCISIV/cur/tools/bin/64bit:/usr/cad/cadence/INCISIV/cur/tools/vtools/vfault/bin:/usr/cad/cadence/INCISIV/cur/tools/vtools/vfault/bin/64bit:/usr/cad/cadence/INCISIV/cur/tools/dfII/bin:/usr/cad/cadence/INCISIV/cur/tools/dfII/bin/64bit:/usr/cad/cadence/INCISIV/cur/tools/bin:/usr/cad/cadence/INCISIV/cur/tools/vtools/vfault/bin:/usr/cad/cadence/INCISIV/cur/tools/dfII/bin:/usr/cad/cadence/EDI/cur/tools/celtic/bin:/usr/cad/cadence/EDI/cur/tools/plato/bin:/usr/cad/cadence/EDI/cur/tools/dfII/bin:/usr/cad/cadence/EDI/cur/tools/fe/bin:/usr/cad/cadence/EDI/cur/tools/cdsdoc/bin:/usr/cad/cadence/EDI/cur/tools/bin:/usr/cad/cadence/EDI/cur//tools/tlfUtil/bin:/usr/cad/cadence/CTOS/cur/tools/bin:/usr/cad/cadence/MMSIM/cur/tools/dfII/bin:/usr/cad/cadence/MMSIM/cur/tools/bin:/usr/cad/cadence/EXT/cur/tools/bin:/usr/cad/cadence/ETS/cur/tools/bin:/usr/cad/cadence/CONFRML/cur/./bin:/usr/cad/cadence/CONFRML/cur/tools/bin:/usr/cad/cadence/IC/cur/tools/dfII/bin:/usr/cad/cadence/IC/cur/tools/dracula/bin:/usr/cad/cadence/IC/cur/tools/bin:/usr/cad/synopsys/pa_virtualizer/cur/SLS/linux/pc/bin:/usr/cad/synopsys/pa_virtualizer/cur/SLS/linux/InnoGUI/Innovator/Bin:/usr/cad/synopsys/pa_virtualizer/cur/SLS/linux/tools/bin:/usr/cad/synopsys/icc/cur/amd64/syn/bin:/usr/bin/X11:/usr/cad/synopsys/coreconsultant/cur/bin:/usr/cad/synopsys/verdi/cur/bin:/usr/cad/synopsys/verdi/cur/nLint/bin:/usr/cad/synopsys/vcs-mx/cur/bin:/usr/cad/synopsys/vcs-mx/cur/linux/bin:/usr/cad/synopsys/vcs-mx/cur/linux/util:/usr/cad/synopsys/vcs-mx/cur/linux/flexlm:/usr/bin/X11:/usr/cad/synopsys/coreConsultant/cur/bin:/usr/cad/synopsys/synthesis/cur/amd64/syn/bin:/usr/cad/synopsys/lc/cur/bin:/usr/bin/X11:/usr/cad/synopsys/primetime/cur/amd64/syn/bin:/usr/lib64/qt-3.3/bin:/usr/local/bin:/usr/bin
+LM_LICENSE_FILE=5280@lscic:5280@lsntu:5280@lsncku:5280@lsncu:8224@lscic.cic.org.tw:26585@lscic.cic.org.tw:26585@hostname
+SNPS_VP_HTYPE=linux
+QT_GRAPHICSSYSTEM_CHECKED=1
+ENCOUNTER=/usr/cad/cadence/EDI/cur/tools/fe
+SNPS_VP_PRODUCT=PA
+SSH_TTY=/dev/pts/1
+XDG_RUNTIME_DIR=/run/user/561
+COWARE_MONITORS_PATH=/users/student/mr108/hshuang19/.synopsys/monitors:/usr/cad/synopsys/pa_virtualizer/cur/SLS/linux/IP
+VENDOR=unknown
+COWAREHT=linux
+SELINUX_USE_CURRENT_RANGE=
+LS_COLORS=rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:mi=01;05;37;41:su=37;41:sg=30;43:ca=30;41:tw=30;42:ow=34;42:st=37;44:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arc=01;31:*.arj=01;31:*.taz=01;31:*.lha=01;31:*.lz4=01;31:*.lzh=01;31:*.lzma=01;31:*.tlz=01;31:*.txz=01;31:*.tzo=01;31:*.t7z=01;31:*.zip=01;31:*.z=01;31:*.Z=01;31:*.dz=01;31:*.gz=01;31:*.lrz=01;31:*.lz=01;31:*.lzo=01;31:*.xz=01;31:*.bz2=01;31:*.bz=01;31:*.tbz=01;31:*.tbz2=01;31:*.tz=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.war=01;31:*.ear=01;31:*.sar=01;31:*.rar=01;31:*.alz=01;31:*.ace=01;31:*.zoo=01;31:*.cpio=01;31:*.7z=01;31:*.rz=01;31:*.cab=01;31:*.jpg=01;35:*.jpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.svg=01;35:*.svgz=01;35:*.mng=01;35:*.pcx=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.m2v=01;35:*.mkv=01;35:*.webm=01;35:*.ogm=01;35:*.mp4=01;35:*.m4v=01;35:*.mp4v=01;35:*.vob=01;35:*.qt=01;35:*.nuv=01;35:*.wmv=01;35:*.asf=01;35:*.rm=01;35:*.rmvb=01;35:*.flc=01;35:*.avi=01;35:*.fli=01;35:*.flv=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.yuv=01;35:*.cgm=01;35:*.emf=01;35:*.axv=01;35:*.anx=01;35:*.ogv=01;35:*.ogx=01;35:*.aac=01;36:*.au=01;36:*.flac=01;36:*.mid=01;36:*.midi=01;36:*.mka=01;36:*.mp3=01;36:*.mpc=01;36:*.ogg=01;36:*.ra=01;36:*.wav=01;36:*.axa=01;36:*.oga=01;36:*.spx=01;36:*.xspf=01;36:
+SHLIB_PATH=/usr/cad/synopsys/verdi/cur/share/PLI/IUS/LINUX
+OA_HOME=/usr/cad/cadence/EDI/cur/oa
+DISPLAY=localhost:10.0
+COWARE_PRODUCT=PA
+PWD=/users/student/mr108/hshuang19/add
+PRIMETIME=/usr/cad/synopsys/primetime/cur
+MANPATH=:/usr/cad/synopsys/synthesis/cur/doc/syn/man:/usr/cad/synopsys/coreconsultant/cur/doc/dware/man
+HOME=/users/student/mr108/hshuang19
+SYNOPSYS=/usr/cad/synopsys/icc/cur
+LD_LIBRARY_PATH=/usr/cad/synopsys/verdi/cur/share/PLI/IUS/LINUX64:/usr/cad/cadence/INCISIV/cur/tools/lib/64bit:/usr/cad/cadence/INCISIV/cur/tools/lib:/usr/cad/cadence/INCISIV/cur/tools/vtools/vfault/lib::/usr/cad/cadence/INCISIV/cur/tools/lib:/usr/cad/cadence/INCISIV/cur/tools/vtools/vfault/lib:::/usr/cad/cadence/EDI/cur//tools/tlfUtil/lib:/usr/cad/cadence/CTOS/cur/tools/lib:/usr/cad/cadence/MMSIM/cur/tools/lib:/usr/cad/cadence/EXT/cur/tools/lib:/usr/cad/cadence/ETS/cur/tools/lib:/usr/cad/cadence/CONFRML/cur/tools/lib:/usr/cad/cadence/IC/cur/tools/lib:/usr/cad/synopsys/pa_virtualizer/cur/SLS/linux/dmtools/lib:/usr/cad/synopsys/pa_virtualizer/cur/SLS/linux/pc/lib:/usr/cad/synopsys/pa_virtualizer/cur/SLS/linux/common/lib-any:/usr/cad/synopsys/pa_virtualizer/cur/SLS/linux/common/libso-gcc-4.7.2:/usr/cad/synopsys/pa_virtualizer/cur/SLS/linux/gnu/gcc-4.7.2/lib:/usr/cad/synopsys/verdi/cur/share/PLI/IUS/LINUX/:/usr/cad/synopsys/pa_virtualizer/cur/SLS/linux/dmtools/lib:/lib
+SYN_MAN_DIR=/usr/cad/synopsys/synthesis/cur/doc/syn/man
+LOGNAME=hshuang19
+SELINUX_LEVEL_REQUESTED=
+VCS_CC=gcc
+HOSTNAME=ic59
+OSTYPE=linux
+SHLVL=1
+COWAREHOME=/usr/cad/synopsys/pa_virtualizer/cur/SLS/linux
+XDG_SESSION_ID=2019
+USER=hshuang19
+QTLIB=/usr/lib64/qt-3.3/lib
+SNPS_VIEW_CONFIG_PATH=/users/student/mr108/hshuang19/.synopsys/viewconfig:/usr/cad/synopsys/pa_virtualizer/cur/SLS/linux/IP:/usr/cad/synopsys/pa_virtualizer/cur/SLS/linux/common/etc/viewconfig
+SYNTHESIS=/usr/cad/synopsys/synthesis/cur
+REMOTEHOST=nthucad
+MAKEFLAGS=
+MFLAGS=
+SSH_CLIENT=192.168.75.200 59091 22
+MAIL=/var/spool/mail/hshuang19
+COWARE_AUX_BIN=/usr/cad/synopsys/pa_virtualizer/cur/SLS/linux/common/bin
+COWARE_JRE=/usr/cad/synopsys/pa_virtualizer/cur/SLS/linux/../linux/java
+COWAREDOC_INSTALLED_AT=/usr/cad/synopsys/pa_virtualizer/vJ-2014.12/Documentation
+OAHOME=/usr/cad/cadence/oa_v22.04.073
+HOSTTYPE=x86_64-linux
+VERPLEX_HOME=/usr/cad/cadence/CONFRML/cur
+SELINUX_ROLE_REQUESTED=
+SNPS_VP_DOC=/usr/cad/synopsys/pa_virtualizer/vJ-2014.12/Documentation
+COWARE_CXX_COMPILER=gcc-4.7.2
+GROUP=ylin
+CDS_Netlisting_Mode=Analog
+INPUTRC=/etc/inputrc
+QTINC=/usr/lib64/qt-3.3/include
+QTDIR=/usr/lib64/qt-3.3
+SNPS_VP_HOME=/usr/cad/synopsys/pa_virtualizer/cur/SLS/linux
+LANG=en_US
+TERM=xterm
+HOST=ic59
+MAKELEVEL=1
+_IRUNROOT_=/usr/cad/cadence/INCISIV/cur/tools
+CDS_ARCH=lnx86
+NCRUNMODE=ncverilog:./INCA_libs/irun.lnx8664.15.20.nc
+IRUNBATCH=FALSE
+IMPERAS_PORT_FILE=.vsp_ovp_gdb_port
+TCL_LIBRARY=/usr/cad/cadence/INCISIV/cur/tools/inca/files/tcl/library
+Runtime command line arguments:
+argv[0]=ncverilog
+argv[1]=header.v
+argv[2]=ADDER_tb.v
+argv[3]=ADDER_syn.v
+argv[4]=-v
+argv[5]=/theda21_2/yllab/CBDK40_TSMC/CBDK_TSMC40_Arm_f1.0/CIC/Verilog/sc9_cln40g_base_lvt_udp.v
+argv[6]=-v
+argv[7]=/theda21_2/yllab/CBDK40_TSMC/CBDK_TSMC40_Arm_f1.0/CIC/Verilog/sc9_cln40g_base_lvt.v
+argv[8]=-v
+argv[9]=/theda21_2/yllab/CBDK40_TSMC/CBDK_TSMC40_Arm_f1.0/CIC/Verilog/sc9_cln40g_base_lvt_neg.v
+argv[10]=+define+SDF
+argv[11]=+access+r
+argv[12]=+define+MODE0
+106 profile - 100
+          CPU/Mem usage: 1.420 sys,  0.930 user,  2670.14M sys,  0.00M vm
+107 VC callback profile - scalar:0 vector:0
+108 Mon Apr 13 10:45:12 2020
+109 pliAppInit
+110 *Verdi3* : Enable Parallel Dumping.
+111 pliAppMiscSet: New Sim Round
+112 pliEntryInit
+113 LIBSSCORE=found /usr/cad/synopsys/verdi/cur/share/PLI/IUS/LINUX64/libsscore_ius152.so through $LD_LIBRARY_PATH setting.
+114 argv[0]: ADDER_syn.fsdb
+115 argv[0]: +mda
+116 FSDB Dumper for IUS, Release Verdi3_L-2016.06-SP1-1, Linux x86_64/64bit, 09/27/2016
+117 (C) 1996 - 2016 by Synopsys, Inc.
+118 sps_call_fsdbDumpfile at 0 : /users/student/mr108/hshuang19/add/ADDER_tb.v(69)
+119 argv[0]: ADDER_syn.fsdb
+120 *Verdi3* FSDB WARNING: The FSDB file already exists. Overwriting the FSDB file may crash the programs that are using this file.
+121 *Verdi3* : Create FSDB file 'ADDER_syn.fsdb'
+122 sps_call_fsdbDumpvars at 0 : /users/student/mr108/hshuang19/add/ADDER_tb.v(70)
+123 argv[0]: +mda
+124 *Verdi3* : Begin traversing the scopes, layer (0).
+125 *Verdi3* : Enable +mda dumping.
+126 Cell instance `ADDER_tb.ADDER.C0.ROW1.\genblk1[0].L1 .add_1_root_add_0_root_add_109_2.U1_7'.
+127 *Verdi3* : End of traversing.
+128 fsdbDumpvars traverse var: profile - 
+          CPU/Mem usage: 5.290 sys,  101.250 user,  8543.13M sys,  0.00M vm
+                   incr: 3.860 sys,  100.310 user,  5785.55M sys,  0.00M vm
+                   accu: 3.860 sys,  100.310 user,  5785.55M sys,  0.00M vm
+              accu incr: 3.860 sys,  100.310 user,  5785.55M sys,  0.00M vm
+
+          Count usage: 14283331 var,  6174350 idcode,  6174350 callback
+                 incr: 14283331 var,  6174350 idcode,  6174350 callback
+                 accu: 14283331 var,  6174350 idcode,  6174350 callback
+            accu incr: 14283331 var,  6174350 idcode,  6174350 callback
+129 VC callback profile - scalar:0 vector:0
+130 Mon Apr 13 10:46:57 2020
+131 *Verdi3* FSDB: For performance reasons, the Memory Size Limit has been increased to 512M.
+132 fsdbDumpvars: profile - 
+          CPU/Mem usage: 5.600 sys,  104.270 user,  8839.84M sys,  0.00M vm
+                   incr: 0.310 sys,  3.020 user,  296.71M sys,  0.00M vm
+                   accu: 4.170 sys,  103.330 user,  6082.25M sys,  0.00M vm
+              accu incr: 0.310 sys,  3.020 user,  296.71M sys,  0.00M vm
+
+          Count usage: 14283331 var,  6174350 idcode,  6174350 callback
+                 incr: 0 var,  0 idcode,  0 callback
+                 accu: 14283331 var,  6174350 idcode,  6174350 callback
+            accu incr: 0 var,  0 idcode,  0 callback
+133 VC callback profile - scalar:6174331 vector:19
+134 Mon Apr 13 10:47:00 2020
+135 End of simulation at 149000
+136 VC callback profile - scalar:127149858 vector:44
+137 Mon Apr 13 10:47:28 2020
+138 Begin FSDB profile info:
+139 FSDB Writer : flush elapsed time(3.087710) bc1(127149858) bcn(44) mtf/stf(0/0) MT Compression : 0
+140 End FSDB profile info
+141 Parallel profile    -  Flush:3 Expand:0 ProduceWait:0 ConsumerWait:125 BlockUsed:576
+142                        ProduceTime:141.494876832 ConsumerTime:20.785316721 Buffer:64MB
+143 SimExit
+144 Sim process exit

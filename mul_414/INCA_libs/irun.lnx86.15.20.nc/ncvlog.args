@@ -1,0 +1,29 @@
+//
+// File created by:  ncverilog
+// Do not modify this file
+//
+-XLMODE
+./INCA_libs/irun.lnx86.15.20.nc
+-RUNMODE
+header.v
+IPF_tb.v
+IPF_syn.v
+-VFILE
+/theda21_2/yllab/CBDK40_TSMC/CBDK_TSMC40_Arm_f1.0/CIC/Verilog/sc9_cln40g_base_lvt_udp.v
+-VFILE
+/theda21_2/yllab/CBDK40_TSMC/CBDK_TSMC40_Arm_f1.0/CIC/Verilog/sc9_cln40g_base_lvt.v
+-VFILE
+/theda21_2/yllab/CBDK40_TSMC/CBDK_TSMC40_Arm_f1.0/CIC/Verilog/sc9_cln40g_base_lvt_neg.v
+-DEFINE
+SDF
+-DEFINE
+MODE0
+-CDSLIB
+./INCA_libs/irun.lnx86.15.20.nc/cdsrun.lib
+-HDLVAR
+./INCA_libs/irun.lnx86.15.20.nc/hdlrun.var
+-MESSAGES
+-UPDATE
+-XLLIBSTORE
+./INCA_libs/irun.lnx86.15.20.nc/xllibs
+-ALLOWUNBOUND

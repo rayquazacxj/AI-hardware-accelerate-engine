@@ -1,0 +1,29 @@
+ 
+****************************************
+Report : area
+Design : ADDER
+Version: Q-2019.12
+Date   : Sat Mar  7 11:29:27 2020
+****************************************
+
+Library(s) Used:
+
+    slow (File: /theda21_2/CBDK_IC_Contest/cur/SynopsysDC/db/slow.db)
+
+Number of ports:                       720350
+Number of nets:                       1143791
+Number of cells:                       378703
+Number of combinational cells:         140216
+Number of sequential cells:            221455
+Number of macros/black boxes:               0
+Number of buf/inv:                      34303
+Number of references:                      99
+
+Combinational area:            3059512.711385
+Buf/Inv area:                   182351.679191
+Noncombinational area:         7142056.381054
+Macro/Black Box area:                0.000000
+Net Interconnect area:      undefined  (No wire load specified)
+
+Total cell area:              10201569.092438
+Total area:                 undefined

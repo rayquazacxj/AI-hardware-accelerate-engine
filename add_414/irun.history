@@ -1,0 +1,137 @@
+s1(26Feb2020:10:56:39):  ncverilog header.v ADDER_tb.v ADDER.v +access+r +define+MODE0 
+s2(26Feb2020:10:57:33):  ncverilog header.v ADDER_tb.v ADDER.v +access+r +define+MODE0 
+s3(26Feb2020:10:58:12):  ncverilog header.v ADDER_tb.v ADDER.v +access+r +define+MODE0 
+s4(26Feb2020:10:59:55):  ncverilog header.v ADDER_tb.v ADDER.v +access+r +define+MODE0 
+s5(26Feb2020:11:01:35):  ncverilog header.v ADDER_tb.v ADDER.v +access+r +define+MODE0 
+s6(26Feb2020:11:03:20):  ncverilog header.v ADDER_tb.v ADDER.v +access+r +define+MODE0 
+s7(26Feb2020:11:04:12):  ncverilog header.v ADDER_tb.v ADDER.v +access+r +define+MODE0 
+s8(26Feb2020:11:08:20):  ncverilog header.v ADDER_tb.v ADDER.v +access+r +define+MODE0 
+s9(26Feb2020:11:10:35):  ncverilog header.v ADDER_tb.v ADDER.v +access+r +define+MODE0 
+s10(26Feb2020:11:12:25):  ncverilog header.v ADDER_tb.v ADDER.v +access+r +define+MODE0 
+s11(26Feb2020:11:14:17):  ncverilog header.v ADDER_tb.v ADDER.v +access+r +define+MODE0 
+s12(26Feb2020:11:16:45):  ncverilog header.v ADDER_tb.v ADDER.v +access+r +define+MODE0 
+s13(26Feb2020:11:17:14):  ncverilog header.v ADDER_tb.v ADDER.v +access+r +define+MODE0 
+s14(26Feb2020:11:18:32):  ncverilog header.v ADDER_tb.v ADDER.v +access+r +define+MODE0 
+s15(26Feb2020:13:06:57):  ncverilog header.v ADDER_tb.v ADDER.v +access+r +define+MODE0 
+s16(26Feb2020:13:09:04):  ncverilog header.v ADDER_tb.v ADDER.v +access+r +define+MODE0 
+s17(26Feb2020:13:19:17):  ncverilog header.v ADDER_tb.v ADDER.v +access+r +define+MODE0 
+s18(26Feb2020:13:26:05):  ncverilog header.v ADDER_tb.v ADDER.v +access+r +define+MODE0 
+s19(26Feb2020:13:29:39):  ncverilog header.v ADDER_tb.v ADDER.v +access+r +define+MODE0 
+s20(26Feb2020:13:30:44):  ncverilog header.v ADDER_tb.v ADDER.v +access+r +define+MODE0 
+s21(26Feb2020:13:34:19):  ncverilog header.v ADDER_tb.v ADDER.v +access+r +define+MODE0 
+s22(26Feb2020:13:36:00):  ncverilog header.v ADDER_tb.v ADDER.v +access+r +define+MODE0 
+s23(26Feb2020:13:43:09):  ncverilog header.v ADDER_tb.v ADDER.v +access+r +define+MODE0 
+s24(26Feb2020:13:45:51):  ncverilog header.v ADDER_tb.v ADDER.v +access+r +define+MODE0 
+s25(26Feb2020:13:48:41):  ncverilog header.v ADDER_tb.v ADDER.v +access+r +define+MODE0 
+s26(26Feb2020:13:49:32):  ncverilog header.v ADDER_tb.v ADDER.v +access+r +define+MODE0 
+s27(26Feb2020:13:53:54):  ncverilog header.v ADDER_tb.v ADDER.v +access+r +define+MODE0 
+s28(26Feb2020:13:54:31):  ncverilog header.v ADDER_tb.v ADDER.v +access+r +define+MODE0 
+s29(26Feb2020:15:31:52):  ncverilog header.v ADDER_tb.v ADDER.v +access+r +define+MODE0 
+s30(26Feb2020:15:47:02):  ncverilog header.v ADDER_tb.v ADDER.v +access+r +define+MODE0 
+s31(26Feb2020:15:52:44):  ncverilog header.v ADDER_tb.v ADDER.v +access+r +define+MODE0 
+s32(26Feb2020:16:03:34):  ncverilog header.v ADDER_tb.v ADDER.v +access+r +define+MODE0 
+s33(26Feb2020:16:17:28):  ncverilog header.v ADDER_tb.v ADDER.v +access+r +define+MODE0 
+s34(26Feb2020:16:32:59):  ncverilog header.v ADDER_tb.v ADDER.v +access+r +define+MODE0 
+s35(26Feb2020:16:41:22):  ncverilog header.v ADDER_tb.v ADDER.v +access+r +define+MODE0 
+s36(26Feb2020:16:54:20):  ncverilog header.v ADDER_tb.v ADDER.v +access+r +define+MODE0 
+s37(26Feb2020:16:54:54):  ncverilog header.v ADDER_tb.v ADDER.v +access+r +define+MODE0 
+s38(26Feb2020:16:59:24):  ncverilog header.v ADDER_tb.v ADDER.v +access+r +define+MODE0 
+s39(26Feb2020:17:09:32):  ncverilog header.v ADDER_tb.v ADDER.v +access+r +define+MODE0 
+s40(26Feb2020:17:14:00):  ncverilog header.v ADDER_tb.v ADDER.v +access+r +define+MODE0 
+s41(26Feb2020:17:42:37):  ncverilog header.v ADDER_tb.v ADDER.v +access+r +define+MODE0 
+s42(26Feb2020:20:30:08):  ncverilog header.v ADDER_tb.v ADDER.v +access+r +define+MODE0 
+s43(27Feb2020:10:57:21):  ncverilog header.v ADDER_tb.v ADDER.v +access+r +define+MODE0 
+s44(27Feb2020:10:57:57):  ncverilog header.v ADDER_tb.v ADDER.v +access+r +define+MODE0 
+s45(27Feb2020:11:05:54):  ncverilog header.v ADDER_tb.v ADDER.v +access+r +define+MODE0 
+s46(27Feb2020:12:56:25):  ncverilog header.v ADDER_tb.v ADDER.v +access+r +define+MODE0 
+s47(27Feb2020:13:57:08):  ncverilog header.v ADDER_tb.v ADDER.v +access+r +define+MODE0 
+s48(28Feb2020:09:12:38):  ncverilog header.v ADDER_tb.v ADDER.v +access+r +define+MODE0 
+s49(28Feb2020:09:40:01):  ncverilog header.v ADDER_tb.v ADDER.v +access+r +define+MODE0 
+s50(28Feb2020:09:40:21):  ncverilog header.v ADDER_tb.v ADDER.v +access+r +define+MODE0 
+s51(28Feb2020:09:54:51):  ncverilog header.v ADDER_tb.v ADDER.v +access+r +define+MODE0 
+s52(28Feb2020:10:20:52):  ncverilog header.v ADDER_tb.v ADDER.v +access+r +define+MODE0 
+s53(28Feb2020:11:08:37):  ncverilog header.v ADDER_tb.v ADDER.v +access+r +define+MODE0 
+s54(28Feb2020:11:34:22):  ncverilog header.v ADDER_tb.v ADDER.v +access+r +define+MODE0 
+s55(28Feb2020:11:41:06):  ncverilog header.v ADDER_tb.v ADDER.v +access+r +define+MODE0 
+s56(28Feb2020:11:49:57):  ncverilog header.v ADDER_tb.v ADDER.v +access+r +define+MODE0 
+s57(28Feb2020:11:52:59):  ncverilog header.v ADDER_tb.v ADDER.v +access+r +define+MODE0 
+s58(28Feb2020:12:03:08):  ncverilog header.v ADDER_tb.v ADDER.v +access+r +define+MODE0 
+s59(28Feb2020:12:36:07):  ncverilog header.v ADDER_tb.v ADDER.v +access+r +define+MODE0 
+s60(28Feb2020:12:45:12):  ncverilog header.v ADDER_tb.v ADDER.v +access+r +define+MODE0 
+s61(28Feb2020:12:55:45):  ncverilog header.v ADDER_tb.v ADDER.v +access+r +define+MODE0 
+s62(28Feb2020:14:10:51):  ncverilog header.v ADDER_tb.v ADDER.v +access+r +define+MODE0 
+s63(28Feb2020:14:23:50):  ncverilog header.v ADDER_tb.v ADDER.v +access+r +define+MODE0 
+s64(01Mar2020:14:27:25):  ncverilog header.v ADDER_tb.v ADDER.v +access+r +define+MODE0 
+s65(01Mar2020:14:28:47):  ncverilog header.v ADDER_tb.v ADDER.v +access+r +define+MODE0 
+s66(01Mar2020:14:29:15):  ncverilog header.v ADDER_tb.v ADDER.v +access+r +define+MODE0 
+s67(01Mar2020:14:51:46):  ncverilog header.v ADDER_tb.v ADDER.v +access+r +define+MODE0 
+s68(01Mar2020:14:55:39):  ncverilog header.v ADDER_tb.v ADDER.v +access+r +define+MODE0 
+s69(06Mar2020:15:15:44):  ncverilog header.v ADDER_tb.v ADDER_syn.v -v /theda21_2/CBDK_IC_Contest/cur/Verilog/tsmc13.v +define+SDF +access+r +define+MODE0 
+s70(06Mar2020:15:17:06):  ncverilog header.v ADDER_tb.v ADDER_syn.v -v /theda21_2/CBDK_IC_Contest/cur/Verilog/tsmc13.v +define+SDF +access+r +define+MODE0 
+s71(02Apr2020:16:13:12):  ncverilog header.v ADDER_tb.v ADDER.v +access+r +define+MODE0 
+s72(02Apr2020:16:47:47):  ncverilog header.v ADDER_tb.v ADDER.v +access+r +define+MODE0 
+s73(02Apr2020:16:49:36):  ncverilog header.v ADDER_tb.v ADDER.v +access+r +define+MODE0 
+s74(02Apr2020:16:51:07):  ncverilog header.v ADDER_tb.v ADDER.v +access+r +define+MODE0 
+s75(02Apr2020:17:03:54):  ncverilog header.v ADDER_tb.v ADDER.v +access+r +define+MODE0 
+s76(04Apr2020:09:36:45):  ncverilog header.v ADDER_tb.v ADDER.v +access+r +define+MODE0 
+s77(04Apr2020:11:25:40):  ncverilog header.v ADDER_tb.v ADDER.v +access+r +define+MODE0 
+s78(04Apr2020:11:26:45):  ncverilog header.v ADDER_tb.v ADDER.v +access+r +define+MODE0 
+s79(04Apr2020:11:27:10):  ncverilog header.v ADDER_tb.v ADDER.v +access+r +define+MODE0 
+s80(04Apr2020:11:27:44):  ncverilog header.v ADDER_tb.v ADDER.v +access+r +define+MODE0 
+s81(04Apr2020:13:29:25):  ncverilog header.v ADDER_tb.v ADDER_syn.v -v /theda21_2/yllab/CBDK40_TSMC/CBDK_TSMC40_Arm_f1.0/CIC/Verilog/sc9_cln40g_base_lvt_udp.v -v /theda21_2/yllab/CBDK40_TSMC/CBDK_TSMC40_Arm_f1.0/CIC/Verilog/sc9_cln40g_base_lvt.v -v /theda21_2/yllab/CBDK40_TSMC/CBDK_TSMC40_Arm_f1.0/CIC/Verilog/sc9_cln40g_base_lvt_neg.v +define+SDF +access+r +define+MODE0 
+s82(04Apr2020:13:33:43):  ncverilog header.v ADDER_tb.v ADDER_syn.v -v /theda21_2/yllab/CBDK40_TSMC/CBDK_TSMC40_Arm_f1.0/CIC/Verilog/sc9_cln40g_base_lvt_udp.v -v /theda21_2/yllab/CBDK40_TSMC/CBDK_TSMC40_Arm_f1.0/CIC/Verilog/sc9_cln40g_base_lvt.v -v /theda21_2/yllab/CBDK40_TSMC/CBDK_TSMC40_Arm_f1.0/CIC/Verilog/sc9_cln40g_base_lvt_neg.v +define+SDF +access+r +define+MODE0 
+s83(04Apr2020:13:50:56):  ncverilog header.v ADDER_tb.v ADDER.v +access+r +define+MODE0 
+s84(04Apr2020:15:55:55):  ncverilog header.v ADDER_tb.v ADDER.v +access+r +define+MODE0 
+s85(04Apr2020:17:51:38):  ncverilog header.v ADDER_tb.v ADDER.v +access+r +define+MODE0 
+s86(04Apr2020:19:58:40):  ncverilog header.v ADDER_tb.v ADDER.v +access+r +define+MODE0 
+s87(04Apr2020:19:59:53):  ncverilog header.v ADDER_tb.v ADDER.v +access+r +define+MODE0 
+s88(04Apr2020:22:59:38):  ncverilog header.v ADDER_tb.v ADDER.v +access+r +define+MODE0 
+s89(04Apr2020:23:01:13):  ncverilog header.v ADDER_tb.v ADDER.v +access+r +define+MODE0 
+s90(05Apr2020:07:45:07):  ncverilog header.v ADDER_tb.v ADDER.v +access+r +define+MODE0 
+s91(05Apr2020:10:57:19):  ncverilog header.v ADDER_tb.v ADDER_syn.v -v /theda21_2/yllab/CBDK40_TSMC/CBDK_TSMC40_Arm_f1.0/CIC/Verilog/sc9_cln40g_base_lvt_udp.v -v /theda21_2/yllab/CBDK40_TSMC/CBDK_TSMC40_Arm_f1.0/CIC/Verilog/sc9_cln40g_base_lvt.v -v /theda21_2/yllab/CBDK40_TSMC/CBDK_TSMC40_Arm_f1.0/CIC/Verilog/sc9_cln40g_base_lvt_neg.v +define+SDF +access+r +define+MODE0 
+s92(05Apr2020:15:02:55):  ncverilog header.v ADDER_tb.v ADDER.v +access+r +define+MODE0 
+s93(05Apr2020:15:03:56):  ncverilog header.v ADDER_tb.v ADDER.v +access+r +define+MODE0 
+s94(05Apr2020:15:04:23):  ncverilog header.v ADDER_tb.v ADDER.v +access+r +define+MODE0 
+s95(05Apr2020:15:04:53):  ncverilog header.v ADDER_tb.v ADDER.v +access+r +define+MODE0 
+s96(05Apr2020:15:08:50):  ncverilog header.v ADDER_tb.v ADDER.v +access+r +define+MODE0 
+s97(05Apr2020:15:09:16):  ncverilog header.v ADDER_tb.v ADDER.v +access+r +define+MODE0 
+s98(05Apr2020:15:10:43):  ncverilog header.v ADDER_tb.v ADDER.v +access+r +define+MODE0 
+s99(05Apr2020:17:08:19):  ncverilog header.v ADDER_tb.v ADDER_syn.v -v /theda21_2/yllab/CBDK40_TSMC/CBDK_TSMC40_Arm_f1.0/CIC/Verilog/sc9_cln40g_base_lvt_udp.v -v /theda21_2/yllab/CBDK40_TSMC/CBDK_TSMC40_Arm_f1.0/CIC/Verilog/sc9_cln40g_base_lvt.v -v /theda21_2/yllab/CBDK40_TSMC/CBDK_TSMC40_Arm_f1.0/CIC/Verilog/sc9_cln40g_base_lvt_neg.v +define+SDF +access+r +define+MODE0 
+s100(05Apr2020:17:15:50):  ncverilog header.v ADDER_tb.v ADDER_syn.v -v /theda21_2/yllab/CBDK40_TSMC/CBDK_TSMC40_Arm_f1.0/CIC/Verilog/sc9_cln40g_base_lvt_udp.v -v /theda21_2/yllab/CBDK40_TSMC/CBDK_TSMC40_Arm_f1.0/CIC/Verilog/sc9_cln40g_base_lvt.v -v /theda21_2/yllab/CBDK40_TSMC/CBDK_TSMC40_Arm_f1.0/CIC/Verilog/sc9_cln40g_base_lvt_neg.v +define+SDF +access+r +define+MODE0 
+s101(05Apr2020:17:25:37):  ncverilog header.v ADDER_tb.v ADDER.v +access+r +define+MODE0 
+s102(05Apr2020:19:28:55):  ncverilog header.v ADDER_tb.v ADDER_syn.v -v /theda21_2/yllab/CBDK40_TSMC/CBDK_TSMC40_Arm_f1.0/CIC/Verilog/sc9_cln40g_base_lvt_udp.v -v /theda21_2/yllab/CBDK40_TSMC/CBDK_TSMC40_Arm_f1.0/CIC/Verilog/sc9_cln40g_base_lvt.v -v /theda21_2/yllab/CBDK40_TSMC/CBDK_TSMC40_Arm_f1.0/CIC/Verilog/sc9_cln40g_base_lvt_neg.v +define+SDF +access+r +define+MODE0 
+s103(05Apr2020:20:45:13):  ncverilog header.v ADDER_tb.v ADDER.v +access+r +define+MODE0 
+s104(05Apr2020:21:21:22):  ncverilog header.v ADDER_tb.v ADDER.v +access+r +define+MODE0 
+s105(06Apr2020:07:17:07):  ncverilog header.v ADDER_tb.v ADDER_syn.v -v /theda21_2/yllab/CBDK40_TSMC/CBDK_TSMC40_Arm_f1.0/CIC/Verilog/sc9_cln40g_base_lvt_udp.v -v /theda21_2/yllab/CBDK40_TSMC/CBDK_TSMC40_Arm_f1.0/CIC/Verilog/sc9_cln40g_base_lvt.v -v /theda21_2/yllab/CBDK40_TSMC/CBDK_TSMC40_Arm_f1.0/CIC/Verilog/sc9_cln40g_base_lvt_neg.v +define+SDF +access+r +define+MODE0 
+s106(06Apr2020:07:42:26):  ncverilog header.v ADDER_tb.v ADDER.v +access+r +define+MODE0 
+s107(06Apr2020:09:52:15):  ncverilog header.v ADDER_tb.v ADDER_syn.v -v /theda21_2/yllab/CBDK40_TSMC/CBDK_TSMC40_Arm_f1.0/CIC/Verilog/sc9_cln40g_base_lvt_udp.v -v /theda21_2/yllab/CBDK40_TSMC/CBDK_TSMC40_Arm_f1.0/CIC/Verilog/sc9_cln40g_base_lvt.v -v /theda21_2/yllab/CBDK40_TSMC/CBDK_TSMC40_Arm_f1.0/CIC/Verilog/sc9_cln40g_base_lvt_neg.v +define+SDF +access+r +define+MODE0 
+s108(06Apr2020:11:12:06):  ncverilog header.v ADDER_tb.v ADDER_syn.v -v /theda21_2/yllab/CBDK40_TSMC/CBDK_TSMC40_Arm_f1.0/CIC/Verilog/sc9_cln40g_base_lvt_udp.v -v /theda21_2/yllab/CBDK40_TSMC/CBDK_TSMC40_Arm_f1.0/CIC/Verilog/sc9_cln40g_base_lvt.v -v /theda21_2/yllab/CBDK40_TSMC/CBDK_TSMC40_Arm_f1.0/CIC/Verilog/sc9_cln40g_base_lvt_neg.v +define+SDF +access+r +define+MODE0 
+s109(06Apr2020:11:26:19):  ncverilog header.v ADDER_tb.v ADDER_syn.v -v /theda21_2/yllab/CBDK40_TSMC/CBDK_TSMC40_Arm_f1.0/CIC/Verilog/sc9_cln40g_base_lvt_udp.v -v /theda21_2/yllab/CBDK40_TSMC/CBDK_TSMC40_Arm_f1.0/CIC/Verilog/sc9_cln40g_base_lvt.v -v /theda21_2/yllab/CBDK40_TSMC/CBDK_TSMC40_Arm_f1.0/CIC/Verilog/sc9_cln40g_base_lvt_neg.v +define+SDF +access+r +define+MODE0 
+s110(08Apr2020:11:58:27):  ncverilog header.v ADDER_tb.v ADDER.v +access+r +define+MODE0 
+s111(08Apr2020:15:51:24):  ncverilog header.v ADDER_tb.v ADDER_syn.v -v /theda21_2/yllab/CBDK40_TSMC/CBDK_TSMC40_Arm_f1.0/CIC/Verilog/sc9_cln40g_base_lvt_udp.v -v /theda21_2/yllab/CBDK40_TSMC/CBDK_TSMC40_Arm_f1.0/CIC/Verilog/sc9_cln40g_base_lvt.v -v /theda21_2/yllab/CBDK40_TSMC/CBDK_TSMC40_Arm_f1.0/CIC/Verilog/sc9_cln40g_base_lvt_neg.v +define+SDF +access+r +define+MODE0 
+s112(08Apr2020:16:04:59):  ncverilog header.v ADDER_tb.v ADDER.v +access+r +define+MODE0 
+s113(09Apr2020:07:43:24):  ncverilog header.v ADDER_tb.v ADDER_syn.v -v /theda21_2/yllab/CBDK40_TSMC/CBDK_TSMC40_Arm_f1.0/CIC/Verilog/sc9_cln40g_base_lvt_udp.v -v /theda21_2/yllab/CBDK40_TSMC/CBDK_TSMC40_Arm_f1.0/CIC/Verilog/sc9_cln40g_base_lvt.v -v /theda21_2/yllab/CBDK40_TSMC/CBDK_TSMC40_Arm_f1.0/CIC/Verilog/sc9_cln40g_base_lvt_neg.v +define+SDF +access+r +define+MODE0 
+s114(09Apr2020:08:07:42):  ncverilog header.v ADDER_tb.v ADDER.v +access+r +define+MODE0 
+s115(09Apr2020:16:29:14):  ncverilog header.v ADDER_tb.v ADDER_syn.v -v /theda21_2/yllab/CBDK40_TSMC/CBDK_TSMC40_Arm_f1.0/CIC/Verilog/sc9_cln40g_base_lvt_udp.v -v /theda21_2/yllab/CBDK40_TSMC/CBDK_TSMC40_Arm_f1.0/CIC/Verilog/sc9_cln40g_base_lvt.v -v /theda21_2/yllab/CBDK40_TSMC/CBDK_TSMC40_Arm_f1.0/CIC/Verilog/sc9_cln40g_base_lvt_neg.v +define+SDF +access+r +define+MODE0 
+s116(10Apr2020:07:25:35):  ncverilog header.v ADDER_tb.v ADDER_syn.v -v /theda21_2/yllab/CBDK40_TSMC/CBDK_TSMC40_Arm_f1.0/CIC/Verilog/sc9_cln40g_base_lvt_udp.v -v /theda21_2/yllab/CBDK40_TSMC/CBDK_TSMC40_Arm_f1.0/CIC/Verilog/sc9_cln40g_base_lvt.v -v /theda21_2/yllab/CBDK40_TSMC/CBDK_TSMC40_Arm_f1.0/CIC/Verilog/sc9_cln40g_base_lvt_neg.v +define+SDF +access+r +define+MODE0 
+s117(10Apr2020:10:33:56):  ncverilog header.v ADDER_tb.v ADDER_syn.v -v /theda21_2/yllab/CBDK40_TSMC/CBDK_TSMC40_Arm_f1.0/CIC/Verilog/sc9_cln40g_base_lvt_udp.v -v /theda21_2/yllab/CBDK40_TSMC/CBDK_TSMC40_Arm_f1.0/CIC/Verilog/sc9_cln40g_base_lvt.v -v /theda21_2/yllab/CBDK40_TSMC/CBDK_TSMC40_Arm_f1.0/CIC/Verilog/sc9_cln40g_base_lvt_neg.v +define+SDF +access+r +define+MODE0 
+s118(10Apr2020:19:02:48):  ncverilog header.v ADDER_tb.v ADDER_syn.v -v /theda21_2/yllab/CBDK40_TSMC/CBDK_TSMC40_Arm_f1.0/CIC/Verilog/sc9_cln40g_base_lvt_udp.v -v /theda21_2/yllab/CBDK40_TSMC/CBDK_TSMC40_Arm_f1.0/CIC/Verilog/sc9_cln40g_base_lvt.v -v /theda21_2/yllab/CBDK40_TSMC/CBDK_TSMC40_Arm_f1.0/CIC/Verilog/sc9_cln40g_base_lvt_neg.v +define+SDF +access+r +define+MODE0 
+s119(10Apr2020:19:09:52):  ncverilog header.v ADDER_tb.v ADDER_syn.v -v /theda21_2/yllab/CBDK40_TSMC/CBDK_TSMC40_Arm_f1.0/CIC/Verilog/sc9_cln40g_base_lvt_udp.v -v /theda21_2/yllab/CBDK40_TSMC/CBDK_TSMC40_Arm_f1.0/CIC/Verilog/sc9_cln40g_base_lvt.v -v /theda21_2/yllab/CBDK40_TSMC/CBDK_TSMC40_Arm_f1.0/CIC/Verilog/sc9_cln40g_base_lvt_neg.v +define+SDF +access+r +define+MODE0 
+s120(10Apr2020:19:12:24):  ncverilog header.v ADDER_tb.v ADDER_syn.v -v /theda21_2/yllab/CBDK40_TSMC/CBDK_TSMC40_Arm_f1.0/CIC/Verilog/sc9_cln40g_base_lvt_udp.v -v /theda21_2/yllab/CBDK40_TSMC/CBDK_TSMC40_Arm_f1.0/CIC/Verilog/sc9_cln40g_base_lvt.v -v /theda21_2/yllab/CBDK40_TSMC/CBDK_TSMC40_Arm_f1.0/CIC/Verilog/sc9_cln40g_base_lvt_neg.v +define+SDF +access+r +define+MODE0 
+s121(10Apr2020:19:36:38):  ncverilog header.v ADDER_tb.v ADDER_syn.v -v /theda21_2/yllab/CBDK40_TSMC/CBDK_TSMC40_Arm_f1.0/CIC/Verilog/sc9_cln40g_base_lvt_udp.v -v /theda21_2/yllab/CBDK40_TSMC/CBDK_TSMC40_Arm_f1.0/CIC/Verilog/sc9_cln40g_base_lvt.v -v /theda21_2/yllab/CBDK40_TSMC/CBDK_TSMC40_Arm_f1.0/CIC/Verilog/sc9_cln40g_base_lvt_neg.v +define+SDF +access+r +define+MODE0 
+s122(10Apr2020:19:59:51):  ncverilog header.v ADDER_tb.v ADDER_syn.v -v /theda21_2/yllab/CBDK40_TSMC/CBDK_TSMC40_Arm_f1.0/CIC/Verilog/sc9_cln40g_base_lvt_udp.v -v /theda21_2/yllab/CBDK40_TSMC/CBDK_TSMC40_Arm_f1.0/CIC/Verilog/sc9_cln40g_base_lvt.v -v /theda21_2/yllab/CBDK40_TSMC/CBDK_TSMC40_Arm_f1.0/CIC/Verilog/sc9_cln40g_base_lvt_neg.v +define+SDF +access+r +define+MODE0 
+s123(10Apr2020:20:01:28):  ncverilog header.v ADDER_tb.v ADDER_syn.v -v /theda21_2/yllab/CBDK40_TSMC/CBDK_TSMC40_Arm_f1.0/CIC/Verilog/sc9_cln40g_base_lvt_udp.v -v /theda21_2/yllab/CBDK40_TSMC/CBDK_TSMC40_Arm_f1.0/CIC/Verilog/sc9_cln40g_base_lvt.v -v /theda21_2/yllab/CBDK40_TSMC/CBDK_TSMC40_Arm_f1.0/CIC/Verilog/sc9_cln40g_base_lvt_neg.v +define+SDF +access+r +define+MODE0 
+s124(10Apr2020:20:38:11):  ncverilog header.v ADDER_tb.v ADDER_syn.v -v /theda21_2/yllab/CBDK40_TSMC/CBDK_TSMC40_Arm_f1.0/CIC/Verilog/sc9_cln40g_base_lvt_udp.v -v /theda21_2/yllab/CBDK40_TSMC/CBDK_TSMC40_Arm_f1.0/CIC/Verilog/sc9_cln40g_base_lvt.v -v /theda21_2/yllab/CBDK40_TSMC/CBDK_TSMC40_Arm_f1.0/CIC/Verilog/sc9_cln40g_base_lvt_neg.v +define+SDF +access+r +define+MODE0 
+s125(10Apr2020:20:51:23):  ncverilog header.v ADDER_tb.v ADDER_syn.v -v /theda21_2/yllab/CBDK40_TSMC/CBDK_TSMC40_Arm_f1.0/CIC/Verilog/sc9_cln40g_base_lvt_udp.v -v /theda21_2/yllab/CBDK40_TSMC/CBDK_TSMC40_Arm_f1.0/CIC/Verilog/sc9_cln40g_base_lvt.v -v /theda21_2/yllab/CBDK40_TSMC/CBDK_TSMC40_Arm_f1.0/CIC/Verilog/sc9_cln40g_base_lvt_neg.v +define+SDF +access+r +define+MODE0 
+s126(10Apr2020:21:11:23):  ncverilog header.v ADDER_tb.v ADDER_syn.v -v /theda21_2/yllab/CBDK40_TSMC/CBDK_TSMC40_Arm_f1.0/CIC/Verilog/sc9_cln40g_base_lvt_udp.v -v /theda21_2/yllab/CBDK40_TSMC/CBDK_TSMC40_Arm_f1.0/CIC/Verilog/sc9_cln40g_base_lvt.v -v /theda21_2/yllab/CBDK40_TSMC/CBDK_TSMC40_Arm_f1.0/CIC/Verilog/sc9_cln40g_base_lvt_neg.v +define+SDF +access+r +define+MODE0 
+s127(10Apr2020:21:15:09):  ncverilog header.v ADDER_tb.v ADDER_syn.v -v /theda21_2/yllab/CBDK40_TSMC/CBDK_TSMC40_Arm_f1.0/CIC/Verilog/sc9_cln40g_base_lvt_udp.v -v /theda21_2/yllab/CBDK40_TSMC/CBDK_TSMC40_Arm_f1.0/CIC/Verilog/sc9_cln40g_base_lvt.v -v /theda21_2/yllab/CBDK40_TSMC/CBDK_TSMC40_Arm_f1.0/CIC/Verilog/sc9_cln40g_base_lvt_neg.v +define+SDF +access+r +define+MODE0 
+s128(10Apr2020:21:30:36):  ncverilog header.v ADDER_tb.v ADDER_syn.v -v /theda21_2/yllab/CBDK40_TSMC/CBDK_TSMC40_Arm_f1.0/CIC/Verilog/sc9_cln40g_base_lvt_udp.v -v /theda21_2/yllab/CBDK40_TSMC/CBDK_TSMC40_Arm_f1.0/CIC/Verilog/sc9_cln40g_base_lvt.v -v /theda21_2/yllab/CBDK40_TSMC/CBDK_TSMC40_Arm_f1.0/CIC/Verilog/sc9_cln40g_base_lvt_neg.v +define+SDF +access+r +define+MODE0 
+s129(10Apr2020:21:33:28):  ncverilog header.v ADDER_tb.v ADDER_syn.v -v /theda21_2/yllab/CBDK40_TSMC/CBDK_TSMC40_Arm_f1.0/CIC/Verilog/sc9_cln40g_base_lvt_udp.v -v /theda21_2/yllab/CBDK40_TSMC/CBDK_TSMC40_Arm_f1.0/CIC/Verilog/sc9_cln40g_base_lvt.v -v /theda21_2/yllab/CBDK40_TSMC/CBDK_TSMC40_Arm_f1.0/CIC/Verilog/sc9_cln40g_base_lvt_neg.v +define+SDF +access+r +define+MODE0 
+s130(12Apr2020:14:10:45):  ncverilog header.v ADDER_tb.v ADDER_syn.v -v /theda21_2/yllab/CBDK40_TSMC/CBDK_TSMC40_Arm_f1.0/CIC/Verilog/sc9_cln40g_base_lvt_udp.v -v /theda21_2/yllab/CBDK40_TSMC/CBDK_TSMC40_Arm_f1.0/CIC/Verilog/sc9_cln40g_base_lvt.v -v /theda21_2/yllab/CBDK40_TSMC/CBDK_TSMC40_Arm_f1.0/CIC/Verilog/sc9_cln40g_base_lvt_neg.v +define+SDF +access+r +define+MODE0 
+s131(12Apr2020:16:19:58):  ncverilog header.v ADDER_tb.v ADDER.v +access+r +define+MODE0 
+s132(12Apr2020:16:27:28):  ncverilog header.v ADDER_tb.v ADDER.v +access+r +define+MODE0 
+s133(12Apr2020:16:29:23):  ncverilog header.v ADDER_tb.v ADDER.v +access+r +define+MODE0 
+s134(12Apr2020:16:32:14):  ncverilog header.v ADDER_tb.v ADDER.v +access+r +define+MODE0 
+s135(12Apr2020:16:36:26):  irun -64bit 
+s136(12Apr2020:16:37:13):  irun 64bit 
+s137(12Apr2020:16:40:23):  irun -access +rwc -loadpli1 debpli:novas_pli_boot 

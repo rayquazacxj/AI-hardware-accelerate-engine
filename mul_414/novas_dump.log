@@ -1,0 +1,163 @@
+ncsim 15.20-s039
+Linux 2.6.32-754.23.1.el6.x86_64 #1 SMP Thu Sep 26 12:05:41 UTC 2019 x86_64
+CPU cores: 32
+Limit information:
+======================================
+cputime			unlimited
+filesize		unlimited
+datasize		unlimited
+stacksize		10240 kbytes
+coredumpsize	0 kbytes
+memoryuse		unlimited
+vmemoryuse		unlimited
+descriptors		4096
+memorylocked	64 kbytes
+maxproc			1024
+======================================
+(Special)Runtime environment variables:
+
+Runtime environment variables:
+QTDIR=/usr/lib64/qt-3.3
+VCS_HOME=/usr/cad/synopsys/vcs-mx/cur
+SOFT_MAN_DIR=/usr/cad/synopsys/coreconsultant/cur/doc/dware/man
+SHELL=/bin/tcsh
+PCTHOME=/usr/cad/synopsys/pa_virtualizer/cur/SLS/linux/pc
+MACHTYPE=x86_64
+LESSOPEN=||/usr/bin/lesspipe.sh %s
+CWR_USING_LNX_KERNEL_THREADS=1
+SSH_CONNECTION=192.168.75.200 51747 192.168.75.28 22
+PATH=/usr/cad/cadence/INCISIV/cur/tools/bin:/usr/cad/cadence/INCISIV/cur/tools/vtools/vfault/bin:/usr/cad/cadence/INCISIV/cur/tools/dfII/bin:/usr/cad/cadence/EDI/cur/tools/celtic/bin:/usr/cad/cadence/EDI/cur/tools/plato/bin:/usr/cad/cadence/EDI/cur/tools/dfII/bin:/usr/cad/cadence/EDI/cur/tools/fe/bin:/usr/cad/cadence/EDI/cur/tools/cdsdoc/bin:/usr/cad/cadence/EDI/cur/tools/bin:/usr/cad/cadence/EDI/cur//tools/tlfUtil/bin:/usr/cad/cadence/CTOS/cur/tools/bin:/usr/cad/cadence/MMSIM/cur/tools/dfII/bin:/usr/cad/cadence/MMSIM/cur/tools/bin:/usr/cad/cadence/EXT/cur/tools/bin:/usr/cad/cadence/ETS/cur/tools/bin:/usr/cad/cadence/CONFRML/cur/./bin:/usr/cad/cadence/CONFRML/cur/tools/bin:/usr/cad/cadence/IC/cur/tools/dfII/bin:/usr/cad/cadence/IC/cur/tools/dracula/bin:/usr/cad/cadence/IC/cur/tools/bin:/usr/cad/synopsys/pa_virtualizer/cur/SLS/linux/pc/bin:/usr/cad/synopsys/pa_virtualizer/cur/SLS/linux/InnoGUI/Innovator/Bin:/usr/cad/synopsys/pa_virtualizer/cur/SLS/linux/tools/bin:/usr/cad/synopsys/icc/cur/amd64/syn/bin:/usr/bin/X11:/usr/cad/synopsys/coreconsultant/cur/bin:/usr/cad/synopsys/verdi/cur/bin:/usr/cad/synopsys/verdi/cur/nLint/bin:/usr/cad/synopsys/vcs-mx/cur/bin:/usr/cad/synopsys/vcs-mx/cur/linux/bin:/usr/cad/synopsys/vcs-mx/cur/linux/util:/usr/cad/synopsys/vcs-mx/cur/linux/flexlm:/usr/bin/X11:/usr/cad/synopsys/coreConsultant/cur/bin:/usr/cad/synopsys/synthesis/cur/amd64/syn/bin:/usr/cad/synopsys/lc/cur/bin:/usr/bin/X11:/usr/cad/synopsys/primetime/cur/amd64/syn/bin:/usr/lib64/qt-3.3/bin:/usr/local/bin:/bin:/usr/bin
+LM_LICENSE_FILE=5280@lscic:5280@lscic:5280@lsnctu:8224@lscic.cic.org.tw:26585@lscic.cic.org.tw:26585@hostname
+SNPS_VP_HTYPE=linux
+PRIMETIME=/usr/cad/synopsys/primetime/cur
+ENCOUNTER=/usr/cad/cadence/EDI/cur/tools/fe
+SNPS_VP_PRODUCT=PA
+SSH_TTY=/dev/pts/1
+COWARE_MONITORS_PATH=/users/student/mr108/hshuang19/.synopsys/monitors:/usr/cad/synopsys/pa_virtualizer/cur/SLS/linux/IP
+VENDOR=unknown
+COWAREHT=linux
+LS_COLORS=rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:mi=01;05;37;41:su=37;41:sg=30;43:ca=30;41:tw=30;42:ow=34;42:st=37;44:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arj=01;31:*.taz=01;31:*.lzh=01;31:*.lzma=01;31:*.tlz=01;31:*.txz=01;31:*.zip=01;31:*.z=01;31:*.Z=01;31:*.dz=01;31:*.gz=01;31:*.lz=01;31:*.xz=01;31:*.bz2=01;31:*.tbz=01;31:*.tbz2=01;31:*.bz=01;31:*.tz=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.rar=01;31:*.ace=01;31:*.zoo=01;31:*.cpio=01;31:*.7z=01;31:*.rz=01;31:*.jpg=01;35:*.jpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.svg=01;35:*.svgz=01;35:*.mng=01;35:*.pcx=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.m2v=01;35:*.mkv=01;35:*.ogm=01;35:*.mp4=01;35:*.m4v=01;35:*.mp4v=01;35:*.vob=01;35:*.qt=01;35:*.nuv=01;35:*.wmv=01;35:*.asf=01;35:*.rm=01;35:*.rmvb=01;35:*.flc=01;35:*.avi=01;35:*.fli=01;35:*.flv=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.yuv=01;35:*.cgm=01;35:*.emf=01;35:*.axv=01;35:*.anx=01;35:*.ogv=01;35:*.ogx=01;35:*.aac=01;36:*.au=01;36:*.flac=01;36:*.mid=01;36:*.midi=01;36:*.mka=01;36:*.mp3=01;36:*.mpc=01;36:*.ogg=01;36:*.ra=01;36:*.wav=01;36:*.axa=01;36:*.oga=01;36:*.spx=01;36:*.xspf=01;36:
+SHLIB_PATH=/usr/cad/synopsys/verdi/cur/share/PLI/IUS/LINUX
+OA_HOME=/usr/cad/cadence/EDI/cur/oa
+KDEDIRS=/usr
+DISPLAY=localhost:10.0
+COWARE_PRODUCT=PA
+PWD=/users/student/mr108/hshuang19/multestt
+G_BROKEN_FILENAMES=1
+MANPATH=:/usr/cad/synopsys/synthesis/cur/doc/syn/man:/usr/cad/synopsys/coreconsultant/cur/doc/dware/man
+HOME=/users/student/mr108/hshuang19
+SYNOPSYS=/usr/cad/synopsys/icc/cur
+LD_LIBRARY_PATH=/usr/cad/cadence/INCISIV/cur/tools/lib:/usr/cad/cadence/INCISIV/cur/tools/vtools/vfault/lib:::/usr/cad/cadence/EDI/cur//tools/tlfUtil/lib:/usr/cad/cadence/CTOS/cur/tools/lib:/usr/cad/cadence/MMSIM/cur/tools/lib:/usr/cad/cadence/EXT/cur/tools/lib:/usr/cad/cadence/ETS/cur/tools/lib:/usr/cad/cadence/CONFRML/cur/tools/lib:/usr/cad/cadence/IC/cur/tools/lib:/usr/cad/synopsys/pa_virtualizer/cur/SLS/linux/dmtools/lib:/usr/cad/synopsys/pa_virtualizer/cur/SLS/linux/pc/lib:/usr/cad/synopsys/pa_virtualizer/cur/SLS/linux/common/lib-any:/usr/cad/synopsys/pa_virtualizer/cur/SLS/linux/common/libso-gcc-4.7.2:/usr/cad/synopsys/pa_virtualizer/cur/SLS/linux/gnu/gcc-4.7.2/lib:/usr/cad/synopsys/verdi/cur/share/PLI/IUS/LINUX/:/usr/cad/synopsys/pa_virtualizer/cur/SLS/linux/dmtools/lib:/lib
+SYN_MAN_DIR=/usr/cad/synopsys/synthesis/cur/doc/syn/man
+LOGNAME=hshuang19
+VCS_CC=gcc
+HOSTNAME=ic58.cs.nthu.edu.tw
+SSH_ASKPASS=/usr/libexec/openssh/gnome-ssh-askpass
+OSTYPE=linux
+SHLVL=1
+COWAREHOME=/usr/cad/synopsys/pa_virtualizer/cur/SLS/linux
+USER=hshuang19
+QTLIB=/usr/lib64/qt-3.3/lib
+SNPS_VIEW_CONFIG_PATH=/users/student/mr108/hshuang19/.synopsys/viewconfig:/usr/cad/synopsys/pa_virtualizer/cur/SLS/linux/IP:/usr/cad/synopsys/pa_virtualizer/cur/SLS/linux/common/etc/viewconfig
+SYNTHESIS=/usr/cad/synopsys/synthesis/cur
+REMOTEHOST=nthucad
+CVS_RSH=ssh
+MAKEFLAGS=
+MFLAGS=
+SSH_CLIENT=192.168.75.200 51747 22
+MAIL=/var/spool/mail/hshuang19
+COWARE_AUX_BIN=/usr/cad/synopsys/pa_virtualizer/cur/SLS/linux/common/bin
+COWARE_JRE=/usr/cad/synopsys/pa_virtualizer/cur/SLS/linux/../linux/java
+KDE_IS_PRELINKED=1
+COWAREDOC_INSTALLED_AT=/usr/cad/synopsys/pa_virtualizer/vJ-2014.12/Documentation
+OAHOME=/usr/cad/cadence/oa_v22.04.073
+HOSTTYPE=x86_64-linux
+VERPLEX_HOME=/usr/cad/cadence/CONFRML/cur
+SNPS_VP_DOC=/usr/cad/synopsys/pa_virtualizer/vJ-2014.12/Documentation
+COWARE_CXX_COMPILER=gcc-4.7.2
+GROUP=ylin
+CDS_Netlisting_Mode=Analog
+INPUTRC=/etc/inputrc
+QTINC=/usr/lib64/qt-3.3/include
+SNPS_VP_HOME=/usr/cad/synopsys/pa_virtualizer/cur/SLS/linux
+LANG=en_US
+TERM=xterm
+HOST=ic58.cs.nthu.edu.tw
+MAKELEVEL=1
+_IRUNROOT_=/usr/cad/cadence/INCISIV/cur/tools
+CDS_ARCH=lnx86
+NCRUNMODE=ncverilog:./INCA_libs/irun.lnx86.15.20.nc
+IRUNBATCH=FALSE
+IMPERAS_PORT_FILE=.vsp_ovp_gdb_port
+TCL_LIBRARY=/usr/cad/cadence/INCISIV/cur/tools/inca/files/tcl/library
+Runtime command line arguments:
+argv[0]=ncverilog
+argv[1]=header.v
+argv[2]=IPF_tb.v
+argv[3]=IPF_syn.v
+argv[4]=-v
+argv[5]=/theda21_2/yllab/CBDK40_TSMC/CBDK_TSMC40_Arm_f1.0/CIC/Verilog/sc9_cln40g_base_lvt_udp.v
+argv[6]=-v
+argv[7]=/theda21_2/yllab/CBDK40_TSMC/CBDK_TSMC40_Arm_f1.0/CIC/Verilog/sc9_cln40g_base_lvt.v
+argv[8]=-v
+argv[9]=/theda21_2/yllab/CBDK40_TSMC/CBDK_TSMC40_Arm_f1.0/CIC/Verilog/sc9_cln40g_base_lvt_neg.v
+argv[10]=+define+SDF
+argv[11]=+access+r
+argv[12]=+define+MODE0
+106 profile - 100
+          CPU/Mem usage: 0.940 sys,  1.000 user,  989.90M sys,  0.00M vm
+107 VC callback profile - scalar:0 vector:0
+108 Tue Apr 14 08:36:02 2020
+109 pliAppInit
+110 *Verdi3* : Enable Parallel Dumping.
+111 pliAppMiscSet: New Sim Round
+112 pliEntryInit
+113 LIBSSCORE=found /usr/cad/synopsys/verdi/cur/share/PLI/IUS/LINUX/libsscore_ius152.so through $LD_LIBRARY_PATH setting.
+114 argv[0]: IPF_syn.fsdb
+115 argv[0]: +mda
+116 FSDB Dumper for IUS, Release Verdi3_L-2016.06-SP1-1, Linux, 09/27/2016
+117 (C) 1996 - 2016 by Synopsys, Inc.
+118 sps_call_fsdbDumpfile at 0 : /users/student/mr108/hshuang19/multestt/IPF_tb.v(110)
+119 argv[0]: IPF_syn.fsdb
+120 *Verdi3* FSDB WARNING: The FSDB file already exists. Overwriting the FSDB file may crash the programs that are using this file.
+121 *Verdi3* : Create FSDB file 'IPF_syn.fsdb'
+122 sps_call_fsdbDumpvars at 0 : /users/student/mr108/hshuang19/multestt/IPF_tb.v(111)
+123 argv[0]: +mda
+124 *Verdi3* : Begin traversing the scopes, layer (0).
+125 *Verdi3* : Enable +mda dumping.
+126 Cell instance `IPF_tb.IPF.C0.add_1172_3_I9.U1_9'.
+127 *Verdi3* : End of traversing.
+128 fsdbDumpvars traverse var: profile - 
+          CPU/Mem usage: 1.920 sys,  116.910 user,  3338.26M sys,  0.00M vm
+                   incr: 0.970 sys,  115.910 user,  2266.36M sys,  0.00M vm
+                   accu: 0.970 sys,  115.910 user,  2266.36M sys,  0.00M vm
+              accu incr: 0.970 sys,  115.910 user,  2266.36M sys,  0.00M vm
+
+          Count usage: 10195615 var,  4367786 idcode,  4367786 callback
+                 incr: 10195615 var,  4367786 idcode,  4367786 callback
+                 accu: 10195615 var,  4367786 idcode,  4367786 callback
+            accu incr: 10195615 var,  4367786 idcode,  4367786 callback
+129 VC callback profile - scalar:0 vector:0
+130 Tue Apr 14 08:37:59 2020
+131 fsdbDumpvars: profile - 
+          CPU/Mem usage: 1.980 sys,  119.730 user,  3475.44M sys,  0.00M vm
+                   incr: 0.060 sys,  2.820 user,  137.19M sys,  0.00M vm
+                   accu: 1.030 sys,  118.730 user,  2403.55M sys,  0.00M vm
+              accu incr: 0.060 sys,  2.820 user,  137.19M sys,  0.00M vm
+
+          Count usage: 10195615 var,  4367786 idcode,  4367786 callback
+                 incr: 0 var,  0 idcode,  0 callback
+                 accu: 10195615 var,  4367786 idcode,  4367786 callback
+            accu incr: 0 var,  0 idcode,  0 callback
+132 VC callback profile - scalar:4367686 vector:100
+133 Tue Apr 14 08:38:02 2020
+134 End of simulation at 645000
+135 VC callback profile - scalar:353982147 vector:586
+136 Tue Apr 14 08:39:15 2020
+137 Begin FSDB profile info:
+138 FSDB Writer : flush elapsed time(5.015051) bc1(353982147) bcn(586) mtf/stf(0/3) MT Compression : 0
+139 End FSDB profile info
+140 Parallel profile    -  Flush:3 Expand:0 ProduceWait:0 ConsumerWait:925 BlockUsed:1000
+141                        ProduceTime:198.081830526 ConsumerTime:38.760516288 Buffer:64MB
+142 SimExit
+143 Sim process exit

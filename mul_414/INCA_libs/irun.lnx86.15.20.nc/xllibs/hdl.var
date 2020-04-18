@@ -1,0 +1,5 @@
+define LIB_MAP ( $LIB_MAP \
+, ../../../../../../../../theda21_2/yllab/CBDK40_TSMC/CBDK_TSMC40_Arm_f1.0/CIC/Verilog/sc9_cln40g_base_lvt_neg.v => sc9_cln40g_base_lvt_neg \
+, ../../../../../../../../theda21_2/yllab/CBDK40_TSMC/CBDK_TSMC40_Arm_f1.0/CIC/Verilog/sc9_cln40g_base_lvt.v => sc9_cln40g_base_lvt \
+, ../../../../../../../../theda21_2/yllab/CBDK40_TSMC/CBDK_TSMC40_Arm_f1.0/CIC/Verilog/sc9_cln40g_base_lvt_udp.v => sc9_cln40g_base_lvt_udp \
+)
