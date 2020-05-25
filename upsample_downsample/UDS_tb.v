@@ -1,14 +1,15 @@
 `define CYCLE      30
 `define SDFFILE    "./UDS.sdf"	  
-`define End_CYCLE  1000000
+`define End_CYCLE  10000000
 
-`define A = 7'd64;
 
-//`define PAT        "./mul_data_i.dat" 
+`define PAT        "./uds_downsample2_input.dat" 
+`define ANS        "./uds_downsample2_ans.dat" 
  
 
 module UDS_tb;
-    	
+    localparam A = 7'd64;
+	
 	reg clk;
 	reg rst_n;
 	reg active;
@@ -17,25 +18,23 @@ module UDS_tb;
 	reg [1:0]scale_factor;
 	reg [1:0]function_mode;
 	
-	wire [2*A*32-1:0]odata; //2A
+	wire [2*(A-8)*32-1:0]odata; //2A
 	wire odata_valid;
 	
 	wire finish;
 	
 	
-	//reg [63:0] i_mem [0:7];
-	
+	reg [A*32-1:0] idata_mem [0:5];
+	//reg [2*(A-8)*32-1:0]odata_mem[0:2];
 	
     reg over;
     integer err, exp_num, i;
 	
 	
 /* 接線 */
-`ifdef SDF
-    UDS UDS(
-`else
-    UDS UDS #(.A(A)) (
-`endif
+
+    UDS  #(.A(A))UDS (
+
     	.clk(clk),
 		.rst_n(rst_n),  
         .active(active),
@@ -58,9 +57,11 @@ module UDS_tb;
 	
 	/* read file data */
 	initial begin
-		$readmemb(`PAT, i_mem);
-		$readmemb(`WPA , w_mem);
-		//$readmemb(`EXP0 , exp_mem);		
+	
+		$readmemb(`PAT, idata_mem);
+		//$readmemb(`ANS , odata_mem);
+	
+				
 		
 	end
 	
@@ -71,29 +72,87 @@ module UDS_tb;
 	initial begin
 		`ifdef SDF //syn
 			$sdf_annotate(`SDFFILE,IPF); 	//time violation 
-			$fsdbDumpfile("IPF_syn.fsdb"); 	//nWave
+			$fsdbDumpfile("UDS_syn.fsdb"); 	//nWave
 			$fsdbDumpvars("+mda");
 		`else
-			$fsdbDumpfile("IPF.fsdb");
+			$fsdbDumpfile("UDS.fsdb");
 			$fsdbDumpvars("+mda");
 		`endif
 	end
 
 	/* init val & give data */ 
 	initial begin 
-	
+		i=0;
+		
 		clk=0;
 		rst_n=1;
 		active=0;
+		idata_valid=0;
 		
-		@(posedge clk)rst_n=0; 	//wait , when pos clk => active(rst=0)
+	//----
+	//  downsample2_max
+		scale_factor =	0;
+		function_mode = 0;
+	//----
+	
+		@(posedge clk)rst_n=0; 		//wait , when pos clk => active(rst=0)
 		#(`CYCLE*2)rst_n=1; 		//wait 2 cyc
 		@(negedge clk);
 		
+	//----------------------------------A,B
+		idata = idata_mem[i];
+		idata_valid = 1;
+		active = 0;
+		i=i+1;
+		@(negedge clk);
 		
+		idata = idata_mem[i];
+		idata_valid = 1;
+		active = 1;
+		i=i+1;
+		@(negedge clk);
+	//----------------------------------
+		idata_valid = 0;
+		active = 0;
+		@(negedge clk);
+	//---------------------------------------------------------
+	//----------------------------------C,D
+		idata = idata_mem[i];
+		idata_valid = 1;
+		active = 0;
+		i=i+1;
+		@(negedge clk);
 		
+		idata = idata_mem[i];
+		idata_valid = 1;
+		active = 1;
+		i=i+1;
+		@(negedge clk);
+	//----------------------------------
+		idata_valid = 0;
+		active = 0;
+		@(negedge clk);
+	//---------------------------------------------------------
+		//----------------------------------E,F
+		idata = idata_mem[i];
+		idata_valid = 1;
+		active = 0;
+		i=i+1;
+		@(negedge clk);
+		
+		idata = idata_mem[i];
+		idata_valid = 1;
+		active = 1;
+		i=i+1;
+		@(negedge clk);
+	//----------------------------------
+		idata_valid = 0;
+		active = 0;
+		@(negedge clk);
+	//---------------------------------------------------------
+		repeat(10)@(negedge clk);
 		$display("END RUN\n");	
-	
+		over=1;
 		
 
 		
@@ -113,6 +172,7 @@ module UDS_tb;
 		@(posedge clk);
 		@(posedge clk);
 		$display("finish\n");
+		
 		/*
 		for(i=0;i<`ANS_NUM;i=i+1)begin
 			exp_dbg=exp_mem[i]; ipf_dbg= u_ipf_mem.ipf_M[i];

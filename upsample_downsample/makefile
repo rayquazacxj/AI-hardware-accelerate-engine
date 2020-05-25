@@ -26,20 +26,8 @@ all :: sim
 sim :
 		$(VLOG) $(HEAD) $(SRC) $(VLOGARG) 
 
-sim1 :
-		$(VLOG) $(HEAD) $(SRC) $(VLOGARG) 
-
-sim2 :
-		$(VLOG) $(HEAD) $(SRC) $(VLOGARG) 
-
 syn : 
 		$(VLOG) $(HEAD) $(SRC_syn)  $(SDF) $(VLOGARG) 
-
-syn1 :
-		$(VLOG) $(HEAD) $(SRC_syn) $(SDF) $(VLOGARG) 
-
-syn2 :
-		$(VLOG) $(HEAD) $(SRC_syn) $(SDF) $(VLOGARG) 
 
 check :
 		$(VLOG) -c $(SRC)
