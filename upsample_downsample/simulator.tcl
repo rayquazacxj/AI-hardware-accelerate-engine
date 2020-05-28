@@ -44,8 +44,8 @@ set_structure -timing true
 set_ideal_network [get_ports clk]
 set_ideal_network [get_ports rst]
 
-#compile -map_effort high
-compile -exact_map
+compile -map_effort high 
+#compile -exact_map
 write_sdf -version 1.0 -context verilog UDS.sdf
 write -hierarchy -format verilog -output UDS_syn.v
 uplevel #0 { report_area }
