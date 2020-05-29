@@ -29,6 +29,8 @@ module UDS#(parameter A=7'd64)( // A = 8 * 8
 	//reg idata_valid_reg,idata_valid_reg2;
 	reg active_reg,active_reg2;
 	
+	reg shift2pre,NEXT_shift2pre;
+	
 	/*
 	always@(posedge clk or negedge rst_n)begin
 		if(!rst_n)begin
@@ -90,6 +92,15 @@ module UDS#(parameter A=7'd64)( // A = 8 * 8
 	
 	always@(posedge clk or negedge rst_n)begin
 		if(!rst_n)begin
+			shift2pre <= 0;
+		end
+		else begin
+			shift2pre <= NEXT_shift2pre;
+		end
+	end
+	
+	always@(posedge clk or negedge rst_n)begin
+		if(!rst_n)begin
 			odata_valid <= 0;
 		end
 		else begin
@@ -112,6 +123,7 @@ module UDS#(parameter A=7'd64)( // A = 8 * 8
 		
 		NEXT_odata_valid = 0 ;
 		NEXT_odata = odata;
+		NEXT_shift2pre = 0;
 		
 		for(i=0; i< 8 ; i=i+1)begin 
 			NEXT_CUR[i] = CUR[i];
@@ -121,7 +133,7 @@ module UDS#(parameter A=7'd64)( // A = 8 * 8
 		end
 		
 		
-		/*
+		
 	//----- UPSAMPLE 2X -----
 		if(function_mode[1]==1 && !active_reg && !active_reg2)begin 			//NEXT SHIFT (AT BEGINING)
 			for(i=0; i< ROW_NUMS-3 ; i=i+2)begin  								// i< ROW_NUMS-3: loop until row12(G)
@@ -158,30 +170,15 @@ module UDS#(parameter A=7'd64)( // A = 8 * 8
 			
 			NEXT_odata_valid = 1;
 		end
-		*/
+		
+		if(function_mode[1]==1 && shift2pre)begin
+			NEXT_odata = {PRE[13],PRE[12],PRE[11],PRE[10],PRE[9],PRE[8],PRE[7],PRE[6],PRE[5],PRE[4],PRE[3],PRE[2],PRE[1],PRE[0]};
+			NEXT_odata_valid = 1;
+		end
+		
 	//-------------------------------------------------------------------------------	
 	//----	DOWNSAMPLE 2*2 stride2 -------	
 		
-		/*
-		if(function_mode[1]==0 && scale_factor==0 && active_reg)begin 			// NEXT NO SHIFT, compute r1,r2			
-			if(function_mode[0]==0)begin										// MaxPooling
-				for(i=0; i< HALF_ROWS ; i=i+2)begin  	
-					for(j=0; j< 8 ; j=j+1)begin     					
-						NEXT_CUR[i][j<<5 +:6'd32] = (CUR[i][j<<5 +:6'd32]>CUR[i+1][j<<5 +:6'd32])? CUR[i][j<<5 +:6'd32] : CUR[i+1][j<<5 +:6'd32];
-						NEXT_PRE[i][j<<5 +:6'd32] = (PRE[i][j<<5 +:6'd32]>PRE[i+1][j<<5 +:6'd32])? PRE[i][j<<5 +:6'd32] : PRE[i+1][j<<5 +:6'd32];
-					end
-				end
-			end
-			else begin															// AvgPooling
-				for(i=0; i< HALF_ROWS ; i=i+2)begin  	
-					for(j=0; j< 8 ; j=j+1)begin     					
-						NEXT_CUR[i][j<<5 +:6'd32] = (CUR[i][j<<5 +:6'd32] + CUR[i+1][j<<5 +:6'd32])>>1;
-						NEXT_PRE[i][j<<5 +:6'd32] = (PRE[i][j<<5 +:6'd32] + PRE[i+1][j<<5 +:6'd32])>>1;
-					end
-				end
-			end
-		end	
-		*/
 	
 		if(function_mode[1]==0 && scale_factor==0 && !active_reg)begin 	//NEXT  SHIFT, compute r2			
 			if(function_mode[0]==0)begin								// MaxPooling
@@ -190,14 +187,15 @@ module UDS#(parameter A=7'd64)( // A = 8 * 8
 						NEXT_PRE[i][j<<5 +:6'd32] = (CUR[i][j<<5 +:6'd32]>CUR[i+1][j<<5 +:6'd32])? CUR[i][j<<5 +:6'd32] : CUR[i+1][j<<5 +:6'd32];
 					end
 				end
-			end/*
+			end
 			else begin													// AvgPooling
 				for(i=0; i< HALF_ROWS ; i=i+2)begin  	
 					for(j=0; j< 8 ; j=j+1)begin     					
 						//NEXT_PRE[i][j<<5 +:6'd32] = (CUR[i][j<<5 +:6'd32] + CUR[i+1][j<<5 +:6'd32])>>1;
+						NEXT_PRE[i][j<<5 +:6'd32] = CUR[i][{j[26:0],5'b00001} +:6'd31] + CUR[i+1][{j[26:0],5'b00001} +:6'd31] + ( CUR[i][{j[26:0],5'd0}] & CUR[i+1][{j[26:0],5'd0}] );
 					end
 				end
-			end*/
+			end
 		end	
 		
 		if(function_mode[1]==0 && scale_factor==0 && active_reg)begin 	//NEXT NO SHIFT, compute r2			
@@ -207,14 +205,15 @@ module UDS#(parameter A=7'd64)( // A = 8 * 8
 						NEXT_CUR[i][j<<5 +:6'd32] = (CUR[i][j<<5 +:6'd32]>CUR[i+1][j<<5 +:6'd32])? CUR[i][j<<5 +:6'd32] : CUR[i+1][j<<5 +:6'd32];
 					end
 				end
-			end/*
+			end
 			else begin													// AvgPooling
 				for(i=0; i< HALF_ROWS ; i=i+2)begin  	
 					for(j=0; j< 8 ; j=j+1)begin     					
-						NEXT_CUR[i][j<<5 +:6'd32] = (CUR[i][j<<5 +:6'd32] + CUR[i+1][j<<5 +:6'd32])>>1;
+						//NEXT_CUR[i][j<<5 +:6'd32] = (CUR[i][j<<5 +:6'd32] + CUR[i+1][j<<5 +:6'd32])>>1;
+						NEXT_CUR[i][j<<5 +:6'd32] = CUR[i][{j[26:0],5'b00001} +:6'd31] + CUR[i+1][{j[26:0],5'b00001} +:6'd31] + ( CUR[i][{j[26:0],5'd0}] & CUR[i+1][{j[26:0],5'd0}] );
 					end
 				end
-			end*/
+			end
 		end	
 		
 		
@@ -226,19 +225,21 @@ module UDS#(parameter A=7'd64)( // A = 8 * 8
 						NEXT_odata_test[i][j<<5 +:6'd32] = (CUR[i][j<<5 +:6'd32]>PRE[i][j<<5 +:6'd32])? CUR[i][j<<5 +:6'd32] : PRE[i][j<<5 +:6'd32];
 					end
 				end
-			end/*
+			end
 			else begin															// AvgPooling
 				for(i=0 ;i< HALF_ROWS ; i=i+2)begin  	
 					for(j=0; j< 8 ; j=j+1)begin // (i>>1)<<8  + j<<5	
-						NEXT_odata[(  {i[23:1],8'd0} + {j[26:0],5'd0} ) +:6'd32] = (CUR[i][j<<5 +:6'd32] + PRE[i][j<<5 +:6'd32])>>1;
-						NEXT_odata_test[i][j<<5 +:6'd32] = (CUR[i][j<<5 +:6'd32] + PRE[i][j<<5 +:6'd32])>>1;
+						//NEXT_odata[(  {i[23:1],8'd0} + {j[26:0],5'd0} ) +:6'd32] = (CUR[i][j<<5 +:6'd32] + PRE[i][j<<5 +:6'd32])>>1;	
+						//NEXT_odata_test[i][j<<5 +:6'd32] = (CUR[i][j<<5 +:6'd32] + PRE[i][j<<5 +:6'd32])>>1;
+						NEXT_odata[(  {i[23:1],8'd0} + {j[26:0],5'd0} ) +:6'd32] = CUR[i][{j[26:0],5'b00001} +:6'd31] + PRE[i][{j[26:0],5'b00001} +:6'd31] + ( CUR[i][{j[26:0],5'd0}] & PRE[i][{j[26:0],5'd0}] );
+						NEXT_odata_test[i][j<<5 +:6'd32] = CUR[i][{j[26:0],5'b00001} +:6'd31] + PRE[i][{j[26:0],5'b00001} +:6'd31] + ( CUR[i][{j[26:0],5'd0}] & PRE[i][{j[26:0],5'd0}] );
 					end
 				end
-			end	*/
+			end	
 			
 			NEXT_odata_valid = 1;
 		end
-		
+		/*
 	//---------------------------------------------------------------------------
 	//----	DOWNSAMPLE 3*3 stride2 -------------
 		if(function_mode[1]==0 && scale_factor==1 && !active_reg)begin 		//NEXT  SHIFT, compute col
@@ -250,7 +251,7 @@ module UDS#(parameter A=7'd64)( // A = 8 * 8
 					end
 					NEXT_PRE[i] = MID[i];
 				end
-			end/*
+			end
 			else begin														// AvgPooling
 				for(i=0; i< HALF_ROWS ; i=i+2)begin  	
 					for(j=0; j< 8 ; j=j+1)begin     					
@@ -258,7 +259,7 @@ module UDS#(parameter A=7'd64)( // A = 8 * 8
 					end
 					NEXT_PRE[i] = MID[i];
 				end
-			end*/
+			end
 		end
 		
 		if(function_mode[1]==0 && scale_factor==1 && active_reg)begin 		//NEXT NO SHIFT, compute col
@@ -269,7 +270,7 @@ module UDS#(parameter A=7'd64)( // A = 8 * 8
 						NEXT_CUR[i][j<<5 +:6'd32] = (CUR[i][j<<5 +:6'd32]>CUR[i+1][j<<5 +:6'd32])? (CUR[i][j<<5 +:6'd32]>CUR[i+2][j<<5 +:6'd32])? CUR[i][j<<5 +:6'd32]: CUR[i+2][j<<5 +:6'd32] : (CUR[i+1][j<<5 +:6'd32]>CUR[i+2][j<<5 +:6'd32])? CUR[i+1][j<<5 +:6'd32]: CUR[i+2][j<<5 +:6'd32];
 					end
 				end
-			end/*
+			end
 			else begin														// AvgPooling
 				for(i=0; i< HALF_ROWS ; i=i+2)begin  	
 					for(j=0; j< 8 ; j=j+1)begin     					
@@ -277,7 +278,7 @@ module UDS#(parameter A=7'd64)( // A = 8 * 8
 					end
 				end
 			end
-			*/
+			
 		end
 		
 		if(function_mode[1]==0 && scale_factor==1 && active_reg2)begin			//downsamle 3*3, compute row
@@ -291,7 +292,7 @@ module UDS#(parameter A=7'd64)( // A = 8 * 8
 					NEXT_MID[i] = CUR[i];										//NEXT SHIFT				
 					NEXT_PRE[i] = MID[i];
 				end
-			end/*
+			end
 			else begin															// AvgPooling
 				for(i=0; i< HALF_ROWS ; i=i+2)begin  	
 					for(j=0; j< 8 ; j=j+1)begin     							// 8 items in a row (depth)
@@ -302,10 +303,10 @@ module UDS#(parameter A=7'd64)( // A = 8 * 8
 					NEXT_PRE[i] = MID[i];
 				end
 			end
-			*/
+			
 			NEXT_odata_valid = 1;
 		end
-	
+	*/
 	end
 	
 endmodule
