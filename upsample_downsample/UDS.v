@@ -133,7 +133,7 @@ module UDS#(parameter A=7'd64)( // A = 8 * 8
 		end
 		
 		
-		
+		/*
 	//----- UPSAMPLE 2X -----
 		if(function_mode[1]==1 && !active_reg && !active_reg2)begin 			//NEXT SHIFT (AT BEGINING)
 			for(i=0; i< ROW_NUMS-3 ; i=i+2)begin  								// i< ROW_NUMS-3: loop until row12(G)
@@ -175,7 +175,7 @@ module UDS#(parameter A=7'd64)( // A = 8 * 8
 			NEXT_odata = {PRE[13],PRE[12],PRE[11],PRE[10],PRE[9],PRE[8],PRE[7],PRE[6],PRE[5],PRE[4],PRE[3],PRE[2],PRE[1],PRE[0]};
 			NEXT_odata_valid = 1;
 		end
-		
+		*/
 	//-------------------------------------------------------------------------------	
 	//----	DOWNSAMPLE 2*2 stride2 -------	
 		
@@ -185,6 +185,7 @@ module UDS#(parameter A=7'd64)( // A = 8 * 8
 				for(i=0; i< HALF_ROWS ; i=i+2)begin  	
 					for(j=0; j< 8 ; j=j+1)begin     					
 						NEXT_PRE[i][j<<5 +:6'd32] = (CUR[i][j<<5 +:6'd32]>CUR[i+1][j<<5 +:6'd32])? CUR[i][j<<5 +:6'd32] : CUR[i+1][j<<5 +:6'd32];
+					
 					end
 				end
 			end
@@ -192,7 +193,7 @@ module UDS#(parameter A=7'd64)( // A = 8 * 8
 				for(i=0; i< HALF_ROWS ; i=i+2)begin  	
 					for(j=0; j< 8 ; j=j+1)begin     					
 						//NEXT_PRE[i][j<<5 +:6'd32] = (CUR[i][j<<5 +:6'd32] + CUR[i+1][j<<5 +:6'd32])>>1;
-						NEXT_PRE[i][j<<5 +:6'd32] = CUR[i][{j[26:0],5'b00001} +:6'd31] + CUR[i+1][{j[26:0],5'b00001} +:6'd31] + ( CUR[i][{j[26:0],5'd0}] & CUR[i+1][{j[26:0],5'd0}] );
+						NEXT_PRE[i][j<<5 +:6'd32] = CUR[i][{j[26:0],5'b00010} +:6'd16] + CUR[i+1][{j[26:0],5'b00010} +:6'd16] + 1; //  (a+b)/4 + 1
 					end
 				end
 			end
@@ -210,7 +211,7 @@ module UDS#(parameter A=7'd64)( // A = 8 * 8
 				for(i=0; i< HALF_ROWS ; i=i+2)begin  	
 					for(j=0; j< 8 ; j=j+1)begin     					
 						//NEXT_CUR[i][j<<5 +:6'd32] = (CUR[i][j<<5 +:6'd32] + CUR[i+1][j<<5 +:6'd32])>>1;
-						NEXT_CUR[i][j<<5 +:6'd32] = CUR[i][{j[26:0],5'b00001} +:6'd31] + CUR[i+1][{j[26:0],5'b00001} +:6'd31] + ( CUR[i][{j[26:0],5'd0}] & CUR[i+1][{j[26:0],5'd0}] );
+						NEXT_CUR[i][j<<5 +:6'd32] = CUR[i][{j[26:0],5'b00010} +:6'd16] + CUR[i+1][{j[26:0],5'b00010} +:6'd16] + 1;
 					end
 				end
 			end
@@ -231,8 +232,8 @@ module UDS#(parameter A=7'd64)( // A = 8 * 8
 					for(j=0; j< 8 ; j=j+1)begin // (i>>1)<<8  + j<<5	
 						//NEXT_odata[(  {i[23:1],8'd0} + {j[26:0],5'd0} ) +:6'd32] = (CUR[i][j<<5 +:6'd32] + PRE[i][j<<5 +:6'd32])>>1;	
 						//NEXT_odata_test[i][j<<5 +:6'd32] = (CUR[i][j<<5 +:6'd32] + PRE[i][j<<5 +:6'd32])>>1;
-						NEXT_odata[(  {i[23:1],8'd0} + {j[26:0],5'd0} ) +:6'd32] = CUR[i][{j[26:0],5'b00001} +:6'd31] + PRE[i][{j[26:0],5'b00001} +:6'd31] + ( CUR[i][{j[26:0],5'd0}] & PRE[i][{j[26:0],5'd0}] );
-						NEXT_odata_test[i][j<<5 +:6'd32] = CUR[i][{j[26:0],5'b00001} +:6'd31] + PRE[i][{j[26:0],5'b00001} +:6'd31] + ( CUR[i][{j[26:0],5'd0}] & PRE[i][{j[26:0],5'd0}] );
+						NEXT_odata[(  {i[23:1],8'd0} + {j[26:0],5'd0} ) +:6'd16] = CUR[i][{j[26:0],5'd0} +:6'd16] + PRE[i][{j[26:0],5'd0} +:6'd16] ;
+						NEXT_odata_test[i][j<<5 +:6'd32] = CUR[i][{j[26:0],5'd0} +:6'd16] + PRE[i][{j[26:0],5'd0} +:6'd16];
 					end
 				end
 			end	
