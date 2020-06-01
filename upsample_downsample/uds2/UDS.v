@@ -68,16 +68,12 @@ module UDS#(parameter A=7'd64)( // A = 8 * 8
 				PRE[i] <= NEXT_PRE[i];
 			end
 			
-			if(!active_reg && idata_valid)begin								//active_reg == 0 => shift
-												// UPSAMPLE
+			
+			if(!active_reg && idata_valid)begin									//active_reg == 0 => shift
 				for(i=0; i< ROW_NUMS ; i=i+1)begin 							//1 row = 8 items = 8 * 32 (256)bits 
 					CUR[i] <= idata[ {i[31:1],8'd0} +: 9'd256]; 			//  (i>>1) *8*32 = (i>>1)<<8 = {i[31:8],8'd0}
 				end
-				
-			end
-			/*
-			if(!active_reg && idata_valid)begin									//active_reg == 0 => shift
-				if(function_mode[1]==1)begin									// UPSAMPLE
+				/*if(function_mode[1]==1)begin									// UPSAMPLE
 					for(i=0; i< ROW_NUMS ; i=i+1)begin 							//1 row = 8 items = 8 * 32 (256)bits 
 						CUR[i] <= idata[ {i[31:1],8'd0} +: 9'd256]; 			//  (i>>1) *8*32 = (i>>1)<<8 = {i[31:8],8'd0}
 					end
@@ -86,14 +82,14 @@ module UDS#(parameter A=7'd64)( // A = 8 * 8
 					for(i=0; i< ROW_NUMS ; i=i+1)begin 										
 						CUR[i] <= idata[i<<8 +: 9'd256]; 						
 					end
-				end
+				end*/
 			end
 			else begin
 				for(i=0; i< ROW_NUMS ; i=i+1)begin  
 					CUR[i] <= NEXT_CUR[i];
 				end
 			end
-			*/
+			
 		end
 	end
 	
@@ -132,7 +128,7 @@ module UDS#(parameter A=7'd64)( // A = 8 * 8
 		NEXT_odata = odata;
 		NEXT_shift2pre = 0;
 		
-		for(i=0; i< 8 ; i=i+1)begin 
+		for(i=0; i< ROW_NUMS ; i=i+1)begin 
 			NEXT_CUR[i] = CUR[i];
 			NEXT_MID[i] = MID[i];
 			NEXT_PRE[i] = PRE[i];
@@ -265,7 +261,7 @@ module UDS#(parameter A=7'd64)( // A = 8 * 8
 			
 			NEXT_odata_valid = 1;
 		end
-		
+		/*
 	//---------------------------------------------------------------------------
 	//----	DOWNSAMPLE 3*3 stride2 -------------
 		if(function_mode[1]==0 && scale_factor==1 && !active_reg)begin 		//NEXT  SHIFT, compute col
@@ -310,16 +306,16 @@ module UDS#(parameter A=7'd64)( // A = 8 * 8
 		if(function_mode[1]==0 && scale_factor==1 && active_reg2)begin			//downsamle 3*3, compute row
 			
 			if(function_mode[0]==0)begin	
-			/*									// MaxPooling
-				for(i=0 ; i< HALF_ROWS ; i=i+2)begin  	
-					for(j=0; j< 8 ; j=j+1)begin     							
-						NEXT_odata[({i[23:1],8'd0} + {j[26:0],5'd0}) +:6'd32] = (PRE[i][j<<5 +:6'd32]>CUR[i][j<<5 +:6'd32])? (PRE[i][j<<5 +:6'd32]>MID[i][j<<5 +:6'd32])? PRE[i][j<<5 +:6'd32]: MID[i][j<<5 +:6'd32] : (CUR[i][j<<5 +:6'd32]>MID[i][j<<5 +:6'd32])? CUR[i][j<<5 +:6'd32]: MID[i][j<<5 +:6'd32];
-					end
-					
-					NEXT_MID[i] = CUR[i];										//NEXT SHIFT				
-					NEXT_PRE[i] = MID[i];
-				end
-				*/
+										// MaxPooling
+				//for(i=0 ; i< HALF_ROWS ; i=i+2)begin  	
+				//	for(j=0; j< 8 ; j=j+1)begin     							
+				//		NEXT_odata[({i[23:1],8'd0} + {j[26:0],5'd0}) +:6'd32] = (PRE[i][j<<5 +:6'd32]>CUR[i][j<<5 +:6'd32])? (PRE[i][j<<5 +:6'd32]>MID[i][j<<5 +:6'd32])? PRE[i][j<<5 +:6'd32]: MID[i][j<<5 +:6'd32] : (CUR[i][j<<5 +:6'd32]>MID[i][j<<5 +:6'd32])? CUR[i][j<<5 +:6'd32]: MID[i][j<<5 +:6'd32];
+				//	end
+				//	
+				//	NEXT_MID[i] = CUR[i];										//NEXT SHIFT				
+				//	NEXT_PRE[i] = MID[i];
+				//end
+				
 				for(j=0; j< 8 ; j=j+1)begin     							
 					NEXT_odata[ {j[26:0],5'd0}  +:6'd32] 		  = (PRE[1][j<<5 +:6'd32]>CUR[1][j<<5 +:6'd32])? (PRE[1][j<<5 +:6'd32]>MID[1][j<<5 +:6'd32])? PRE[1][j<<5 +:6'd32]: MID[1][j<<5 +:6'd32] : (CUR[1][j<<5 +:6'd32]>MID[1][j<<5 +:6'd32])? CUR[1][j<<5 +:6'd32]: MID[1][j<<5 +:6'd32];
 					NEXT_odata[ 32'd256 +{j[26:0],5'd0}  +:6'd32] = (PRE[5][j<<5 +:6'd32]>CUR[5][j<<5 +:6'd32])? (PRE[5][j<<5 +:6'd32]>MID[5][j<<5 +:6'd32])? PRE[5][j<<5 +:6'd32]: MID[5][j<<5 +:6'd32] : (CUR[5][j<<5 +:6'd32]>MID[5][j<<5 +:6'd32])? CUR[5][j<<5 +:6'd32]: MID[5][j<<5 +:6'd32];
@@ -331,17 +327,17 @@ module UDS#(parameter A=7'd64)( // A = 8 * 8
 				
 			end
 			else begin	
-			/*
+			
 			// AvgPooling
-				for(i=0; i< HALF_ROWS ; i=i+2)begin  	
-					for(j=0; j< 8 ; j=j+1)begin     							// 8 items in a row (depth)
-						NEXT_odata[({i[23:1],8'd0} + {j[26:0],5'd0}) +:6'd32] = CUR[i][j<<5 +:6'd32] + PRE[i][j<<5 +:6'd32] + MID[i][j<<5 +:6'd32] ;
-					end
-					
-					NEXT_MID[i] = CUR[i];										//NEXT SHIFT
-					NEXT_PRE[i] = MID[i];
-				end
-				*/
+				//for(i=0; i< HALF_ROWS ; i=i+2)begin  	
+				//	for(j=0; j< 8 ; j=j+1)begin     							// 8 items in a row (depth)
+				//		NEXT_odata[({i[23:1],8'd0} + {j[26:0],5'd0}) +:6'd32] = CUR[i][j<<5 +:6'd32] + PRE[i][j<<5 +:6'd32] + MID[i][j<<5 +:6'd32] ;
+				//	end
+				//	
+				//	NEXT_MID[i] = CUR[i];										//NEXT SHIFT
+				//	NEXT_PRE[i] = MID[i];
+				//end
+				
 				for(j=0; j< 8 ; j=j+1)begin     							// AvgPooling
 					NEXT_odata[ {j[26:0],5'd0}  +:6'd32]  		   = CUR[1][j<<5 +:6'd32] + PRE[1][j<<5 +:6'd32] + MID[1][j<<5 +:6'd32] ;
 					NEXT_odata[ 32'd256 +{j[26:0],5'd0}  +:6'd32]  = CUR[5][j<<5 +:6'd32] + PRE[5][j<<5 +:6'd32] + MID[5][j<<5 +:6'd32] ;
@@ -363,7 +359,7 @@ module UDS#(parameter A=7'd64)( // A = 8 * 8
 			
 			NEXT_odata_valid = 1;
 		end
-	
+	*/
 	end
 	
 endmodule
