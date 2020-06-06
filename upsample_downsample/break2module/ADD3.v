@@ -1,4 +1,4 @@
-module ADD2(
+module ADD3(
 	input[31:0]a;
 	input[31:0]b;
 	input[31:0]c;
