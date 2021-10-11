@@ -1,4 +1,5 @@
-# multilayer-perceptron
+# AI-hardware-accelerate-engine
+
 
 verilog版MLP
 
